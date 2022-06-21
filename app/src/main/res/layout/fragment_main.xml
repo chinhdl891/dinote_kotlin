@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/milky"
+        android:orientation="vertical"
+        android:weightSum="10">
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vpg_main_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="25dp"
+            android:layout_weight="1.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/margin_10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="@dimen/margin_10dp"
+            android:layout_weight="8.5"
+            android:background="@drawable/corner_top"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vpg_main_fragment"
+            app:layout_constraintVertical_bias="1.0">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_main_dinote"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:paddingStart="@dimen/margin_10dp"
+                android:paddingEnd="@dimen/margin_10dp"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="35dp" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/bg_main_background"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="@dimen/margin_20"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="#806EFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <ImageView
+                android:id="@+id/imv_main_create_dinote"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_main_create_dinote"
+                app:layout_constraintBottom_toBottomOf="@+id/bg_main_background"
+                app:layout_constraintEnd_toEndOf="@+id/bg_main_background"
+                app:layout_constraintStart_toStartOf="@+id/bg_main_background"
+                app:layout_constraintTop_toTopOf="@+id/bg_main_background" />
+
+            <ProgressBar
+                android:id="@+id/pb_main_load_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/rcv_main_dinote" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</layout>

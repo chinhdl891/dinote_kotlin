@@ -22,4 +22,27 @@
     <style name="Theme.DinotesLite.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.DinotesLite.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="imageTools" parent="android:Widget">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.AppCompat.Dialog.Pop" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="twoButton" parent="android:Widget">
+        <item name="android:padding">@dimen/margin_start_text</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">5</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/margin_16dp</item>
+        <item name="android:layout_marginEnd">@dimen/margin_16dp</item>
+    </style>
 </resources>

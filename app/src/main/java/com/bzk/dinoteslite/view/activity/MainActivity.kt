@@ -1,42 +1,77 @@
 package com.bzk.dinoteslite.view.activity
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.databinding.HeaderAccBinding
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.fragment.MainFragment
+
+private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
-
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var mBinding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var headerView: View
     private lateinit var headerAccBinding: HeaderAccBinding
+    private lateinit var fragmentManager: FragmentManager
+    private lateinit var fragmentTransaction: FragmentTransaction
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setupToolBarMain()
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        setContentView(mBinding.root)
         setupHeader()
+        setupToolBarMain()
+        loadFragment(MainFragment(), AppConstant.MAIN_FRAGMENT)
         reSizeView()
         setClick()
     }
 
+    fun loadFragment(fragment: Fragment, tag: String) {
+        fragmentManager = supportFragmentManager
+        fragmentTransaction = supportFragmentManager.beginTransaction()
+        if (tag != AppConstant.MAIN_FRAGMENT) {
+            if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
+                mBinding.drlMain.closeDrawer(GravityCompat.START)
+            }
+            mBinding.tlbMainAction.visibility = View.GONE
+            replaceFragment(fragment, tag)
+        } else {
+            replaceFragment(fragment, tag)
+        }
+
+    }
+
+    private fun replaceFragment(fragment: Fragment, tag: String) {
+        fragmentTransaction.replace(R.id.frl_main_content, fragment, tag)
+        fragmentTransaction.addToBackStack(tag)
+        fragmentTransaction.commit()
+
+    }
+
     private fun setClick() {
-        binding.imvMainSearch.setOnClickListener(this)
-        binding.imvMainWatch.setOnClickListener(this)
-        binding.imvMainNotification.setOnClickListener(this)
+        mBinding.imvMainSearch.setOnClickListener(this)
+        mBinding.imvMainWatch.setOnClickListener(this)
+        mBinding.imvMainNotification.setOnClickListener(this)
+        headerAccBinding.imvHeadTheme.setOnClickListener(this)
+        headerAccBinding.imvHeadFavorite.setOnClickListener(this)
+        headerAccBinding.imvHeadRate.setOnClickListener(this)
     }
 
     private fun reSizeView() {
-        ReSizeView.resizeView(binding.imvMainNotification, 64)
-        ReSizeView.resizeView(binding.imvMainSearch, 64)
-        ReSizeView.resizeView(binding.imvMainWatch, 64)
+        ReSizeView.resizeView(mBinding.imvMainNotification, 64)
+        ReSizeView.resizeView(mBinding.imvMainSearch, 64)
+        ReSizeView.resizeView(mBinding.imvMainWatch, 64)
         ReSizeView.resizeView(headerAccBinding.imvHeadRate, 64)
         ReSizeView.resizeView(headerAccBinding.imvHeadTheme, 64)
         ReSizeView.resizeView(headerAccBinding.imvHeadFavorite, 64)
@@ -45,23 +80,32 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setupHeader() {
-        headerView = binding.ngvMainAction.getHeaderView(0)
-        headerAccBinding = DataBindingUtil.setContentView(this, R.layout.header_acc)
-
+        headerAccBinding = HeaderAccBinding.inflate(LayoutInflater.from(this))
     }
 
     private fun setupToolBarMain() {
-        setSupportActionBar(binding.tlbMainAction)
+        setSupportActionBar(mBinding.tlbMainAction)
         toggle = ActionBarDrawerToggle(this,
-            binding.drlMain,
-            binding.tlbMainAction,
+            mBinding.drlMain,
+            mBinding.tlbMainAction,
             R.string.open,
             R.string.close)
-        binding.drlMain.addDrawerListener(toggle)
+        mBinding.drlMain.addDrawerListener(toggle)
         toggle.syncState()
     }
 
-    override fun onClick(p0: View?) {
+    override fun onClick(p0: View) {
+        when (p0.id) {
+            R.id.imv_main_watch -> gotoWatch()
+            R.id.imv_main_notification -> gotoWatch()
+            R.id.imv_main_search -> gotoWatch()
+            R.id.imv_head_theme -> gotoWatch()
+            R.id.imv_head_rate -> gotoWatch()
+            R.id.imv_head_favorite -> gotoWatch()
+        }
+    }
+
+    private fun gotoWatch() {
 
     }
 }
