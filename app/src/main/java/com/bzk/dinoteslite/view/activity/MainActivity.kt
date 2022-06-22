@@ -1,6 +1,7 @@
 package com.bzk.dinoteslite.view.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -23,7 +24,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var headerAccBinding: HeaderAccBinding
-    private lateinit var fragmentManager: FragmentManager
     private lateinit var fragmentTransaction: FragmentTransaction
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,15 +32,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(mBinding.root)
         setupHeader()
         setupToolBarMain()
-        loadFragment(MainFragment(), AppConstant.MAIN_FRAGMENT)
+        loadFragment(MainFragment(),MainFragment::class.java.simpleName)
         reSizeView()
         setClick()
     }
 
     fun loadFragment(fragment: Fragment, tag: String) {
-        fragmentManager = supportFragmentManager
+
         fragmentTransaction = supportFragmentManager.beginTransaction()
-        if (tag != AppConstant.MAIN_FRAGMENT) {
+        if (tag != MainFragment().javaClass.simpleName) {
             if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
             }
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun replaceFragment(fragment: Fragment, tag: String) {
-        fragmentTransaction.replace(R.id.frl_main_content, fragment, tag)
+        fragmentTransaction.replace(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
         fragmentTransaction.addToBackStack(tag)
         fragmentTransaction.commit()
 

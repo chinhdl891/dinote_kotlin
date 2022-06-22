@@ -6,7 +6,7 @@ class AppConstant {
 
     companion object {
         const val DISPLAY = 1080
-        const val MAIN_FRAGMENT = "main_fragment"
-        const val CREATE_FRAGMENT = "create_fragment"
+        const val TIME_DELAY = 1500L
+        const val PERIOD = 3000L
     }
 }

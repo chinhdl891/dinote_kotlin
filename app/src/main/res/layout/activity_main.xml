@@ -41,10 +41,7 @@
 
             <ImageView
                 android:id="@+id/imv_main_watch"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="15dp"
+                style="@style/imv_option_main"
                 app:layout_constraintBottom_toBottomOf="@+id/tlb_main_action"
                 app:layout_constraintEnd_toEndOf="@+id/tlb_main_action"
                 app:layout_constraintTop_toTopOf="parent"
@@ -53,28 +50,18 @@
 
             <ImageView
                 android:id="@+id/imv_main_notification"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="10dp"
+                style="@style/imv_option_main"
                 app:layout_constraintBottom_toBottomOf="@+id/tlb_main_action"
                 app:layout_constraintRight_toLeftOf="@+id/imv_main_watch"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_notification" />
 
             <ImageView
                 android:id="@+id/imv_main_search"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="10dp"
+                style="@style/imv_option_main"
                 app:layout_constraintBottom_toBottomOf="@+id/tlb_main_action"
                 app:layout_constraintRight_toLeftOf="@+id/imv_main_notification"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_search" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

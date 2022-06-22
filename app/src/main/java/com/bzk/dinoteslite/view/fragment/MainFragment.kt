@@ -2,8 +2,13 @@ package com.bzk.dinoteslite.view.fragment
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
+import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.PhotoAdapter
 import com.bzk.dinoteslite.base.BaseFragment
@@ -13,13 +18,19 @@ import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.MainFragmentViewModel
 import java.util.*
+import kotlin.math.abs
 
 private const val TAG = "MainFragment"
 
 class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
-    lateinit var viewModel: MainFragmentViewModel
-    lateinit var photoAdapter: PhotoAdapter
-    lateinit var mTimer: Timer
+
+    private val viewModel: MainFragmentViewModel by lazy {
+        ViewModelProvider(this)[MainFragmentViewModel::class.java]
+    }
+    private lateinit var photoAdapter: PhotoAdapter
+    private var mTimer: Timer? = null
+    private lateinit var compositePageTransformer: CompositePageTransformer
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_main
     }
@@ -29,22 +40,37 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     override fun setUpdata() {
-        mBinding.vpgMainFragment.pageMargin = 50
-        photoAdapter = PhotoAdapter()
-        viewModel = ViewModelProvider(this).get(MainFragmentViewModel::class.java)
-        photoAdapter.initData(listImage(), mainActivity)
-        mBinding.vpgMainFragment.adapter = photoAdapter
+        photoAdapter = PhotoAdapter().apply {
+            submitData(viewModel.list.value!!, context = requireContext())
+        }
         observeViewModel()
+        mBinding.vpgMainFragment.adapter = photoAdapter
+        setViewPage()
         autoRunAds()
+    }
+
+    private fun setViewPage() {
+        mBinding.vpgMainFragment.offscreenPageLimit = 3
+        mBinding.vpgMainFragment.clipToPadding = false
+        mBinding.vpgMainFragment.clipChildren = false
+        mBinding.vpgMainFragment.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        compositePageTransformer = CompositePageTransformer().apply {
+            addTransformer { page, position ->
+                val r = 1 - abs(position)
+                page.scaleY = 0.8f + 0.15f * r
+            }
+            addTransformer(MarginPageTransformer(50))
+        }
+        mBinding.vpgMainFragment.setPageTransformer(compositePageTransformer)
     }
 
     private fun autoRunAds() {
         mTimer = Timer()
-        mTimer.schedule(object : TimerTask() {
+        mTimer?.schedule(object : TimerTask() {
             override fun run() {
                 Handler(Looper.getMainLooper()).post {
                     var positionItem: Int = mBinding.vpgMainFragment.currentItem
-                    val size = listImage().size - 1
+                    val size = viewModel.list.value!!.size - 1
                     if (positionItem < size) {
                         positionItem++
                         mBinding.vpgMainFragment.currentItem = positionItem
@@ -53,7 +79,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
                     }
                 }
             }
-        }, 1500, 3000)
+        }, AppConstant.TIME_DELAY, AppConstant.PERIOD)
     }
 
     private fun observeViewModel() {
@@ -62,7 +88,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
 
     override fun onReSize() {
         ReSizeView.resizeView(mBinding.imvMainCreateDinote, 80)
-        ReSizeView.resizeView(mBinding.bgMainBackground, 160, 160)
+        ReSizeView.resizeView(mBinding.bgMainBackground, 160)
     }
 
     override fun onClick() {
@@ -76,20 +102,21 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     private fun openCreateDinote() {
-        mainActivity.loadFragment(CreateFragment(), AppConstant.CREATE_FRAGMENT)
-    }
-
-    fun listImage(): MutableList<PhotoModel> {
-        return mutableListOf(
-            PhotoModel(R.drawable.imv_ads_1),
-            PhotoModel(R.drawable.imv_ads_2),
-            PhotoModel(R.drawable.imv_ads_3),
-            PhotoModel(R.drawable.imv_ads_4)
-        )
+       mainActivity.loadFragment(CreateFragment(), CreateFragment().javaClass.simpleName)
     }
 
     override fun onStop() {
         super.onStop()
-        mTimer?.cancel() ?: null
+        mTimer?.cancel()
+        mTimer = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mTimer == null) {
+            autoRunAds()
+        }
     }
 }
+
+

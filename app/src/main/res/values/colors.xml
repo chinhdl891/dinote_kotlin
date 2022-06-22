@@ -14,4 +14,5 @@
     <color name="text_color">#1C1E25</color>
     <color name="text_color_exit">#806EFF</color>
     <color name="hint_text_color">#777E90</color>
+    <color name="button_action_dionte">#806EFF</color>
 </resources>
