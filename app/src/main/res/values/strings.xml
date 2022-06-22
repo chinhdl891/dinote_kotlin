@@ -92,4 +92,22 @@
     <string name="txt_go_to_main" />
     <string name="txt_go_to_main_des">Viết ghi chú cá nhân của bạn,  những sự kiện hằng ngày, những cảm xúc và bí mật cá nhân</string>
     <string name="txt_start_dinote">Bắt đầu ngay bây giờ</string>
+    <string name="txt_dinote_lite">Dinote Lite</string>
+    <string name="txt_enter_content">Nhập nội dung</string>
+    <string name="text_enter_title">Nhập tiêu đề</string>
+    <string name="continues_draw_continue">Bạn có muốn tiếp tục vẽ</string>
+    <string name="question_and_answer_draw_continue">Bạn có muốn tiếp tục vẽ không?</string>
+    <string name="txt_save_change">Bạn có muốn lưu thay đổi</string>
+    <string name="question_and_answer_change_dinote">Bạn có muốn lưu thay đổi không ?</string>
+    <string name="txt_change">Thay đổi</string>
+    <string name="fake_data">Fake data</string>
+    <string name="hh_mm_a">HH:mm a</string>
+    <string name="txt_nodesciption">No description</string>
+    <string name="txt_no_title">No Title</string>
+    <string name="txt_no_content">No Content</string>
+    <string name="txt_update">Cập Nhật</string>
+    <string name="hint_date">08/09/2022</string>
+    <string name="txt_des_image">Mô tả ảnh</string>
+    <string name="txt_draw_in_my_life">Draw In My Life</string>
+    <string name="date_hint">08/09/2022</string>
 </resources>

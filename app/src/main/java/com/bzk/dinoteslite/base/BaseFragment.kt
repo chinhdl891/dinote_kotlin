@@ -7,15 +7,18 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.bzk.dinoteslite.view.activity.MainActivity
 
 abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     protected lateinit var mBinding: VB
+    protected lateinit var mainActivity: MainActivity
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         mBinding = DataBindingUtil.inflate(layoutInflater, getLayoutResource(), container, false)
+        mainActivity = activity as MainActivity
         return mBinding.root
     }
 
@@ -36,6 +39,5 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     protected abstract fun onReSize()
 
     protected abstract fun onClick()
-
 
 }

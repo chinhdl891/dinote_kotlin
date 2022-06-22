@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="margin_start">24dp</dimen>
-    <dimen name="margin_20">10dp</dimen>
-    <dimen name="margin_10dp">10dp</dimen>
-    <dimen name="margin_16dp">16dp</dimen>
+    <dimen name="margin_child_to_child">10dp</dimen>
+    <dimen name="margin_view_to_view_small">10dp</dimen>
+    <dimen name="margin_view_to_view_big">16dp</dimen>
     <dimen name="conner_radius">12dp</dimen>
     <dimen name="padding_textview">5dp</dimen>
     <dimen name="padding_text">4dp</dimen>
     <dimen name="text_size_title">16sp</dimen>
     <dimen name="margin_start_text">4dp</dimen>
+    <dimen name="padding_vpg">20dp</dimen>
+    <dimen name="padding_viewpager_theme">80dp</dimen>
+    <dimen name="pad_parent">48dp</dimen>
+    <dimen name="padding_text_button">14dp</dimen>
+    <dimen name="padding_top_bottom_view">8dp</dimen>
+    <dimen name="padding_edittext_content">12dp</dimen>
+    <dimen name="title_size">20sp</dimen>
+    <dimen name="dimen_parent_to_parent">128dp</dimen>
+    <dimen name="padding_view_medium">30dp</dimen>
+    <dimen name="margin_view_to_view_largest">20dp</dimen>
+    <dimen name="size_icon_medium">30dp</dimen>
+    <dimen name="margin_view_to_view_medium">16dp</dimen>
+    <dimen name="margin_view_to_view_biggest">48dp</dimen>
 </resources>
