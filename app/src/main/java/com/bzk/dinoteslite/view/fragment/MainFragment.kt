@@ -41,7 +41,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
 
     override fun setUpdata() {
         photoAdapter = PhotoAdapter().apply {
-            submitData(viewModel.list.value!!, context = requireContext())
+            submitData(viewModel.list.value!!)
         }
         observeViewModel()
         mBinding.vpgMainFragment.adapter = photoAdapter

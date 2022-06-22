@@ -21,17 +21,15 @@ import com.bzk.dinoteslite.utils.ReSizeView
 class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     private var listImage = mutableListOf<PhotoModel>()
-    private var mContext: Context? = null
 
-    fun submitData(list: List<PhotoModel>, context: Context) {
+    fun submitData(list: List<PhotoModel>) {
         listImage.clear()
         listImage.addAll(list)
-        mContext = context
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        return PhotoViewHolder(LayoutInflater.from(mContext)
+        return PhotoViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.item_photo_ads, parent, false))
     }
 
