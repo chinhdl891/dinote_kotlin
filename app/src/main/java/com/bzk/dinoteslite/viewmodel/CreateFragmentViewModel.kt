@@ -15,6 +15,7 @@ class CreateFragmentViewModel : ViewModel() {
     var motionId = 0
     var tagList: MutableList<Tag> = mutableListOf()
     var isFavorite: MutableLiveData<Boolean> = MutableLiveData(false)
+
     var listMotion = mutableListOf<Motion>(
         Motion(0, R.drawable.ic_motion_item_fun, R.string.funny),
         Motion(0, R.drawable.ic_motion_item_happy, R.string.happy),
@@ -26,12 +27,13 @@ class CreateFragmentViewModel : ViewModel() {
         Motion(0, R.drawable.ic_motion_item_hate, R.string.hate)
     )
 
+
     fun setFavorite(favorite: Boolean) {
         isFavorite.value = favorite
     }
-    fun getFavorite() : Boolean{
+
+    fun getFavorite(): Boolean {
         return isFavorite.value!!
     }
-
 
 }

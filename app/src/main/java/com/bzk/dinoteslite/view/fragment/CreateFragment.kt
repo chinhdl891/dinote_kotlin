@@ -1,7 +1,6 @@
 package com.bzk.dinoteslite.view.fragment
 
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.bzk.dinoteslite.R
@@ -13,11 +12,12 @@ import com.bzk.dinoteslite.view.dialog.DialogMotion
 import com.bzk.dinoteslite.viewmodel.CreateFragmentViewModel
 
 private const val TAG = "CreateFragment"
+
 class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListener {
     private val viewModel: CreateFragmentViewModel by lazy {
         ViewModelProvider(this)[CreateFragmentViewModel::class.java]
     }
-    private lateinit var mMotion : Motion
+    private lateinit var mMotion: Motion
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_create
@@ -61,7 +61,7 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
     }
 
     private fun setFavoriteDionte() {
-        if (viewModel.getFavorite()){
+        if (viewModel.getFavorite()) {
             viewModel.setFavorite(false)
         } else {
             viewModel.setFavorite(true)
