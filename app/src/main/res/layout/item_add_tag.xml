@@ -6,7 +6,7 @@
     <data>
         <variable
             name="tag"
-            type="com.bzk.dinoteslite.model.Tag" />
+            type="com.bzk.dinoteslite.model.TagModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

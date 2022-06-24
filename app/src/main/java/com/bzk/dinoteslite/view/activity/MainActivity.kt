@@ -16,6 +16,7 @@ import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.databinding.HeaderAccBinding
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.fragment.DrawableFragment
 import com.bzk.dinoteslite.view.fragment.MainFragment
 
 private const val TAG = "MainActivity"
@@ -45,18 +46,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
             }
             mBinding.tlbMainAction.visibility = View.GONE
-            replaceFragment(fragment, tag)
+            if (tag == DrawableFragment::class.simpleName){
+                addFragment(fragment, tag)
+            }else {
+                replaceFragment(fragment, tag)
+            }
         } else {
             replaceFragment(fragment, tag)
         }
 
     }
 
+    private fun addFragment(fragment: Fragment, tag: String) {
+        fragmentTransaction.add(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
+        fragmentTransaction.addToBackStack(tag)
+        fragmentTransaction.commit()
+    }
+
     private fun replaceFragment(fragment: Fragment, tag: String) {
         fragmentTransaction.replace(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
         fragmentTransaction.addToBackStack(tag)
         fragmentTransaction.commit()
+    }
 
+    override fun onBackPressed() {
+        supportFragmentManager.popBackStack()
     }
 
     private fun setClick() {

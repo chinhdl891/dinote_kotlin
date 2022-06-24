@@ -14,10 +14,10 @@ import com.bzk.dinoteslite.model.Motion
 
 class MotionAdapter(var onSelectedMotion: (Motion) -> Unit) :
     RecyclerView.Adapter<MotionAdapter.MotionViewHolder>() {
-    private var listMotion: MutableList<Motion> = mutableListOf()
+    private var listMotion: MutableList<Motion>? = mutableListOf()
     fun initData(list: MutableList<Motion>) {
-        listMotion.clear()
-        listMotion.addAll(list)
+        listMotion!!.clear()
+        listMotion!!.addAll(list)
         notifyDataSetChanged()
     }
 
@@ -38,7 +38,7 @@ class MotionAdapter(var onSelectedMotion: (Motion) -> Unit) :
     }
 
     override fun getItemCount(): Int {
-        return listMotion.size ?: 0
+        return listMotion?.size ?: 0
     }
 
     class MotionViewHolder(var binding: ItemMotionBinding) : RecyclerView.ViewHolder(binding.root) {

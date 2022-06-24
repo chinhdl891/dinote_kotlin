@@ -1,3 +1,3 @@
 package com.bzk.dinoteslite.model
 
-class Tag(var contentTag: String = "")
+class TagModel(var contentTag: String = "")
