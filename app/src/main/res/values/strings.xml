@@ -110,4 +110,6 @@
     <string name="txt_des_image">Mô tả ảnh</string>
     <string name="txt_draw_in_my_life">Draw In My Life</string>
     <string name="date_hint">08/09/2022</string>
+    <string name="txt_color">Color</string>
+    <string name="txt_apply">Apply</string>
 </resources>

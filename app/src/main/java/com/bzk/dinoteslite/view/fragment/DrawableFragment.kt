@@ -1,18 +1,32 @@
 package com.bzk.dinoteslite.view.fragment
 
+import android.content.ContentValues
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.core.view.drawToBitmap
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentDrawableBinding
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.dialog.DialogColor
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.util.*
 
-class DrawableFragment(var onSave : (String) -> Unit) : BaseFragment<FragmentDrawableBinding>(), View.OnClickListener {
+private const val TAG = "DrawableFragment"
+
+class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDrawableBinding>(),
+    View.OnClickListener {
     private var sizeStoke = 16
+    private var mColor = Color.BLACK
     override fun getLayoutResource(): Int {
         return R.layout.fragment_drawable
     }
@@ -22,7 +36,13 @@ class DrawableFragment(var onSave : (String) -> Unit) : BaseFragment<FragmentDra
     }
 
     override fun setUpdata() {
-
+        val bundle = arguments
+        if (bundle != null) {
+            val oldUri = bundle.getString("old_uri")
+            if (oldUri != null) {
+                mainActivity.contentResolver.delete(Uri.parse(oldUri), null, null)
+            }
+        }
     }
 
     override fun onReSize() {
@@ -45,6 +65,7 @@ class DrawableFragment(var onSave : (String) -> Unit) : BaseFragment<FragmentDra
         mBinding.imvDrawChangeSize.setOnClickListener(this)
         mBinding.imvDrawEraser.setOnClickListener(this)
         mBinding.imvDrawSave.setOnClickListener(this)
+        mBinding.imvDrawChangeColor.setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {
@@ -60,23 +81,77 @@ class DrawableFragment(var onSave : (String) -> Unit) : BaseFragment<FragmentDra
             R.id.imv_draw_eraser -> mBinding.pvDrawContent.pen(Color.WHITE, sizeStoke)
             R.id.imv_draw_cancel -> mainActivity.onBackPressed()
             R.id.imv_draw_save -> saveImage()
+            R.id.imv_draw_change_color -> changeColor()
         }
     }
 
-    private fun saveImage() {
-        var bitmap = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        var uri : String = MediaStore.Images.Media.insertImage(mainActivity.contentResolver,
-            mBinding.pvDrawContent.drawingCache,
-            UUID.randomUUID().toString() + ".png",
-            "Dinote")
+    private fun changeColor() {
+        val dialogColor = DialogColor(mainActivity, onSelectColor = {
+            mColor = it
+            mBinding.pvDrawContent.pen(color = it, sizeStoke)
+        })
+        dialogColor.show()
     }
+
+    private fun saveImage() {
+        var bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
+        onSave(saveBitMapToStores(bitmap))
+        mainActivity.onBackPressed()
+    }
+
+    private fun saveBitMapToStores(bitmap: Bitmap): String {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return saveImageInQ(bitmap)
+        } else {
+            return saveImageUnQ(bitmap)
+        }
+    }
+
+    private fun saveImageUnQ(bitmap: Bitmap): String {
+        val imagesDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
+        val fos = FileOutputStream(image)
+        fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+        return image.toURI().toString()
+    }
+
+    private fun saveImageInQ(bitmap: Bitmap): String {
+        val filename = "IMG_${System.currentTimeMillis()}.jpg"
+        var fos: OutputStream?
+        var imageUri: Uri
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                put(MediaStore.Video.Media.IS_PENDING, 1)
+            }
+        }
+        val contentResolver = mainActivity.contentResolver
+        contentResolver.also { resolver ->
+            imageUri =
+                resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
+            fos = imageUri.let {
+                resolver.openOutputStream(it)
+            }
+        }
+        fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 70, it) }
+        contentValues.clear()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+        }
+        mainActivity.contentResolver.update(imageUri, contentValues, null, null)
+
+        return imageUri.toString()
+    }
+
 
     private fun onChangeSize(size: Int) {
         sizeStoke = size
         mBinding.lnlDrawChangeSize.visibility = View.GONE
         mBinding.imvDrawChangeSize.visibility = View.VISIBLE
-        mBinding.pvDrawContent.pen(brushSize = size)
+        mBinding.pvDrawContent.pen(color = mColor, brushSize = size)
     }
-
 
 }
