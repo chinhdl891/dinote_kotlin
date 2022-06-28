@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/lnl_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/milky"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_view_to_view_medium">
+
+        <TextView
+            android:id="@+id/tv_dialog_title_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_view_to_view_largest"
+            android:text="@string/txt_color"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/view_dialog_color_pilot"
+            android:layout_width="@dimen/margin_start"
+            android:layout_height="@dimen/margin_start"
+            android:layout_below="@+id/imv_dialog_color"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_view_to_view_medium"
+            android:layout_marginEnd="@dimen/margin_start"
+            android:background="@color/purple_500" />
+
+        <ImageView
+            android:id="@+id/imv_dialog_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/tv_dialog_title_color"
+            android:src="@drawable/color_picker" />
+
+        <TextView
+            android:id="@+id/tv_dialog_apply_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_start"
+            android:layout_toEndOf="@id/imv_dialog_color"
+            android:text="@string/txt_apply"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+</layout>

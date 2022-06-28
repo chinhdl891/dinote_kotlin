@@ -2,7 +2,6 @@ package com.bzk.dinoteslite.view.dialog
 
 import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.MotionAdapter
@@ -10,17 +9,23 @@ import com.bzk.dinoteslite.base.BaseDialog
 import com.bzk.dinoteslite.databinding.DialogMotionBinding
 import com.bzk.dinoteslite.model.Motion
 import com.bzk.dinoteslite.utils.ReSizeView
-import com.bzk.dinoteslite.viewmodel.CreateFragmentViewModel
 
-class DialogMotion(context: Context, var onSelectItem : (Motion) -> Unit) : BaseDialog<DialogMotionBinding>(context) {
+class DialogMotion(
+    context: Context,
+    val list: MutableList<Motion>,
+    var onSelectItem: (Motion) -> Unit,
+) :
+    BaseDialog<DialogMotionBinding>(context) {
     private var motionAdapter: MotionAdapter? = null
     private lateinit var layoutManager: RecyclerView.LayoutManager
+
+
     override fun setClick() {
 
     }
 
     override fun setResizeView() {
-        ReSizeView.resizeView(mBinding.lnlDialogMotionBackground , 936, 1120)
+        ReSizeView.resizeView(mBinding.lnlDialogMotionBackground, 936, 1120)
     }
 
     override fun getLayoutResource(): Int {
@@ -33,7 +38,7 @@ class DialogMotion(context: Context, var onSelectItem : (Motion) -> Unit) : Base
             onSelectItem(it)
             dismiss()
         }).apply {
-            initData(CreateFragmentViewModel().listMotion)
+            initData(list)
         }
         mBinding.rcvDialogMotion.layoutManager = layoutManager
         mBinding.rcvDialogMotion.adapter = motionAdapter
