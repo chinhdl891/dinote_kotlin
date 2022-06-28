@@ -1,6 +1,7 @@
 package com.bzk.dinoteslite.view.fragment
 
 
+import android.app.DatePickerDialog
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -22,11 +23,14 @@ import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.DialogMotion
 import com.bzk.dinoteslite.viewmodel.CreateFragmentViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.concurrent.thread
 
 private const val TAG = "CreateFragment"
 
 class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListener {
+    private var deletedFile = false
     private val viewModel: CreateFragmentViewModel by lazy {
         CreateFragmentViewModel(requireActivity().application)
     }
@@ -90,23 +94,46 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
         mBinding.imvCreateTextEdit.setOnClickListener(this)
         mBinding.tvCreateSave.setOnClickListener(this)
         mBinding.imvCreateCancel.setOnClickListener(this)
+        mBinding.tvDateSelection.setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.lnl_crate_status -> openDialogMotion()
             R.id.imv_create_text_love -> setFavoriteDionte()
-            R.id.imv_create_text_edit -> {mainActivity.loadFragment(DrawableFragment(onSave = {
-                onShowImage(it)
-            }).apply {
+            R.id.imv_create_text_edit -> {
+                mainActivity.loadFragment(DrawableFragment(onSave = {
+                    onShowImage(it)
+                }).apply {
                     val bundle = Bundle()
-                bundle.putString("old_uri", mUri)
-                arguments = bundle
-            }, DrawableFragment::class.java.simpleName)
+                    bundle.putString("old_uri", mUri)
+                    arguments = bundle
+                }, DrawableFragment::class.java.simpleName)
             }
             R.id.tv_create_save -> saveDinote()
             R.id.imv_create_cancel -> cancelCreateFragment()
+            R.id.tv_date_selection -> setDateSelect()
         }
+    }
+
+    private fun setDateSelect() {
+        var date = Date()
+        date.time = System.currentTimeMillis()
+        var calendar = Calendar.getInstance()
+        calendar.timeInMillis = date.time
+        val day = calendar.get(Calendar.DATE)
+        val month = calendar.get(Calendar.MONTH)
+        val year = calendar.get(Calendar.YEAR)
+        val datePickerDialog = DatePickerDialog(mainActivity,
+            { datePicker, i, i2, i3 ->
+                calendar.set(i, i2, i3)
+                val simpleDateFormat = SimpleDateFormat("dd/mm/yyyy")
+                mBinding.tvDateSelection.text = simpleDateFormat.format(calendar.time)
+                viewModel.timeCreate = calendar.timeInMillis
+            },
+            year,
+            month,
+            day).show()
     }
 
     private fun cancelCreateFragment() {
@@ -115,19 +142,26 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
     }
 
     private fun deleteFile() {
-        mUri.let {
-            val uri : Uri? = Uri.parse(it)
-            val file = File(uri?.path?: "")
-            if (!file.exists()){
-                if (uri != null) {
-                    mainActivity.contentResolver.delete(uri, null, null)
+        if (!deletedFile) {
+            mUri.let {
+                val uri: Uri? = Uri.parse(it)
+                val file = File(uri?.path ?: "")
+                if (!file.exists() && file.path != "") {
+                    if (uri != null) {
+                        deletedFile = true
+                        mainActivity.contentResolver.delete(uri, null, null)
+                    }
                 }
             }
         }
     }
 
     private fun saveDinote() {
-        viewModel.title = mBinding.edtCreateContent.text.toString().trim()
+        viewModel.title = mBinding.edtCreateTitle.text.toString().trim()
+        viewModel.content = mBinding.edtCreateContent.text.toString().trim()
+        viewModel.motionId = mMotion.id
+        viewModel.desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
+        viewModel.imageUri = mUri!!
         viewModel.insertDinote()
     }
 
@@ -154,4 +188,5 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
         })
         dialogMotion.show()
     }
+
 }

@@ -10,19 +10,19 @@ data class Dinote(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
     @ColumnInfo
-    var title: String = "fake 1",
+    var title: String = "No Title",
     @ColumnInfo
-    var content: String = "content",
+    var content: String = "No Content",
     @ColumnInfo
     var uriImage: String = "null",
     @ColumnInfo
     var desImage: String = "null",
     @ColumnInfo
-    var dateCreate: Long = 0,
+    var dateCreate: Long = System.currentTimeMillis(),
     @ColumnInfo
     var motion: Int = 1,
     @ColumnInfo
-    var isLike: Int = 1,
+    var isLike: Boolean = false,
     @ColumnInfo
     var ListTag: List<TagModel> = listOf(TagModel(0))
 )

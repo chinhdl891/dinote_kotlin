@@ -13,6 +13,7 @@ import com.bzk.dinoteslite.model.TagModel
 @TypeConverters(TagConvert::class)
 abstract class DinoteDataBase : RoomDatabase() {
     abstract fun dinoteDAO(): DinoteDAO
+    abstract fun tagDAO() : TagDAO
 
     companion object {
         private val DB_NAME = "dinote.db"
