@@ -1,5 +1,6 @@
 package com.bzk.dinoteslite.view.fragment
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -32,7 +33,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
     private lateinit var photoAdapter: PhotoAdapter
     private var mTimer: Timer? = null
-    private lateinit var dinoteAdapter : DinoteAdapter
+    private lateinit var dinoteAdapter: DinoteAdapter
     private lateinit var compositePageTransformer: CompositePageTransformer
     override fun getLayoutResource(): Int {
         return R.layout.fragment_main
@@ -54,9 +55,19 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
 
         val layoutManager = LinearLayoutManager(context)
         mBinding.rcvMainDinote.layoutManager = layoutManager
-        dinoteAdapter = DinoteAdapter()
+        dinoteAdapter = DinoteAdapter(onDelete = {
+            viewModel.deleteDinote(it)
+        }, onGotoDetail = {
+            val bundle = Bundle()
+            bundle.putSerializable(AppConstant.SEND_OBJ, it)
+            var detailFragment = DetailFragment().apply {
+                arguments = bundle
+            }
+            mainActivity.loadFragment(detailFragment, DetailFragment::class.simpleName.toString())
+
+        })
         mBinding.rcvMainDinote.adapter = dinoteAdapter
-        dinoteAdapter.initData(viewModel.getListDinote())
+        viewModel.getListDinote()
     }
 
     private fun setViewPage() {
@@ -93,7 +104,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     private fun observeViewModel() {
-
+        viewModel.listDinote.observe(this) {
+            dinoteAdapter.initData(it)
+        }
     }
 
     override fun onReSize() {

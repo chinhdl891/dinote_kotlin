@@ -4,6 +4,8 @@ import android.net.Uri
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.bzk.dinoteslite.R
+import java.text.SimpleDateFormat
 import java.util.*
 
 @BindingAdapter("setImageResource")
@@ -17,10 +19,14 @@ fun setTextByResource(textView: TextView, textRes: Int) {
 
 }
 
-@BindingAdapter("setImageByUri")
-fun setImageByUri(imageView: ImageView, string: String) {
-    imageView.setImageURI(Uri.parse(string))
-}
+//@BindingAdapter("setImageByURI")
+//fun setImageByUri(imageView: ImageView, string: String) {
+//    if (string.isEmpty()) {
+//        imageView.setImageURI(null);
+//    } else {
+//        imageView.setImageURI(Uri.parse(string));
+//    }
+//}
 
 @BindingAdapter("setMonthTime")
 fun setDateMonth(textView: TextView, time: Long) {
@@ -47,4 +53,21 @@ fun setDateDay(textView: TextView, time: Long) {
     val day = calendar.get(Calendar.DATE)
     textView.text = String.format(" %d", day)
     textView.textSize = 15F
+}
+
+@BindingAdapter("setDate")
+fun setDate(textView: TextView, time: Long) {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = time
+    val simpleDateFormat = SimpleDateFormat("dd/mm/yyyy")
+    textView.text = simpleDateFormat.format(time)
+}
+
+@BindingAdapter("setImageIsLikeByBoolean")
+fun setImageIsLikeByBoolean(imageView: ImageView, boolean: Boolean) {
+    if (boolean) {
+        imageView.setImageResource(R.drawable.ic_text_loved)
+    } else {
+        imageView.setImageResource(R.drawable.ic_text_love)
+    }
 }

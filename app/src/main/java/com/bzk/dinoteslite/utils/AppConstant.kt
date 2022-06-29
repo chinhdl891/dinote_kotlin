@@ -9,5 +9,6 @@ class AppConstant {
         const val TIME_DELAY = 1500L
         const val PERIOD = 3000L
         const val OLD_URI = "send_uri"
+        const val SEND_OBJ = "send_obj"
     }
 }
