@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="dinote"
+            type="com.bzk.dinoteslite.model.Dinote" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="@dimen/margin_view_to_view_small"
+        android:background="@drawable/conner_view"
+        android:foregroundGravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/imv_item_dinote_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_view_to_view_small"
+            android:layout_marginBottom="@dimen/margin_view_to_view_small"
+            android:src="@drawable/bg_item_dinote"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_item_dinote_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/padding_text"
+            android:layout_marginTop="@dimen/padding_text"
+            setYearTime="@{dinote.dateCreate}"
+            android:hint="2022"
+            app:layout_constraintStart_toStartOf="@+id/imv_item_dinote_bg"
+            app:layout_constraintTop_toTopOf="@+id/imv_item_dinote_bg" />
+
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/tv_item_dinote_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding_text"
+            android:hint="16"
+            setDayTime="@{dinote.dateCreate}"
+            app:layout_constraintBottom_toBottomOf="@+id/imv_item_dinote_bg"
+            app:layout_constraintStart_toStartOf="@+id/imv_item_dinote_bg" />
+
+        <TextView
+            android:id="@+id/tv_item_dinote_moth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/padding_text"
+            android:layout_marginBottom="@dimen/padding_text"
+            android:hint="Th5"
+            setMonthTime="@{dinote.dateCreate}"
+            app:layout_constraintBottom_toBottomOf="@+id/imv_item_dinote_bg"
+            app:layout_constraintEnd_toEndOf="@+id/imv_item_dinote_bg" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/margin_view_to_view_small"
+            android:layout_marginTop="@dimen/margin_view_to_view_small"
+            android:layout_marginBottom="@dimen/margin_view_to_view_small"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imv_item_dinote_bg"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:id="@+id/tv_item_dinote_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{dinote.title}"
+                android:layout_marginStart="@dimen/margin_start"
+                android:hint="@string/hint_dinote_item_title" />
+
+            <TextView
+                android:text="@{dinote.content}"
+                android:textColor="@color/text_color"
+                android:id="@+id/tv_item_dinote_content"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/margin_view_to_view_largest"
+                android:layout_marginStart="@dimen/margin_start"
+                android:layout_marginTop="@dimen/margin_view_to_view_small"
+                android:hint="@string/hint_dinote_item_content" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+
+

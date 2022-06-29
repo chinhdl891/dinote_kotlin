@@ -8,5 +8,6 @@ class AppConstant {
         const val DISPLAY = 1080
         const val TIME_DELAY = 1500L
         const val PERIOD = 3000L
+        const val OLD_URI = "send_uri"
     }
 }

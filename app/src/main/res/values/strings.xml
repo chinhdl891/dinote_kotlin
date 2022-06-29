@@ -112,4 +112,6 @@
     <string name="date_hint">08/09/2022</string>
     <string name="txt_color">Color</string>
     <string name="txt_apply">Apply</string>
+    <string name="txt_no_des">no des</string>
+    <string name="txt_name_image">IMG_%1$d.jpg</string>
 </resources>
