@@ -15,11 +15,11 @@ import com.bzk.dinoteslite.model.TagModel
 private const val TAG = "CreateFragmentViewModel"
 
 class CreateFragmentViewModel(application: Application) : AndroidViewModel(application) {
-    var title: String = "No Title"
-    var content: String = "hello"
+    var title: String = ""
+    var content: String = ""
     var timeCreate: Long = System.currentTimeMillis()
-    var desImage: String = "no Des"
-    var imageUri: String = "no"
+    var desImage: String = ""
+    var imageUri: String = ""
     var motionId: Int = 0
 
     var tagModelList: MutableLiveData<MutableList<TagModel>> =
@@ -74,7 +74,15 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
 
     fun insertDinote() {
         removeTag()
-        val dinote = Dinote(0, title, content, imageUri, desImage, timeCreate, motionId, isFavorite.value!!, getListTag())
+        val dinote = Dinote(0,
+            title,
+            content,
+            imageUri,
+            desImage,
+            timeCreate,
+            motionId,
+            isFavorite.value!!,
+            getListTag())
         dinoteDAO?.onInsert(dinote)
 
     }
@@ -83,10 +91,10 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
         for (i in getListTag()) {
             if (i.contentTag.isEmpty()) {
                 tagModelList.value = tagModelList.value.also {
-                    it!!.remove(i)
+                    it?.remove(i)
                 }
             } else {
-                if (tagDAO?.countTag(i.contentTag)!! == 0) {
+                if (tagDAO?.countTag(i.contentTag) == 0) {
                     tagDAO.insert(i)
                 }
             }

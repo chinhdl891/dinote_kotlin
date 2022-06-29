@@ -1,6 +1,7 @@
 package com.bzk.dinoteslite.view.fragment
 
 import android.content.ContentValues
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
@@ -14,6 +15,7 @@ import androidx.core.view.drawToBitmap
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentDrawableBinding
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.DialogColor
 import java.io.File
@@ -38,7 +40,7 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
     override fun setUpdata() {
         val bundle = arguments
         if (bundle != null) {
-            val oldUri = bundle.getString("old_uri")
+            val oldUri = bundle.getString(AppConstant.OLD_URI)
             if (oldUri != null) {
                 mainActivity.contentResolver.delete(Uri.parse(oldUri), null, null)
             }
@@ -109,7 +111,7 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
 
     private fun saveImageUnQ(bitmap: Bitmap): String {
         val imagesDir =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            Environment.getExternalStorageDirectory()
         val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
         val fos = FileOutputStream(image)
         fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
@@ -117,33 +119,10 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
     }
 
     private fun saveImageInQ(bitmap: Bitmap): String {
-        val filename = "IMG_${System.currentTimeMillis()}.jpg"
-        var fos: OutputStream?
-        var imageUri: Uri
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-                put(MediaStore.Video.Media.IS_PENDING, 1)
-            }
-        }
-        val contentResolver = mainActivity.contentResolver
-        contentResolver.also { resolver ->
-            imageUri =
-                resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
-            fos = imageUri.let {
-                resolver.openOutputStream(it)
-            }
-        }
-        fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 70, it) }
-        contentValues.clear()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
-        }
-        mainActivity.contentResolver.update(imageUri, contentValues, null, null)
-
-        return imageUri.toString()
+        val filename = getString(R.string.txt_name_image, System.currentTimeMillis())
+        val fOutputStream = mainActivity.openFileOutput(filename, Context.MODE_PRIVATE)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream)
+        return filename
     }
 
 

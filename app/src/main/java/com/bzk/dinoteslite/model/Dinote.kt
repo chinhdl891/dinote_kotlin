@@ -10,13 +10,13 @@ data class Dinote(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
     @ColumnInfo
-    var title: String = "No Title",
+    var title: String = "",
     @ColumnInfo
-    var content: String = "No Content",
+    var content: String = "",
     @ColumnInfo
-    var uriImage: String = "null",
+    var uriImage: String = "",
     @ColumnInfo
-    var desImage: String = "null",
+    var desImage: String = "",
     @ColumnInfo
     var dateCreate: Long = System.currentTimeMillis(),
     @ColumnInfo

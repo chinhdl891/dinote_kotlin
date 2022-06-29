@@ -2,15 +2,11 @@ package com.bzk.dinoteslite.view.fragment
 
 
 import android.app.DatePickerDialog
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.telephony.mbms.FileInfo
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
@@ -19,18 +15,18 @@ import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.databinding.FragmentCreateBinding
 import com.bzk.dinoteslite.model.Motion
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.DialogMotion
 import com.bzk.dinoteslite.viewmodel.CreateFragmentViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.concurrent.thread
 
 private const val TAG = "CreateFragment"
 
 class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListener {
-    private var deletedFile = false
+
     private val viewModel: CreateFragmentViewModel by lazy {
         CreateFragmentViewModel(requireActivity().application)
     }
@@ -106,7 +102,7 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
                     onShowImage(it)
                 }).apply {
                     val bundle = Bundle()
-                    bundle.putString("old_uri", mUri)
+                    bundle.putString(AppConstant.OLD_URI, mUri)
                     arguments = bundle
                 }, DrawableFragment::class.java.simpleName)
             }
@@ -142,34 +138,30 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
     }
 
     private fun deleteFile() {
-        if (!deletedFile) {
-            mUri.let {
-                val uri: Uri? = Uri.parse(it)
-                val file = File(uri?.path ?: "")
-                if (!file.exists() && file.path != "") {
-                    if (uri != null) {
-                        deletedFile = true
-                        mainActivity.contentResolver.delete(uri, null, null)
-                    }
-                }
+        if (mUri != null) {
+            val file = File(mUri)
+            if (file.exists()) {
+                file.delete()
             }
         }
     }
 
     private fun saveDinote() {
-        viewModel.title = mBinding.edtCreateTitle.text.toString().trim()
-        viewModel.content = mBinding.edtCreateContent.text.toString().trim()
-        viewModel.motionId = mMotion.id
-        viewModel.desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
-        viewModel.imageUri = mUri!!
-        viewModel.insertDinote()
+        viewModel.apply {
+            title = mBinding.edtCreateTitle.text.toString().trim()
+            content = mBinding.edtCreateContent.text.toString().trim()
+            motionId = mMotion.id
+            desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
+            imageUri = mUri?.toString() ?: getString(R.string.txt_no_des)
+            insertDinote()
+        }
     }
 
-    private fun onShowImage(uri: String) {
-        mUri = uri
+    private fun onShowImage(nameFile: String) {
+        mUri = mainActivity.filesDir.absolutePath + "/$nameFile"
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
-        mBinding.imvCreateDrawer.setImageURI(Uri.parse(uri))
+        mBinding.imvCreateDrawer.setImageURI(Uri.parse(mUri))
     }
 
     private fun setFavoriteDionte() {

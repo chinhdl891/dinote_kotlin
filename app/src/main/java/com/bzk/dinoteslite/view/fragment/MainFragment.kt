@@ -4,12 +4,15 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.bzk.dinoteslite.R
+import com.bzk.dinoteslite.adapter.DinoteAdapter
 import com.bzk.dinoteslite.adapter.PhotoAdapter
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentMainBinding
@@ -29,8 +32,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
     private lateinit var photoAdapter: PhotoAdapter
     private var mTimer: Timer? = null
+    private lateinit var dinoteAdapter : DinoteAdapter
     private lateinit var compositePageTransformer: CompositePageTransformer
-
     override fun getLayoutResource(): Int {
         return R.layout.fragment_main
     }
@@ -40,6 +43,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     override fun setUpdata() {
+
         photoAdapter = PhotoAdapter().apply {
             submitData(viewModel.list.value!!)
         }
@@ -47,6 +51,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
         mBinding.vpgMainFragment.adapter = photoAdapter
         setViewPage()
         autoRunAds()
+
+        val layoutManager = LinearLayoutManager(context)
+        mBinding.rcvMainDinote.layoutManager = layoutManager
+        dinoteAdapter = DinoteAdapter()
+        mBinding.rcvMainDinote.adapter = dinoteAdapter
+        dinoteAdapter.initData(viewModel.getListDinote())
     }
 
     private fun setViewPage() {
@@ -89,6 +99,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     override fun onReSize() {
         ReSizeView.resizeView(mBinding.imvMainCreateDinote, 80)
         ReSizeView.resizeView(mBinding.bgMainBackground, 160)
+
     }
 
     override fun onClick() {
@@ -102,7 +113,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     private fun openCreateDinote() {
-       mainActivity.loadFragment(CreateFragment(), CreateFragment().javaClass.simpleName)
+        mainActivity.loadFragment(CreateFragment(), CreateFragment().javaClass.simpleName)
     }
 
     override fun onStop() {

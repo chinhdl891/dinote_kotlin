@@ -31,8 +31,9 @@
             android:id="@+id/tv_item_dinote_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginStart="@dimen/padding_text"
+            android:layout_marginTop="@dimen/padding_text"
+            setYearTime="@{dinote.dateCreate}"
             android:hint="2022"
             app:layout_constraintStart_toStartOf="@+id/imv_item_dinote_bg"
             app:layout_constraintTop_toTopOf="@+id/imv_item_dinote_bg" />
@@ -42,9 +43,9 @@
             android:id="@+id/tv_item_dinote_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="@dimen/padding_text"
             android:hint="16"
+            setDayTime="@{dinote.dateCreate}"
             app:layout_constraintBottom_toBottomOf="@+id/imv_item_dinote_bg"
             app:layout_constraintStart_toStartOf="@+id/imv_item_dinote_bg" />
 
@@ -52,9 +53,10 @@
             android:id="@+id/tv_item_dinote_moth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="@dimen/padding_text"
+            android:layout_marginBottom="@dimen/padding_text"
             android:hint="Th5"
+            setMonthTime="@{dinote.dateCreate}"
             app:layout_constraintBottom_toBottomOf="@+id/imv_item_dinote_bg"
             app:layout_constraintEnd_toEndOf="@+id/imv_item_dinote_bg" />
 
@@ -86,9 +88,9 @@
                 android:textColor="@color/text_color"
                 android:id="@+id/tv_item_dinote_content"
                 android:layout_width="wrap_content"
-                android:layout_height="19dp"
+                android:layout_height="@dimen/margin_view_to_view_largest"
                 android:layout_marginStart="@dimen/margin_start"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/margin_view_to_view_small"
                 android:hint="@string/hint_dinote_item_content" />
         </LinearLayout>
 
