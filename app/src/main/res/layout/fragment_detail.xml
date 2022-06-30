@@ -3,7 +3,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="dinoteDetail"
             type="com.bzk.dinoteslite.model.Dinote" />
@@ -16,14 +18,14 @@
         android:layout_marginStart="@dimen/margin_view_to_view_small"
         android:layout_marginEnd="@dimen/margin_view_to_view_small"
         android:background="@color/milky"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:context=".view.fragment.DetailFragment">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/lnl_option"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:gravity="center"
             android:orientation="horizontal"
             android:padding="@dimen/padding_text"
             android:paddingStart="@dimen/margin_view_to_view_big"
@@ -33,19 +35,17 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/imv_create_cancel"
-                android:layout_width="0dp"
+                android:id="@+id/imv_detail_cancel"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_cancel"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_cancel" />
 
             <TextView
                 android:id="@+id/tv_title_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="8"
+                android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:text="@string/txt_dinote_lite"
                 android:textColor="@color/text_color"
@@ -59,13 +59,13 @@
                 android:id="@+id/cardView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_alignParentEnd="true"
                 app:cardCornerRadius="@dimen/conner_radius"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/tv_create_save"
+                    android:id="@+id/tv_detail_update"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#806EFF"
@@ -78,7 +78,7 @@
                     android:textColor="@color/white" />
             </androidx.cardview.widget.CardView>
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <ScrollView
             android:id="@+id/svCreateDinote"
@@ -100,7 +100,6 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <EditText
-                        android:text="@{dinoteDetail.title}"
                         android:id="@+id/edt_create_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -109,6 +108,7 @@
                         android:background="@android:color/transparent"
                         android:hint="@string/text_enter_title"
                         android:padding="@dimen/margin_view_to_view_small"
+                        android:text="@{dinoteDetail.title}"
                         android:textColor="@color/text_color"
                         android:textColorHint="@color/text_color" />
 
@@ -124,8 +124,8 @@
                         app:layout_constraintTop_toBottomOf="@+id/edt_create_title">
 
                         <TextView
-                            setDate="@{dinoteDetail.dateCreate}"
                             android:id="@+id/tv_date_selection"
+                            setDate="@{dinoteDetail.dateCreate}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_start"
@@ -145,8 +145,8 @@
                             android:gravity="end">
 
                             <ImageView
-                                setImageIsLikeByBoolean="@{dinoteDetail.like}"
                                 android:id="@+id/imv_detail_is_loved"
+                                setImageIsLikeByBoolean="@{dinoteDetail.like}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="@dimen/margin_view_to_view_small"
@@ -186,12 +186,14 @@
 
                             <ImageView
                                 android:id="@+id/imv_create_motion"
+                                setImageMotion="@{dinoteDetail.motion}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/ic_fun" />
 
                             <TextView
                                 android:id="@+id/edt_create_status"
+                                setTextViewMotion="@{dinoteDetail.motion}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/margin_view_to_view_small"
@@ -231,13 +233,13 @@
 
                             <ImageView
                                 android:id="@+id/imv_create_drawer"
+                                setImageByURI="@{dinoteDetail.uriImage}"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:scaleType="fitXY" />
                         </androidx.cardview.widget.CardView>
 
                         <EditText
-                            android:text="@{dinoteDetail.desImage}"
                             android:id="@+id/edt_create_des_drawer"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -249,6 +251,7 @@
                             android:hint="@string/txt_des_image"
                             android:inputType="textPersonName"
                             android:padding="@dimen/padding_text"
+                            android:text="@{dinoteDetail.desImage}"
                             android:textColor="@color/black"
                             android:textColorHint="@color/hint_text_color"
                             app:layout_constraintTop_toBottomOf="@+id/cv_create_drawer" />
@@ -257,7 +260,6 @@
                 </LinearLayout>
 
                 <EditText
-                    android:text="@{dinoteDetail.content}"
                     android:id="@+id/edt_create_content"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -271,6 +273,7 @@
                     android:paddingTop="@dimen/padding_edittext_content"
                     android:paddingEnd="@dimen/padding_edittext_content"
                     android:paddingBottom="@dimen/padding_viewpager_theme"
+                    android:text="@{dinoteDetail.content}"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hint_text_color"
                     app:layout_constraintBottom_toBottomOf="parent"

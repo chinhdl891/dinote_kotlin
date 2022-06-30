@@ -14,6 +14,7 @@ import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.databinding.HeaderAccBinding
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.fragment.CreateFragment
+import com.bzk.dinoteslite.view.fragment.DetailFragment
 import com.bzk.dinoteslite.view.fragment.DrawableFragment
 import com.bzk.dinoteslite.view.fragment.MainFragment
 
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             when(getTopFragment){
                 MainFragment::class.simpleName -> onExitApp()
                 DrawableFragment::class.simpleName -> super.onBackPressed()
-                CreateFragment::class.simpleName ->{
+                CreateFragment::class.simpleName, DetailFragment::class.simpleName ->{
                     mBinding.tlbMainAction.visibility = View.VISIBLE
                     supportFragmentManager.popBackStack()
                 }

@@ -3,6 +3,7 @@ package com.bzk.dinoteslite.view.fragment
 
 import android.app.DatePickerDialog
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -31,10 +32,12 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
         CreateFragmentViewModel(requireActivity().application)
     }
     private lateinit var mMotion: Motion
+    private var addTagAdapter: AddTagAdapter? = null
     private val layoutManager: RecyclerView.LayoutManager by lazy {
         LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
     }
     private var mUri: String? = null
+    private var nameFile: String? = null
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_create
@@ -51,9 +54,14 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
         mBinding.rcvCreateListTag.layoutManager = layoutManager
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
-        Toast.makeText(mainActivity,
-            "" + DinoteDataBase.getInstance(mainActivity)?.dinoteDAO()?.getAllDinote()?.size,
-            Toast.LENGTH_SHORT).show()
+        addTagAdapter = AddTagAdapter(
+            onAddTag = {
+                viewModel.addTag()
+            },
+            onDeleteTag = { position ->
+                viewModel.deleteTag(position)
+            })
+        mBinding.rcvCreateListTag.adapter = addTagAdapter
         observer()
     }
 
@@ -67,16 +75,10 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
         }
         viewModel.tagModelList.observe(this) {
             Log.d(TAG, "observer: " + it.size)
-            mBinding.rcvCreateListTag.adapter =
-                AddTagAdapter(onAddTag = {
-                    viewModel.addTag()
-                },
-                    onDeleteTag = { position ->
-                        viewModel.deleteTag(position)
-                    }).apply {
-                    initData(viewModel.getListTag())
-                    mBinding.rcvCreateListTag.layoutManager!!.scrollToPosition(it.size - 1)
-                }
+            addTagAdapter?.apply {
+                initData(viewModel.getListTag())
+            }
+            mBinding.rcvCreateListTag.layoutManager!!.scrollToPosition(it.size - 1)
         }
     }
 
@@ -85,12 +87,14 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
     }
 
     override fun onClick() {
-        mBinding.lnlCrateStatus.setOnClickListener(this)
-        mBinding.imvCreateTextLove.setOnClickListener(this)
-        mBinding.imvCreateTextEdit.setOnClickListener(this)
-        mBinding.tvCreateSave.setOnClickListener(this)
-        mBinding.imvCreateCancel.setOnClickListener(this)
-        mBinding.tvDateSelection.setOnClickListener(this)
+        mBinding.apply {
+            lnlCrateStatus.setOnClickListener(this@CreateFragment::onClick)
+            imvCreateTextLove.setOnClickListener(this@CreateFragment::onClick)
+            imvCreateTextEdit.setOnClickListener(this@CreateFragment::onClick)
+            tvCreateSave.setOnClickListener(this@CreateFragment::onClick)
+            imvCreateCancel.setOnClickListener(this@CreateFragment::onClick)
+            tvDateSelection.setOnClickListener(this@CreateFragment::onClick)
+        }
     }
 
     override fun onClick(p0: View) {
@@ -152,16 +156,21 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
             content = mBinding.edtCreateContent.text.toString().trim()
             motionId = mMotion.id
             desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
-            imageUri = mUri?.toString() ?: getString(R.string.txt_no_des)
+            imageUri = nameFile?.toString() ?: getString(R.string.txt_no_des)
             insertDinote()
         }
     }
 
     private fun onShowImage(nameFile: String) {
-        mUri = mainActivity.filesDir.absolutePath + "/$nameFile"
+        this.nameFile = nameFile
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
-        mBinding.imvCreateDrawer.setImageURI(Uri.parse(mUri))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mUri = mainActivity.filesDir.absolutePath + "/$nameFile"
+            mBinding.imvCreateDrawer.setImageURI(Uri.parse(mUri))
+        } else {
+            mBinding.imvCreateDrawer.setImageURI(Uri.parse(nameFile))
+        }
     }
 
     private fun setFavoriteDionte() {

@@ -1,12 +1,8 @@
 package com.bzk.dinoteslite.view.fragment
 
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +13,6 @@ import com.bzk.dinoteslite.adapter.DinoteAdapter
 import com.bzk.dinoteslite.adapter.PhotoAdapter
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentMainBinding
-import com.bzk.dinoteslite.model.PhotoModel
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.MainFragmentViewModel
@@ -35,6 +30,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     private var mTimer: Timer? = null
     private lateinit var dinoteAdapter: DinoteAdapter
     private lateinit var compositePageTransformer: CompositePageTransformer
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_main
     }
@@ -44,7 +40,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     override fun setUpdata() {
-
         photoAdapter = PhotoAdapter().apply {
             submitData(viewModel.list.value!!)
         }
@@ -55,17 +50,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
 
         val layoutManager = LinearLayoutManager(context)
         mBinding.rcvMainDinote.layoutManager = layoutManager
-        dinoteAdapter = DinoteAdapter(onDelete = {
-            viewModel.deleteDinote(it)
-        }, onGotoDetail = {
-            val bundle = Bundle()
-            bundle.putSerializable(AppConstant.SEND_OBJ, it)
-            var detailFragment = DetailFragment().apply {
-                arguments = bundle
-            }
-            mainActivity.loadFragment(detailFragment, DetailFragment::class.simpleName.toString())
-
-        })
+        dinoteAdapter = DinoteAdapter(
+            onDelete = {
+                viewModel.deleteDinote(it)
+            },
+            onGotoDetail = { dinote ->
+                val detailFragment = DetailFragment.newInstance(dinote)
+                mainActivity.loadFragment(detailFragment, DetailFragment::class.simpleName.toString())
+            })
         mBinding.rcvMainDinote.adapter = dinoteAdapter
         viewModel.getListDinote()
     }
