@@ -114,4 +114,5 @@
     <string name="txt_apply">Apply</string>
     <string name="txt_no_des">no des</string>
     <string name="txt_name_image">IMG_%1$d.jpg</string>
+    <string name="txt_save">Lưu</string>
 </resources>
