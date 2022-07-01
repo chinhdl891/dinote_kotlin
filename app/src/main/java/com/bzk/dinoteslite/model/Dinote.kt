@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import java.io.Serializable
 
 @Entity(tableName = "dinote")
 data class Dinote(
@@ -25,4 +26,4 @@ data class Dinote(
     var isLike: Boolean = false,
     @ColumnInfo
     var ListTag: List<TagModel> = listOf(TagModel(0))
-)
+) : Serializable

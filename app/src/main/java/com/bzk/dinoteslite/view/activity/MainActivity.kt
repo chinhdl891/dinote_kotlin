@@ -1,7 +1,6 @@
 package com.bzk.dinoteslite.view.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -9,13 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.databinding.HeaderAccBinding
-import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.fragment.CreateFragment
+import com.bzk.dinoteslite.view.fragment.DetailFragment
 import com.bzk.dinoteslite.view.fragment.DrawableFragment
 import com.bzk.dinoteslite.view.fragment.MainFragment
 
@@ -33,7 +32,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(mBinding.root)
         setupHeader()
         setupToolBarMain()
-        loadFragment(MainFragment(),MainFragment::class.java.simpleName)
+        loadFragment(MainFragment(), MainFragment::class.java.simpleName)
         reSizeView()
         setClick()
     }
@@ -46,9 +45,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
             }
             mBinding.tlbMainAction.visibility = View.GONE
-            if (tag == DrawableFragment::class.simpleName){
+            if (tag == DrawableFragment::class.simpleName) {
                 addFragment(fragment, tag)
-            }else {
+            } else {
                 replaceFragment(fragment, tag)
             }
         } else {
@@ -70,7 +69,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        supportFragmentManager.popBackStack()
+        if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
+            mBinding.drlMain.closeDrawer(GravityCompat.START)
+        }
+        var getTopFragment = getTopFragment()?.tag
+        if (getTopFragment != null) {
+            when(getTopFragment){
+                MainFragment::class.simpleName -> onExitApp()
+                DrawableFragment::class.simpleName -> super.onBackPressed()
+                CreateFragment::class.simpleName, DetailFragment::class.simpleName ->{
+                    mBinding.tlbMainAction.visibility = View.VISIBLE
+                    supportFragmentManager.popBackStack()
+                }
+
+            }
+        }
+    }
+
+    private fun onExitApp() {
+
     }
 
     private fun setClick() {
@@ -121,5 +138,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun gotoWatch() {
 
+    }
+
+    fun getTopFragment(): Fragment? {
+        val index = supportFragmentManager.backStackEntryCount - 1
+        val backEntry = supportFragmentManager.getBackStackEntryAt(index)
+        val tag = backEntry.name
+        return supportFragmentManager.findFragmentByTag(tag)
     }
 }

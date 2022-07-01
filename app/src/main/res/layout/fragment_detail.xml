@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="dinoteDetail"
+            type="com.bzk.dinoteslite.model.Dinote" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/rlt_detail_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_view_to_view_small"
+        android:layout_marginEnd="@dimen/margin_view_to_view_small"
+        android:background="@color/milky"
+        android:orientation="vertical"
+        tools:context=".view.fragment.DetailFragment">
+
+        <RelativeLayout
+            android:id="@+id/lnl_option"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_text"
+            android:paddingStart="@dimen/margin_view_to_view_big"
+            android:paddingEnd="@dimen/margin_view_to_view_big"
+            android:weightSum="10"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imv_detail_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_cancel" />
+
+            <TextView
+                android:id="@+id/tv_title_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="@string/txt_dinote_lite"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/text_size_title"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/cardView"
+                app:layout_constraintHorizontal_bias="0.483"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                app:cardCornerRadius="@dimen/conner_radius"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_detail_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#806EFF"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/padding_text_button"
+                    android:paddingTop="@dimen/padding_top_bottom_view"
+                    android:paddingEnd="@dimen/padding_text_button"
+                    android:paddingBottom="@dimen/padding_top_bottom_view"
+                    android:text="@string/txt_update"
+                    android:textColor="@color/white" />
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+
+        <ScrollView
+            android:id="@+id/svCreateDinote"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/lnl_option">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:context=".views.fragments.CreateDinoteFragment">
+
+                <LinearLayout
+                    android:id="@+id/lnl_detail_no_edt_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <EditText
+                        android:id="@+id/edt_create_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_start"
+                        android:layout_marginEnd="@dimen/margin_start"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/text_enter_title"
+                        android:padding="@dimen/margin_view_to_view_small"
+                        android:text="@{dinoteDetail.title}"
+                        android:textColor="@color/text_color"
+                        android:textColorHint="@color/text_color" />
+
+                    <LinearLayout
+                        android:id="@+id/lnl_date_selection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_view_to_view_big"
+                        android:background="@color/white"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/edt_create_title">
+
+                        <TextView
+                            android:id="@+id/tv_date_selection"
+                            setDate="@{dinoteDetail.dateCreate}"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_start"
+                            android:background="@android:color/transparent"
+                            android:drawablePadding="@dimen/margin_view_to_view_small"
+                            android:gravity="center"
+                            android:hint="@string/hint_date"
+                            android:padding="@dimen/margin_view_to_view_small"
+                            android:textColor="@color/text_color"
+                            android:textColorHint="@color/hint_text_color"
+                            app:drawableEndCompat="@drawable/ic_baseline_keyboard_arrow_down_24" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_view_to_view_small"
+                            android:gravity="end">
+
+                            <ImageView
+                                android:id="@+id/imv_detail_is_loved"
+                                setImageIsLikeByBoolean="@{dinoteDetail.like}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/margin_view_to_view_small"
+                                android:src="@drawable/ic_text_love" />
+
+                            <ImageView
+                                android:id="@+id/imv_detail_is_drop"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_text_drop" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lnl_motion_tag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_view_to_view_small"
+                        android:background="@color/white"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/lnl_crate_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_start"
+                            android:layout_marginTop="@dimen/padding_text"
+                            android:background="@drawable/conner_view"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/margin_view_to_view_small">
+
+                            <ImageView
+                                android:id="@+id/imv_create_motion"
+                                setImageMotion="@{dinoteDetail.motion}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_fun" />
+
+                            <TextView
+                                android:id="@+id/edt_create_status"
+                                setTextViewMotion="@{dinoteDetail.motion}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_view_to_view_small"
+                                android:layout_marginEnd="@dimen/margin_view_to_view_small"
+                                android:background="@android:color/transparent"
+                                android:hint="@string/funny"
+                                android:textColor="@color/black"
+                                android:textColorHint="@color/hint_text_color" />
+
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rcv_create_tag"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lnl_detail_draw"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toBottomOf="@+id/lnl_motion_tag">
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cv_create_drawer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_start"
+                            android:layout_marginTop="@dimen/margin_child_to_child"
+                            android:layout_marginEnd="@dimen/margin_start"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_draw_save"
+                            app:layout_constraintTop_toBottomOf="@+id/lnl_motion_tag">
+
+                            <ImageView
+                                android:id="@+id/imv_create_drawer"
+                                setImageByURI="@{dinoteDetail.uriImage}"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:scaleType="fitXY" />
+                        </androidx.cardview.widget.CardView>
+
+                        <EditText
+                            android:id="@+id/edt_create_des_drawer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_start"
+                            android:layout_marginTop="@dimen/margin_view_to_view_big"
+                            android:layout_marginEnd="@dimen/margin_start"
+                            android:layout_marginBottom="@dimen/margin_view_to_view_big"
+                            android:background="@android:color/transparent"
+                            android:hint="@string/txt_des_image"
+                            android:inputType="textPersonName"
+                            android:padding="@dimen/padding_text"
+                            android:text="@{dinoteDetail.desImage}"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/hint_text_color"
+                            app:layout_constraintTop_toBottomOf="@+id/cv_create_drawer" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/edt_create_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/margin_child_to_child"
+                    android:layout_marginTop="@dimen/margin_child_to_child"
+                    android:layout_marginEnd="@dimen/margin_child_to_child"
+                    android:background="@drawable/conner_view"
+                    android:gravity="top"
+                    android:hint="@string/txt_enter_content"
+                    android:paddingStart="@dimen/padding_edittext_content"
+                    android:paddingTop="@dimen/padding_edittext_content"
+                    android:paddingEnd="@dimen/padding_edittext_content"
+                    android:paddingBottom="@dimen/padding_viewpager_theme"
+                    android:text="@{dinoteDetail.content}"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hint_text_color"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lnl_detail_no_edt_content"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:layout_editor_absoluteX="0dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/lnl_crate_option"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/margin_view_to_view_big"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/imv_create_text_custom_text"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_edit"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_pen" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_love"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_love" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_tag"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_tag" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_remove"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_drop" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lnl_create_text_custom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/margin_start"
+            android:layout_marginEnd="@dimen/margin_start"
+            android:layout_marginBottom="@dimen/margin_view_to_view_big"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/imv_create_text_cancel"
+                style="@style/imageTools"
+                android:src="@drawable/ic_edit_text_cancel" />
+
+            <ImageView
+                android:id="@+id/imv_create_color_picker"
+                style="@style/imageTools"
+                android:src="@drawable/ic_color_picker" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_bolder"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_bolder" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_italic"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_italic" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_underline"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_underline" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_align_left"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_align_left" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_align_right"
+                style="@style/imageTools"
+                android:src="@drawable/ic_text_align_right" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_bullet"
+                style="@style/imageTools"
+                android:src="@drawable/ic_list_bullets" />
+
+            <ImageView
+                android:id="@+id/imv_create_text_list_number"
+                style="@style/imageTools"
+                android:src="@drawable/ic_list_numbers" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

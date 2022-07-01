@@ -5,7 +5,7 @@ import com.bzk.dinoteslite.model.Dinote
 
 @Dao
 interface DinoteDAO {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun onInsert(dinote: Dinote)
 
     @Delete
