@@ -1,16 +1,14 @@
 package com.bzk.dinoteslite.base
 
 import android.app.Application
-import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.widget.SwitchCompat
 import androidx.databinding.BindingAdapter
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.viewmodel.DetailFragmentViewModel
-import com.bzk.dinoteslite.viewmodel.MainFragmentViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,16 +25,16 @@ fun setTextByResource(textView: TextView, textRes: Int) {
 }
 
 @BindingAdapter("setImageByURI")
-fun setImageByUri(imageView: ImageView, string: String) {
-    if (string.isEmpty()) {
+fun setImageByUri(imageView: ImageView, uri: String?) {
+    if (uri?.isEmpty() == true) {
         imageView.setImageURI(null);
     } else {
         //file:/storage/emulated/0/671d80a2-c98a-4491-906e-f2a969afaa6b.png
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val file = File(imageView.context.filesDir.absolutePath + "/$string")
+            val file = File(imageView.context.filesDir.absolutePath + "/$uri")
             setImage(imageView, file)
         } else {
-            val file = File(string)
+            val file = File(uri)
             setImage(imageView, file)
         }
 
@@ -108,3 +106,18 @@ fun setTextByRes(textView: TextView, position: Int) {
         DetailFragmentViewModel(textView.context.applicationContext as Application).listMotion[position]
     textView.setText(motion.contentMotion)
 }
+
+@BindingAdapter("setTextTimeRemind")
+fun setTextTimeRemind(textView: TextView, time: Long) {
+    val calendar = Calendar.getInstance().apply {
+        this.timeInMillis = time
+    }
+    val simpleDateFormat = SimpleDateFormat("HH:mm a")
+    textView.text = simpleDateFormat.format(calendar.timeInMillis)
+}
+
+@BindingAdapter("setStatusTimeRemind")
+fun setStatusRemind(switchCompat: SwitchCompat, status: Boolean) {
+    switchCompat.isEnabled = status
+}
+

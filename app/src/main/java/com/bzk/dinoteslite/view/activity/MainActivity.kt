@@ -3,6 +3,7 @@ package com.bzk.dinoteslite.view.activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -10,13 +11,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.bzk.dinoteslite.R
+import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.databinding.HeaderAccBinding
 import com.bzk.dinoteslite.utils.ReSizeView
-import com.bzk.dinoteslite.view.fragment.CreateFragment
-import com.bzk.dinoteslite.view.fragment.DetailFragment
-import com.bzk.dinoteslite.view.fragment.DrawableFragment
-import com.bzk.dinoteslite.view.fragment.MainFragment
+import com.bzk.dinoteslite.view.fragment.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 private const val TAG = "MainActivity"
 
@@ -35,6 +36,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         loadFragment(MainFragment(), MainFragment::class.java.simpleName)
         reSizeView()
         setClick()
+
+        val timeDefault: Long = MySharedPreferences(context = this).getTimeRemindDefault()
+        if (timeDefault == 0L) {
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.HOUR_OF_DAY, 9)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val mySharedPreferences =
+                MySharedPreferences(this).pushTimeRemindDefault(calendar.timeInMillis)
+        }
     }
 
     fun loadFragment(fragment: Fragment, tag: String) {
@@ -74,10 +88,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         var getTopFragment = getTopFragment()?.tag
         if (getTopFragment != null) {
-            when(getTopFragment){
+            when (getTopFragment) {
                 MainFragment::class.simpleName -> onExitApp()
                 DrawableFragment::class.simpleName -> super.onBackPressed()
-                CreateFragment::class.simpleName, DetailFragment::class.simpleName ->{
+                CreateFragment::class.simpleName, DetailFragment::class.simpleName -> {
                     mBinding.tlbMainAction.visibility = View.VISIBLE
                     supportFragmentManager.popBackStack()
                 }
@@ -128,7 +142,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.imv_main_watch -> gotoWatch()
-            R.id.imv_main_notification -> gotoWatch()
+            R.id.imv_main_notification -> gotoRemind()
             R.id.imv_main_search -> gotoWatch()
             R.id.imv_head_theme -> gotoWatch()
             R.id.imv_head_rate -> gotoWatch()
@@ -136,11 +150,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun gotoRemind() {
+        loadFragment(RemindFragment(), RemindFragment::class.simpleName.toString())
+    }
+
     private fun gotoWatch() {
 
     }
 
-    fun getTopFragment(): Fragment? {
+    private fun getTopFragment(): Fragment? {
         val index = supportFragmentManager.backStackEntryCount - 1
         val backEntry = supportFragmentManager.getBackStackEntryAt(index)
         val tag = backEntry.name

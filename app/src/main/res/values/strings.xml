@@ -63,7 +63,7 @@
     <string name="good_jod">Chúc Mừng</string>
     <string name="yes">Đồng ý</string>
     <string name="txt_success">Thành Công</string>
-    <string name="time_remind">Thời gian nhắc nhở:</string>
+    <string name="time_remind">Thời gian nhắc nhở: %1$s</string>
     <string name="choose_time_remind">Choose Time</string>
     <string name="no_dinote">Không có nhật ký</string>
     <string name="autumn">Thu gọn</string>

@@ -1,0 +1,44 @@
+package com.bzk.dinoteslite.adapter
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.bzk.dinoteslite.BR
+import com.bzk.dinoteslite.R
+import com.bzk.dinoteslite.databinding.ItemTimeRemindBinding
+import com.bzk.dinoteslite.model.TimeRemind
+
+class TimeRemindAdapter : RecyclerView.Adapter<TimeRemindAdapter.TimeRemindViewHolder>() {
+    private var listTimeRemind: MutableList<TimeRemind>? = mutableListOf()
+    fun init(list: MutableList<TimeRemind>) {
+        listTimeRemind = list
+        notifyDataSetChanged()
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeRemindViewHolder {
+        val binding: ItemTimeRemindBinding =
+            DataBindingUtil.inflate(LayoutInflater.from(parent.context),
+                R.layout.item_time_remind,
+                parent,
+                false)
+        return TimeRemindViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: TimeRemindViewHolder, position: Int) {
+        var timeRemind = listTimeRemind?.get(position)
+        timeRemind?.let { holder.bind(it) }
+    }
+
+    override fun getItemCount(): Int {
+        return listTimeRemind?.size ?: 0
+    }
+
+    inner class TimeRemindViewHolder(var mBinding: ItemTimeRemindBinding) :
+        RecyclerView.ViewHolder(mBinding.root) {
+        fun bind(timeRemind: TimeRemind) {
+            mBinding.setVariable(BR.timeRemind, timeRemind)
+            mBinding.executePendingBindings()
+        }
+    }
+}

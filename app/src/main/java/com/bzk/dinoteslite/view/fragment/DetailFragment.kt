@@ -55,7 +55,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     }
 
     override fun setUpdata() {
-        onViewDisable()
+//        onViewDisable()
+        mBinding.detailViewModel = viewModel
         val bundle = arguments
         bundle?.let {
             mDinote = bundle.getSerializable(AppConstant.SEND_OBJ) as Dinote
@@ -200,10 +201,10 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     }
 
     private fun onUpdateDinote() {
-        if (!isUpdate) {
+//        if (!isUpdate) {
             mBinding.tvDetailUpdate.text = getString(R.string.txt_save)
-            onViewEnable()
-        }
+//            onViewEnable()
+//        }
 //        viewModel.mDinote.apply {
 //            title = mBinding.edtCreateTitle.text.toString().trim()
 //            desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
@@ -213,21 +214,4 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
 //        viewModel.updateDinote()
     }
 
-    private fun onViewEnable() {
-        mBinding.edtCreateTitle.isEnabled = true
-        mBinding.lnlCrateStatus.isEnabled = true
-        mBinding.edtCreateContent.isEnabled = true
-        mBinding.edtCreateDesDrawer.isEnabled = true
-        mBinding.lnlMotionTag.isEnabled = true
-        mBinding.rcvCreateTag.descendantFocusability = ViewGroup.FOCUSABLES_ALL
-    }
-
-    private fun onViewDisable() {
-        mBinding.rcvCreateTag.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
-        mBinding.lnlMotionTag.isEnabled = false
-        mBinding.edtCreateTitle.isEnabled = false
-        mBinding.lnlCrateStatus.isEnabled = false
-        mBinding.edtCreateContent.isEnabled = false
-        mBinding.edtCreateDesDrawer.isEnabled = false
-    }
 }

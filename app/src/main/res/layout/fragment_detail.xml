@@ -9,6 +9,10 @@
         <variable
             name="dinoteDetail"
             type="com.bzk.dinoteslite.model.Dinote" />
+
+        <variable
+            name="detailViewModel"
+            type="com.bzk.dinoteslite.viewmodel.DetailFragmentViewModel" />
     </data>
 
     <RelativeLayout
@@ -70,11 +74,12 @@
                     android:layout_height="wrap_content"
                     android:background="#806EFF"
                     android:gravity="center"
+                    android:onClick="@{() -> detailViewModel.onClickEnableView()}"
                     android:paddingStart="@dimen/padding_text_button"
                     android:paddingTop="@dimen/padding_top_bottom_view"
                     android:paddingEnd="@dimen/padding_text_button"
                     android:paddingBottom="@dimen/padding_top_bottom_view"
-                    android:text="@string/txt_update"
+                    android:text="@{detailViewModel.txtUpdate}"
                     android:textColor="@color/white" />
             </androidx.cardview.widget.CardView>
 
@@ -106,6 +111,7 @@
                         android:layout_marginStart="@dimen/margin_start"
                         android:layout_marginEnd="@dimen/margin_start"
                         android:background="@android:color/transparent"
+                        android:enabled="@{detailViewModel.enableView}"
                         android:hint="@string/text_enter_title"
                         android:padding="@dimen/margin_view_to_view_small"
                         android:text="@{dinoteDetail.title}"
@@ -118,6 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/margin_view_to_view_big"
                         android:background="@color/white"
+                        android:enabled="@{detailViewModel.enableView}"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         app:layout_constraintStart_toStartOf="parent"
@@ -131,6 +138,7 @@
                             android:layout_marginStart="@dimen/margin_start"
                             android:background="@android:color/transparent"
                             android:drawablePadding="@dimen/margin_view_to_view_small"
+                            android:enabled="@{detailViewModel.enableView}"
                             android:gravity="center"
                             android:hint="@string/hint_date"
                             android:padding="@dimen/margin_view_to_view_small"
@@ -168,6 +176,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/margin_view_to_view_small"
                         android:background="@color/white"
+                        android:enabled="@{detailViewModel.enableView}"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -179,6 +188,7 @@
                             android:layout_marginTop="@dimen/padding_text"
                             android:background="@drawable/conner_view"
                             android:clickable="true"
+                            android:enabled="@{detailViewModel.enableView}"
                             android:focusable="true"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -189,6 +199,7 @@
                                 setImageMotion="@{dinoteDetail.motion}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:enabled="@{detailViewModel.enableView}"
                                 android:src="@drawable/ic_fun" />
 
                             <TextView
@@ -199,6 +210,7 @@
                                 android:layout_marginStart="@dimen/margin_view_to_view_small"
                                 android:layout_marginEnd="@dimen/margin_view_to_view_small"
                                 android:background="@android:color/transparent"
+                                android:enabled="@{detailViewModel.enableView}"
                                 android:hint="@string/funny"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/hint_text_color" />
@@ -209,7 +221,8 @@
                             android:id="@+id/rcv_create_tag"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp" />
+                            android:layout_marginStart="10dp"
+                            android:enabled="@{detailViewModel.enableView}" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -248,6 +261,7 @@
                             android:layout_marginEnd="@dimen/margin_start"
                             android:layout_marginBottom="@dimen/margin_view_to_view_big"
                             android:background="@android:color/transparent"
+                            android:enabled="@{detailViewModel.enableView}"
                             android:hint="@string/txt_des_image"
                             android:inputType="textPersonName"
                             android:padding="@dimen/padding_text"
@@ -267,6 +281,7 @@
                     android:layout_marginTop="@dimen/margin_child_to_child"
                     android:layout_marginEnd="@dimen/margin_child_to_child"
                     android:background="@drawable/conner_view"
+                    android:enabled="@{detailViewModel.enableView}"
                     android:gravity="top"
                     android:hint="@string/txt_enter_content"
                     android:paddingStart="@dimen/padding_edittext_content"
