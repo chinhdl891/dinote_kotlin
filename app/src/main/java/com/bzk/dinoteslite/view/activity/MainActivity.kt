@@ -143,11 +143,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         when (p0.id) {
             R.id.imv_main_watch -> gotoWatch()
             R.id.imv_main_notification -> gotoRemind()
-            R.id.imv_main_search -> gotoWatch()
+            R.id.imv_main_search -> gotoSearch()
             R.id.imv_head_theme -> gotoWatch()
             R.id.imv_head_rate -> gotoWatch()
             R.id.imv_head_favorite -> gotoWatch()
         }
+    }
+
+    private fun gotoSearch() {
+        loadFragment(SearchFragment(), SearchFragment::class.simpleName.toString())
     }
 
     private fun gotoRemind() {

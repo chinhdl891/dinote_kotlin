@@ -66,5 +66,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     // gson
     implementation 'com.google.code.gson:gson:2.9.0'
+    //flexLayout
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
 }
