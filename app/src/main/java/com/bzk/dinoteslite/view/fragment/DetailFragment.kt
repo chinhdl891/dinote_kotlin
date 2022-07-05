@@ -4,6 +4,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.descendants
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
@@ -42,6 +45,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
         }
     }
 
+    private var isUpdate = false
     override fun getLayoutResource(): Int {
         return R.layout.fragment_detail
     }
@@ -51,6 +55,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     }
 
     override fun setUpdata() {
+//        onViewDisable()
+        mBinding.detailViewModel = viewModel
         val bundle = arguments
         bundle?.let {
             mDinote = bundle.getSerializable(AppConstant.SEND_OBJ) as Dinote
@@ -80,6 +86,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     private fun observer() {
         viewModel.tagModelList.observe(this) {
             addTagAdapter?.initData(it)
+            mBinding.rcvCreateTag.layoutManager?.scrollToPosition(it.size - 1)
+
         }
     }
 
@@ -142,16 +150,16 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
 
     private fun onCancel() {
         val nameOld = viewModel.mDinote.uriImage
-        if (nameOld == nameImageNew) {
-            return
+        if (nameOld.equals(nameImageNew)) {
+            mainActivity.onBackPressed()
         } else {
             val filePath: String = mainActivity.filesDir.absolutePath + "/$nameImageNew"
             val file = File(filePath)
             if (file.exists()) {
                 file.delete()
             }
+            mainActivity.onBackPressed()
         }
-        mainActivity.onBackPressed()
     }
 
     private fun onGotoDrawFragment() {
@@ -193,12 +201,17 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     }
 
     private fun onUpdateDinote() {
-        viewModel.mDinote.apply {
-            title = mBinding.edtCreateTitle.text.toString().trim()
-            desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
-            content = mBinding.edtCreateContent.text.toString().trim()
-            uriImage = nameImageNew
-        }
-        viewModel.updateDinote()
+//        if (!isUpdate) {
+            mBinding.tvDetailUpdate.text = getString(R.string.txt_save)
+//            onViewEnable()
+//        }
+//        viewModel.mDinote.apply {
+//            title = mBinding.edtCreateTitle.text.toString().trim()
+//            desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
+//            content = mBinding.edtCreateContent.text.toString().trim()
+//            uriImage = nameImageNew
+//        }
+//        viewModel.updateDinote()
     }
+
 }

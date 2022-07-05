@@ -1,11 +1,15 @@
 package com.bzk.dinoteslite.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
+import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bzk.dinoteslite.R
+import com.bzk.dinoteslite.base.GlobalApp
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.Motion
@@ -18,6 +22,8 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     var tagModelList: MutableLiveData<MutableList<TagModel>> =
         MutableLiveData(mutableListOf(TagModel(0, "")))
     var isFavorite: MutableLiveData<Boolean> = MutableLiveData(false)
+    var enableView : ObservableField<Boolean> = ObservableField(false)
+    var txtUpdate :  ObservableField<String> = ObservableField(application.getString(R.string.update))
 
     var listMotion = mutableListOf<Motion>(
         Motion(0, R.drawable.ic_motion_item_fun, R.string.funny),
@@ -75,5 +81,9 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
             isLike = getFavorite()
         }
         dinoteDAO?.onUpdate(mDinote)
+    }
+    fun onClickEnableView(){
+        enableView.set(true)
+        txtUpdate.set(getApplication<GlobalApp>().applicationContext.getString(R.string.save))
     }
 }

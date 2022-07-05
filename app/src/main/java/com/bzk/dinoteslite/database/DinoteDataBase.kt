@@ -6,14 +6,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.bzk.dinoteslite.model.Dinote
+import com.bzk.dinoteslite.model.TimeRemind
 import com.bzk.dinoteslite.model.TagConvert
 import com.bzk.dinoteslite.model.TagModel
 
-@Database(entities = [Dinote::class, TagModel::class], version = 1, exportSchema = false)
+@Database(entities = [Dinote::class, TagModel::class, TimeRemind::class],
+    version = 1,
+    exportSchema = false)
 @TypeConverters(TagConvert::class)
 abstract class DinoteDataBase : RoomDatabase() {
     abstract fun dinoteDAO(): DinoteDAO
-    abstract fun tagDAO() : TagDAO
+    abstract fun tagDAO(): TagDAO
+    abstract fun timeRemindDAO() : TimeRemindDAO
 
     companion object {
         private val DB_NAME = "dinote.db"
