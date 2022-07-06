@@ -91,7 +91,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             when (getTopFragment) {
                 MainFragment::class.simpleName -> onExitApp()
                 DrawableFragment::class.simpleName -> super.onBackPressed()
-                CreateFragment::class.simpleName, DetailFragment::class.simpleName -> {
+                CreateFragment::class.simpleName,
+                DetailFragment::class.simpleName,
+                SearchFragment::class.simpleName -> {
                     mBinding.tlbMainAction.visibility = View.VISIBLE
                     supportFragmentManager.popBackStack()
                 }

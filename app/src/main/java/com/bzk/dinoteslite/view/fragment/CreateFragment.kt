@@ -102,7 +102,7 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
             R.id.lnl_crate_status -> openDialogMotion()
             R.id.imv_create_text_love -> setFavoriteDionte()
             R.id.imv_create_text_edit -> {
-                mainActivity.loadFragment(DrawableFragment(onSave = {
+                getMainActivity()?.loadFragment(DrawableFragment(onSave = {
                     onShowImage(it)
                 }).apply {
                     val bundle = Bundle()
@@ -124,21 +124,23 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
         val day = calendar.get(Calendar.DATE)
         val month = calendar.get(Calendar.MONTH)
         val year = calendar.get(Calendar.YEAR)
-        val datePickerDialog = DatePickerDialog(mainActivity,
-            { datePicker, i, i2, i3 ->
-                calendar.set(i, i2, i3)
-                val simpleDateFormat = SimpleDateFormat("dd/mm/yyyy")
-                mBinding.tvDateSelection.text = simpleDateFormat.format(calendar.time)
-                viewModel.timeCreate = calendar.timeInMillis
-            },
-            year,
-            month,
-            day).show()
+        val datePickerDialog = getMainActivity()?.let {
+            DatePickerDialog(it,
+                { datePicker, i, i2, i3 ->
+                    calendar.set(i, i2, i3)
+                    val simpleDateFormat = SimpleDateFormat("dd/mm/yyyy")
+                    mBinding.tvDateSelection.text = simpleDateFormat.format(calendar.time)
+                    viewModel.timeCreate = calendar.timeInMillis
+                },
+                year,
+                month,
+                day).show()
+        }
     }
 
     private fun cancelCreateFragment() {
         deleteFile()
-        mainActivity.onBackPressed()
+        getMainActivity()?.onBackPressed()
     }
 
     private fun deleteFile() {
@@ -166,7 +168,7 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mUri = mainActivity.filesDir.absolutePath + "/$nameFile"
+            mUri = getMainActivity()?.filesDir?.absolutePath + "/$nameFile"
             mBinding.imvCreateDrawer.setImageURI(Uri.parse(mUri))
         } else {
             mBinding.imvCreateDrawer.setImageURI(Uri.parse(nameFile))
@@ -182,12 +184,15 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
     }
 
     private fun openDialogMotion() {
-        val dialogMotion = DialogMotion(mainActivity, viewModel.listMotion, onSelectItem = {
-            mMotion = it
-            mBinding.imvCreateMotion.setImageResource(it.imgMotion)
-            mBinding.edtCreateStatus.text = getText(it.contentMotion)
-        })
-        dialogMotion.show()
+        val dialogMotion =
+            getMainActivity()?.let {
+                DialogMotion(it, viewModel.listMotion, onSelectItem = {
+                    mMotion = it
+                    mBinding.imvCreateMotion.setImageResource(it.imgMotion)
+                    mBinding.edtCreateStatus.text = getText(it.contentMotion)
+                })
+            }
+        dialogMotion?.show()
     }
 
 }

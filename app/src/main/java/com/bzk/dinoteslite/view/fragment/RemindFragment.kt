@@ -48,9 +48,11 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             onDelete = {
                 remindFragmentViewModel.deleteTimeRemind(it)
             })
-        val timeDefault: Long = MySharedPreferences(mainActivity).getTimeRemindDefault()
+        val timeDefault: Long? = activity?.let { MySharedPreferences(it).getTimeRemindDefault() }
         val calendar = Calendar.getInstance().apply {
-            timeInMillis = timeDefault
+            if (timeDefault != null) {
+                timeInMillis = timeDefault
+            }
         }
         setTimeToText(calendar.timeInMillis)
         remindFragmentViewModel.listTimeRemind()
@@ -83,7 +85,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
 
     override fun onClick(p0: View) {
         when (p0.id) {
-            R.id.imv_remind_cancel -> mainActivity.onBackPressed()
+            R.id.imv_remind_cancel -> activity?.onBackPressed()
             R.id.tv_time_select -> selectTimeDialog()
             R.id.btn_remind -> addRemind()
         }
@@ -94,7 +96,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
         calendar.timeInMillis = System.currentTimeMillis()
         val hour = calendar[Calendar.HOUR_OF_DAY]
         val minus = calendar[Calendar.MINUTE]
-        val timePickerDialog = TimePickerDialog(mainActivity,
+        val timePickerDialog = TimePickerDialog(activity,
             { timePicker, i1, i2 ->
                 calendar[Calendar.HOUR_OF_DAY] = i1
                 calendar[Calendar.MINUTE] = i2
@@ -121,14 +123,14 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
         calendar.timeInMillis = System.currentTimeMillis()
         val hour = calendar[Calendar.HOUR_OF_DAY]
         val minus = calendar[Calendar.MINUTE]
-        val timePickerDialog = TimePickerDialog(mainActivity,
+        val timePickerDialog = TimePickerDialog(activity,
             { timePicker, i, i2 ->
                 calendar[Calendar.HOUR_OF_DAY] = i
                 calendar[Calendar.MINUTE] = i2
                 calendar[Calendar.SECOND] = 0
                 val time = calendar.timeInMillis
                 setTimeToText(time)
-                MySharedPreferences(mainActivity).pushTimeRemindDefault(time)
+                getMainActivity()?.let { MySharedPreferences(it).pushTimeRemindDefault(time) }
                 setAlarmRemind(time)
             },
             hour,
@@ -140,16 +142,16 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
     }
 
     private fun setAlarmRemind(time: Long) {
-        val alarmManager = mainActivity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(mainActivity, TimeRemindReceiver::class.java)
+        val alarmManager = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(activity, TimeRemindReceiver::class.java)
         val random = Random(50000)
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(mainActivity,
+            PendingIntent.getBroadcast(activity,
                 random.nextInt(),
                 intent,
                 PendingIntent.FLAG_IMMUTABLE)
         } else {
-            PendingIntent.getBroadcast(mainActivity,
+            PendingIntent.getBroadcast(activity,
                 random.nextInt(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT)

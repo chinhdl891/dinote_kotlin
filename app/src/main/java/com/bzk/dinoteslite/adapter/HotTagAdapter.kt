@@ -10,7 +10,7 @@ import com.bzk.dinoteslite.databinding.ItemHotTagBinding
 import com.bzk.dinoteslite.model.TagModel
 
 class HotTagAdapter : RecyclerView.Adapter<HotTagAdapter.HotTagViewHolder>() {
-    private val listHotTag: MutableList<TagModel>? = mutableListOf<TagModel>()
+    private val listHotTag: MutableList<TagModel> = mutableListOf<TagModel>()
 
     class HotTagViewHolder(var mBinding: ItemHotTagBinding) :
         RecyclerView.ViewHolder(mBinding.root) {
@@ -30,11 +30,11 @@ class HotTagAdapter : RecyclerView.Adapter<HotTagAdapter.HotTagViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: HotTagViewHolder, position: Int) {
-        var hotTag = listHotTag?.get(position)
+        var hotTag = listHotTag.get(position)
         hotTag?.let { holder.finData(it) }
     }
 
     override fun getItemCount(): Int {
-        return listHotTag?.size ?: 0
+        return listHotTag.size
     }
 }

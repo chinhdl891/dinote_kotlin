@@ -31,7 +31,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     }
     private lateinit var mDinote: Dinote
     private val layoutManager by lazy {
-        LinearLayoutManager(mainActivity, RecyclerView.HORIZONTAL, false)
+        LinearLayoutManager(getMainActivity(), RecyclerView.HORIZONTAL, false)
     }
     private var addTagAdapter: AddTagAdapter? = null
 
@@ -151,37 +151,40 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     private fun onCancel() {
         val nameOld = viewModel.mDinote.uriImage
         if (nameOld.equals(nameImageNew)) {
-            mainActivity.onBackPressed()
+            getMainActivity()?.onBackPressed()
         } else {
-            val filePath: String = mainActivity.filesDir.absolutePath + "/$nameImageNew"
+            val filePath: String = getMainActivity()?.filesDir?.absolutePath + "/$nameImageNew"
             val file = File(filePath)
             if (file.exists()) {
                 file.delete()
             }
-            mainActivity.onBackPressed()
+            activity?.onBackPressed()
         }
     }
 
     private fun onGotoDrawFragment() {
-        mainActivity.loadFragment(DrawableFragment(onSave = { nameImage ->
+        getMainActivity()?.loadFragment(DrawableFragment(onSave = { nameImage ->
             onShowDraw(nameImage)
         }), DrawableFragment::class.simpleName.toString())
     }
 
     private fun onShowDraw(nameImage: String) {
         nameImageNew = nameImage
-        val uri = mainActivity.filesDir.absolutePath + "/$nameImage"
+        val uri = getMainActivity()?.filesDir?.absolutePath + "/$nameImage"
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
         mBinding.imvCreateDrawer.setImageURI(Uri.parse(uri))
     }
 
     private fun onSelectMotion() {
-        val dialogMotion = DialogMotion(mainActivity, viewModel.listMotion, onSelectItem = {
-            viewModel.mDinote.motion = it.id
-            mBinding.imvCreateMotion.setImageResource(it.imgMotion)
-            mBinding.edtCreateStatus.setText(it.contentMotion)
-        }).show()
+        val dialogMotion =
+            getMainActivity()?.let {
+                DialogMotion(it, viewModel.listMotion, onSelectItem = {
+                    viewModel.mDinote.motion = it.id
+                    mBinding.imvCreateMotion.setImageResource(it.imgMotion)
+                    mBinding.edtCreateStatus.setText(it.contentMotion)
+                }).show()
+            }
     }
 
     private fun onDropDinote() {

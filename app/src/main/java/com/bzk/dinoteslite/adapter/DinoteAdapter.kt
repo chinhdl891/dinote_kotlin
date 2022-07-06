@@ -15,11 +15,11 @@ import com.bzk.dinoteslite.view.dialog.DialogDelete
 
 class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote) -> Unit) :
     RecyclerView.Adapter<DinoteAdapter.DinoteViewHolder>() {
-    private var listDinote: ArrayList<Dinote>? = arrayListOf<Dinote>()
+    private var listDinote: ArrayList<Dinote> = arrayListOf<Dinote>()
     private lateinit var mContext: Context
     fun initData(list: MutableList<Dinote>) {
-        listDinote?.clear()
-        listDinote?.addAll(list)
+        listDinote.clear()
+        listDinote.addAll(list)
         notifyDataSetChanged()
     }
 
@@ -48,7 +48,7 @@ class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote) -
     }
 
     override fun getItemCount(): Int {
-        return listDinote?.size ?: 0
+        return listDinote.size
     }
 
     inner class DinoteViewHolder(var mBinding: ItemDionteBinding) :

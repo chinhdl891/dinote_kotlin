@@ -20,11 +20,11 @@ import com.bzk.dinoteslite.utils.ReSizeView
 
 class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
-    private var listImage : MutableList<PhotoModel>? = mutableListOf<PhotoModel>()
+    private var listImage : MutableList<PhotoModel> = mutableListOf<PhotoModel>()
 
     fun submitData(list: List<PhotoModel>) {
-        listImage!!.clear()
-        listImage!!.addAll(list)
+        listImage.clear()
+        listImage.addAll(list)
         notifyDataSetChanged()
     }
 
@@ -34,11 +34,11 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        holder.bind(listImage!![position])
+        holder.bind(listImage[position])
     }
 
     override fun getItemCount(): Int {
-       return listImage?.size ?: 0
+       return listImage.size
     }
 
     class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

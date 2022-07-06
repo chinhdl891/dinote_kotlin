@@ -18,7 +18,7 @@ class TimeRemindAdapter(
     var onDelete: (TimeRemind) -> Unit,
 ) :
     RecyclerView.Adapter<TimeRemindAdapter.TimeRemindViewHolder>() {
-    private var listTimeRemind: MutableList<TimeRemind>? = mutableListOf()
+    private var listTimeRemind: MutableList<TimeRemind> = mutableListOf()
     fun init(list: MutableList<TimeRemind>) {
         listTimeRemind = list
         notifyDataSetChanged()
@@ -34,19 +34,20 @@ class TimeRemindAdapter(
     }
 
     override fun onBindViewHolder(holder: TimeRemindViewHolder, position: Int) {
-        var timeRemind = listTimeRemind?.get(position)
-        timeRemind?.let { holder.bind(it) }
+        var timeRemind = listTimeRemind.get(position)
+        timeRemind.let { holder.bind(it) }
         holder.mBinding.swTiemOnOff.setOnCheckedChangeListener { compoundButton, b ->
-            timeRemind?.active = b
-            timeRemind?.let { onSetCheck(it) }
+            timeRemind.active = b
+            timeRemind.let { onSetCheck(it) }
         }
-        holder.itemView.setOnLongClickListener{
-            timeRemind?.let { it1 -> onDelete(it1) }
-            true }
+        holder.itemView.setOnLongClickListener {
+            timeRemind.let { it1 -> onDelete(it1) }
+            true
+        }
     }
 
     override fun getItemCount(): Int {
-        return listTimeRemind?.size ?: 0
+        return listTimeRemind.size
     }
 
     inner class TimeRemindViewHolder(var mBinding: ItemTimeRemindBinding) :
