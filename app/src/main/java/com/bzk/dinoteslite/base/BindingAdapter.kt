@@ -115,9 +115,17 @@ fun setTextTimeRemind(textView: TextView, time: Long) {
     val simpleDateFormat = SimpleDateFormat("HH:mm a")
     textView.text = simpleDateFormat.format(calendar.timeInMillis)
 }
+@BindingAdapter("setTextTimeRemindDes")
+fun setTextTimeRemindDes(textView: TextView, time: Long) {
+    val calendar = Calendar.getInstance().apply {
+        this.timeInMillis = time
+    }
+    val simpleDateFormat = SimpleDateFormat("HH:mm a")
+    textView.text = textView.context.getString(R.string.time_remind, simpleDateFormat.format(calendar.timeInMillis))
+}
 
 @BindingAdapter("setStatusTimeRemind")
 fun setStatusRemind(switchCompat: SwitchCompat, status: Boolean) {
-    switchCompat.isEnabled = status
+    switchCompat.isChecked = status
 }
 

@@ -17,7 +17,7 @@ private const val TAG = "AddTagAdapter"
 
 class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -> Unit) :
     RecyclerView.Adapter<AddTagAdapter.AddTagViewHolder>() {
-    private var listTagModel: MutableList<TagModel>? = mutableListOf<TagModel>()
+    private var listTagModel: MutableList<TagModel> = mutableListOf<TagModel>()
 
     fun initData(list: MutableList<TagModel>) {
         this.listTagModel = list
@@ -34,7 +34,7 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
     }
 
     override fun onBindViewHolder(holder: AddTagViewHolder, position: Int) {
-        val tagModel: com.bzk.dinoteslite.model.TagModel = listTagModel!![position]
+        val tagModel: com.bzk.dinoteslite.model.TagModel = listTagModel[position]
         holder.bind(tagModel)
         holder.mBinding.lnlAddTag.setBackgroundResource(R.drawable.un_focused_background)
         holder.mBinding.imvTagCancel.visibility = View.INVISIBLE
@@ -47,7 +47,7 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
     }
 
     override fun getItemCount(): Int {
-        return listTagModel?.size ?: 0
+        return listTagModel.size
     }
 
     inner class AddTagViewHolder(var mBinding: ItemAddTagBinding) :
@@ -95,10 +95,7 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
                     }
                 }
         }
-
-
     }
-
 }
 
 

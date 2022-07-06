@@ -34,10 +34,7 @@ class RemindFragmentViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
-    fun update(position: Int, timeRemind: TimeRemind) {
-        listTimeRemind.value = listTimeRemind.value?.also {
-            it[position] = timeRemind
-            timeRemindDAO?.onUpdateTime(timeRemind)
-        }
+    fun update(timeRemind: TimeRemind) {
+        timeRemindDAO?.onUpdateTime(timeRemind)
     }
 }

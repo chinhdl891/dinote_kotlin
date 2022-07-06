@@ -8,14 +8,84 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.bzk.dinoteslite.R
+import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
+import com.bzk.dinoteslite.model.TimeRemind
 import com.bzk.dinoteslite.view.activity.MainActivity
+import kotlin.random.Random
+
+private const val TAG = "TimeRemindReceiver"
 
 class TimeRemindReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, p1: Intent) {
+        createNotification(context)
+
+        var timeRemindDefault: Long = MySharedPreferences(context).getTimeRemindDefault()
+        if (timeRemindDefault < System.currentTimeMillis() + 10000) {
+            timeRemindDefault += AlarmManager.INTERVAL_DAY
+            MySharedPreferences(context).pushTimeRemindDefault(timeRemindDefault)
+        }
+
+        val timeRemindList: MutableList<TimeRemind> = mutableListOf()
+        DinoteDataBase.getInstance(context)?.timeRemindDAO()?.getListTimeRemind()
+            ?.let { timeRemindList.addAll(it) }
+
+        val timeRemind = TimeRemind(0, timeRemindDefault, true)
+        timeRemindList.add(timeRemind)
+
+        timeRemindList.forEach {
+            Log.e(TAG, "onReceive: " + it.time + " -- " + System.currentTimeMillis())
+        }
+
+        val timeRemindPendingIntent = timeRemindList.filter {
+            it.time > System.currentTimeMillis() && it.active
+        }.sortedBy { time -> time.time }[0]
+
+        val list = timeRemindList.filter {
+            it.time < System.currentTimeMillis() && it.active
+        }
+        Log.e(TAG, "onReceive1: " + list.size)
+
+        timeRemindList.filter {
+            it.time < System.currentTimeMillis() && it.active
+        }.forEach {
+            Log.d("aaa", "onReceive before: ${it.time}")
+            it.time += AlarmManager.INTERVAL_DAY
+            Log.d("aaa", "onReceive: " + it.time)
+            DinoteDataBase.getInstance(context)?.timeRemindDAO()?.onUpdateTime(it)
+        }
+
+        val reIntent = Intent(context, TimeRemindReceiver::class.java)
+        val random = Random(50000)
+        val pendingIntentRe: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getBroadcast(context,
+                random.nextInt(),
+                reIntent,
+                PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            PendingIntent.getBroadcast(context,
+                random.nextInt(),
+                reIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val type = AlarmManager.RTC_WAKEUP
+        Log.e(TAG, "onReceive: " + timeRemindPendingIntent.time)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(type,
+                timeRemindPendingIntent.time,
+                pendingIntentRe)
+        } else {
+            alarmManager.set(type, timeRemindPendingIntent.time, pendingIntentRe)
+        }
+    }
+
+    private fun createNotification(context: Context) {
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -23,6 +93,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
         } else {
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
+
         val builder = NotificationCompat.Builder(context, createNotificationChannel(context))
         builder.apply {
             setContentTitle(context.getText(R.string.notifi_title))
@@ -35,11 +106,6 @@ class TimeRemindReceiver : BroadcastReceiver() {
         }
         val notificationCoManager = NotificationManagerCompat.from(context)
         notificationCoManager.notify(123, builder.build())
-        var timeRemindDefault: Long = MySharedPreferences(context).getTimeRemindDefault()
-        if (timeRemindDefault < System.currentTimeMillis() + 10000) {
-            timeRemindDefault += AlarmManager.INTERVAL_DAY
-            MySharedPreferences(context).pushTimeRemindDefault(timeRemindDefault)
-        }
     }
 
     private fun createNotificationChannel(context: Context): String {

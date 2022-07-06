@@ -42,7 +42,7 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
         if (bundle != null) {
             val oldUri = bundle.getString(AppConstant.OLD_URI)
             if (oldUri != null) {
-                mainActivity.contentResolver.delete(Uri.parse(oldUri), null, null)
+                activity?.contentResolver?.delete(Uri.parse(oldUri), null, null)
             }
         }
     }
@@ -81,24 +81,26 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
                 mBinding.lnlDrawChangeSize.visibility = View.VISIBLE
             }
             R.id.imv_draw_eraser -> mBinding.pvDrawContent.pen(Color.WHITE, sizeStoke)
-            R.id.imv_draw_cancel -> mainActivity.onBackPressed()
+            R.id.imv_draw_cancel -> activity?.onBackPressed()
             R.id.imv_draw_save -> saveImage()
             R.id.imv_draw_change_color -> changeColor()
         }
     }
 
     private fun changeColor() {
-        val dialogColor = DialogColor(mainActivity, onSelectColor = {
-            mColor = it
-            mBinding.pvDrawContent.pen(color = it, sizeStoke)
-        })
-        dialogColor.show()
+        val dialogColor = getMainActivity()?.let {
+            DialogColor(it, onSelectColor = {
+                mColor = it
+                mBinding.pvDrawContent.pen(color = it, sizeStoke)
+            })
+        }
+        dialogColor?.show()
     }
 
     private fun saveImage() {
         var bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
         onSave(saveBitMapToStores(bitmap))
-        mainActivity.onBackPressed()
+        activity?.onBackPressed()
     }
 
     private fun saveBitMapToStores(bitmap: Bitmap): String {
@@ -120,7 +122,7 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
 
     private fun saveImageInQ(bitmap: Bitmap): String {
         val filename = getString(R.string.txt_name_image, System.currentTimeMillis())
-        val fOutputStream = mainActivity.openFileOutput(filename, Context.MODE_PRIVATE)
+        val fOutputStream = activity?.openFileOutput(filename, Context.MODE_PRIVATE)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream)
         return filename
     }

@@ -56,7 +56,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
             },
             onGotoDetail = { dinote ->
                 val detailFragment = DetailFragment.newInstance(dinote)
-                mainActivity.loadFragment(detailFragment, DetailFragment::class.simpleName.toString())
+                getMainActivity()?.loadFragment(detailFragment, DetailFragment::class.simpleName.toString())
             })
         mBinding.rcvMainDinote.adapter = dinoteAdapter
         viewModel.getListDinote()
@@ -118,7 +118,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     private fun openCreateDinote() {
-        mainActivity.loadFragment(CreateFragment(), CreateFragment().javaClass.simpleName)
+        getMainActivity()?.loadFragment(CreateFragment(), CreateFragment().javaClass.simpleName)
     }
 
     override fun onStop() {

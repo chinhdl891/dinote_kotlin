@@ -43,6 +43,7 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
             dinoteDAO?.onDelete(dinote)
         }
     }
+
 }
 
 
