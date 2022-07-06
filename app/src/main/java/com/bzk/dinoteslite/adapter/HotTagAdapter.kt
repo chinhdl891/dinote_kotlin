@@ -11,7 +11,13 @@ import com.bzk.dinoteslite.model.TagModel
 
 class HotTagAdapter : RecyclerView.Adapter<HotTagAdapter.HotTagViewHolder>() {
     private val listHotTag: MutableList<TagModel> = mutableListOf<TagModel>()
-
+    fun initData(list: MutableList<TagModel>){
+        listHotTag.also {
+            it.clear()
+            it.addAll(list)
+            notifyDataSetChanged()
+        }
+    }
     class HotTagViewHolder(var mBinding: ItemHotTagBinding) :
         RecyclerView.ViewHolder(mBinding.root) {
         fun finData(tagModel: TagModel) {
@@ -30,8 +36,8 @@ class HotTagAdapter : RecyclerView.Adapter<HotTagAdapter.HotTagViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: HotTagViewHolder, position: Int) {
-        var hotTag = listHotTag.get(position)
-        hotTag?.let { holder.finData(it) }
+        val hotTag = listHotTag[position]
+        hotTag.let { holder.finData(it) }
     }
 
     override fun getItemCount(): Int {

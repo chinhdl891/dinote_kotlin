@@ -19,4 +19,7 @@ interface DinoteDAO {
 
     @Query("select * from dinote")
     fun getAllDinote(): List<Dinote>
+
+    @Query("select * from dinote where title like '%' ||:search || '%' or content like '%' || :search || '%' or ListTag like '%' || :search || '%'")
+    fun getListBySearch(search: String): List<Dinote>
 }

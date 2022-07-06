@@ -16,6 +16,7 @@ import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.databinding.HeaderAccBinding
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.fragment.*
+import com.bzk.dinoteslite.viewmodel.ThemeFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -93,8 +94,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 DrawableFragment::class.simpleName -> super.onBackPressed()
                 CreateFragment::class.simpleName,
                 DetailFragment::class.simpleName,
-                SearchFragment::class.simpleName -> {
+                RemindFragment::class.simpleName,
+                SearchFragment::class.simpleName,
+                ThemeFragment::class.simpleName,
+                -> {
                     mBinding.tlbMainAction.visibility = View.VISIBLE
+                    supportFragmentManager.popBackStack()
+                }
+                ResultSearchFragment::class.simpleName -> {
+                    mBinding.tlbMainAction.visibility = View.GONE
                     supportFragmentManager.popBackStack()
                 }
 
@@ -113,6 +121,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         headerAccBinding.imvHeadTheme.setOnClickListener(this)
         headerAccBinding.imvHeadFavorite.setOnClickListener(this)
         headerAccBinding.imvHeadRate.setOnClickListener(this)
+        headerAccBinding.lnlHeadOpenTheme.setOnClickListener(this)
     }
 
     private fun reSizeView() {
@@ -146,10 +155,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.imv_main_watch -> gotoWatch()
             R.id.imv_main_notification -> gotoRemind()
             R.id.imv_main_search -> gotoSearch()
-            R.id.imv_head_theme -> gotoWatch()
+            R.id.lnl_head_openTheme -> goToTheme()
             R.id.imv_head_rate -> gotoWatch()
             R.id.imv_head_favorite -> gotoWatch()
         }
+    }
+
+    private fun goToTheme() {
+//        loadFragment(ThemeFragment(), ThemeFragment::class.simpleName.toString())
+        Toast.makeText(this, "aaa", Toast.LENGTH_SHORT).show()
     }
 
     private fun gotoSearch() {

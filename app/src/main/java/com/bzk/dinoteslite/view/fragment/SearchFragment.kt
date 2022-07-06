@@ -2,6 +2,7 @@ package com.bzk.dinoteslite.view.fragment
 
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.HistorySearchAdapter
 import com.bzk.dinoteslite.adapter.HotTagAdapter
@@ -30,23 +31,35 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
     }
 
     override fun setUpdata() {
+        mBinding.rcvSearchHistory.layoutManager = layoutManager()
+        searchAdapter = HistorySearchAdapter(onSearch = {
+            mBinding.editSearchContent.setText(it)
+        })
+        mBinding.rcvSearchHistory.adapter = searchAdapter
+
+        hotTagAdapter = HotTagAdapter()
+        mBinding.rcvSearchTagHot.adapter = hotTagAdapter
+        mBinding.rcvSearchTagHot.layoutManager = layoutManager()
+        viewModel.listHotTag()
+        viewModel.listHistorySearch()
+        observer()
+    }
+
+    private fun layoutManager(): RecyclerView.LayoutManager? {
         val layoutManager = FlexboxLayoutManager(activity).apply {
             flexDirection = FlexDirection.ROW
             justifyContent = JustifyContent.FLEX_START
             alignItems = AlignItems.FLEX_START
         }
-        mBinding.rcvSearchHistory.layoutManager = layoutManager
-        searchAdapter = HistorySearchAdapter(onSearch = {
-            mBinding.editSearchContent.setText(it)
-        })
-        mBinding.rcvSearchHistory.adapter = searchAdapter
-        viewModel.listHistorySearch()
-        observer()
+        return layoutManager
     }
 
     private fun observer() {
         viewModel.listHistorySearch.observe(this) {
             it?.let { searchAdapter?.initData(it) }
+        }
+        viewModel.listHotTag.observe(this) {
+            it?.let { listTag -> hotTagAdapter?.initData(listTag) }
         }
     }
 
@@ -75,6 +88,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         val contentSearch = mBinding.editSearchContent.text.toString().trim()
         val search = HistorySearch(content = contentSearch)
         viewModel.onInsertHistory(search)
+        val resultSearchFragment = ResultSearchFragment.newInstance(contentSearch)
+        getMainActivity()?.loadFragment(resultSearchFragment, ResultSearchFragment::class.simpleName.toString())
     }
 
 }

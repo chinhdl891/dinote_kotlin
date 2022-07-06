@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/rlt_search_result"
+        android:padding="@dimen/margin_view_to_view_small"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".views.fragments.ResultSearchFragment">
+
+        <ImageView
+            android:id="@+id/imv_result_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_cancel" />
+
+        <TextView
+            android:id="@+id/tv_search_result_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:hint="@string/hint_search_result"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_title"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_search_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imv_result_cancel"
+            android:layout_marginTop="@dimen/margin_view_to_view_big" />
+        <LinearLayout
+            android:visibility="gone"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_start"
+            android:layout_marginStart="@dimen/margin_start"
+            android:layout_marginEnd="@dimen/margin_start"
+            android:layout_gravity="center"
+            android:id="@+id/lnl_search_result_empty"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/imv_favorite_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_box_empty"/>
+            <TextView
+                android:textColor="@color/text_color"
+                android:layout_marginTop="@dimen/margin_view_to_view_big"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_dinote"/>
+        </LinearLayout>
+        <ProgressBar
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pb_result_load_more"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+</layout>
