@@ -23,7 +23,7 @@ class ThemeAdapter : RecyclerView.Adapter<ThemeAdapter.ThemeViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThemeViewHolder {
         val mBinding: ItemThemeBinding =
             DataBindingUtil.inflate(LayoutInflater.from(parent.context),
-                R.layout.fragment_theme,
+                R.layout.item_theme,
                 parent,
                 false)
         return ThemeViewHolder(mBinding)

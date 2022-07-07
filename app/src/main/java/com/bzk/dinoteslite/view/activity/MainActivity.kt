@@ -3,9 +3,9 @@ package com.bzk.dinoteslite.view.activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -16,8 +16,6 @@ import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.databinding.HeaderAccBinding
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.fragment.*
-import com.bzk.dinoteslite.viewmodel.ThemeFragment
-import java.text.SimpleDateFormat
 import java.util.*
 
 private const val TAG = "MainActivity"
@@ -31,6 +29,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        onsetUpTheme()
         setContentView(mBinding.root)
         setupHeader()
         setupToolBarMain()
@@ -49,6 +48,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             val mySharedPreferences =
                 MySharedPreferences(this).pushTimeRemindDefault(calendar.timeInMillis)
+        }
+
+    }
+
+    private fun onsetUpTheme() {
+        val theme: Int = MySharedPreferences(this).getTheme()
+        if (theme == 1) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
@@ -72,15 +81,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun addFragment(fragment: Fragment, tag: String) {
-        fragmentTransaction.add(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
-        fragmentTransaction.addToBackStack(tag)
-        fragmentTransaction.commit()
+        with(fragmentTransaction) {
+            add(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
+            addToBackStack(tag)
+            commit()
+        }
     }
 
     private fun replaceFragment(fragment: Fragment, tag: String) {
-        fragmentTransaction.replace(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
-        fragmentTransaction.addToBackStack(tag)
-        fragmentTransaction.commit()
+        with(fragmentTransaction) {
+            replace(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
+            addToBackStack(tag)
+            commit()
+        }
     }
 
     override fun onBackPressed() {
@@ -118,10 +131,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mBinding.imvMainSearch.setOnClickListener(this)
         mBinding.imvMainWatch.setOnClickListener(this)
         mBinding.imvMainNotification.setOnClickListener(this)
-        headerAccBinding.imvHeadTheme.setOnClickListener(this)
-        headerAccBinding.imvHeadFavorite.setOnClickListener(this)
-        headerAccBinding.imvHeadRate.setOnClickListener(this)
-        headerAccBinding.lnlHeadOpenTheme.setOnClickListener(this)
     }
 
     private fun reSizeView() {
@@ -158,12 +167,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.lnl_head_openTheme -> goToTheme()
             R.id.imv_head_rate -> gotoWatch()
             R.id.imv_head_favorite -> gotoWatch()
+
         }
     }
 
+
     private fun goToTheme() {
-//        loadFragment(ThemeFragment(), ThemeFragment::class.simpleName.toString())
-        Toast.makeText(this, "aaa", Toast.LENGTH_SHORT).show()
+        loadFragment(ThemeFragment(), ThemeFragment::class.simpleName.toString())
     }
 
     private fun gotoSearch() {
