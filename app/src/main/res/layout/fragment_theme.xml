@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ctl_theme"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".base.BaseFragment">
+
+
+        <ImageView
+            android:id="@+id/imv_theme_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_view_to_view_big"
+            android:layout_marginTop="@dimen/margin_view_to_view_big"
+            android:layout_weight="1"
+            android:src="@drawable/ic_cancel"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_theme_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_view_to_view_big"
+            android:layout_weight="9"
+            android:gravity="center"
+            android:text="@string/change_theme"
+            android:textColor="@color/text_color"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:layout_marginBottom="@dimen/margin_view_to_view_largest"
+            android:id="@+id/vpg_theme_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:paddingStart="@dimen/padding_viewpager_theme"
+            android:paddingEnd="@dimen/padding_viewpager_theme"
+            app:layout_constraintBottom_toTopOf="@+id/dot"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+            android:id="@+id/dot"
+            android:layout_marginTop="@dimen/margin_view_to_view_largest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:dotsColor="@color/dot_color_un_select"
+            app:dotsCornerRadius="@dimen/conner_radius"
+            app:dotsSize="@dimen/margin_view_to_view_small"
+            app:dotsSpacing="4dp"
+            app:dotsWidthFactor="2.5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_theme_title"
+            app:progressMode="true"
+            app:selectedDotColor="@color/dot_color_select" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_marginTop="@dimen/margin_view_to_view_largest"
+            android:id="@+id/btn_theme_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/coner_view_button_continues"
+            android:paddingStart="@dimen/margin_start"
+            android:paddingEnd="@dimen/margin_start"
+            android:text="@string/text_change"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dot" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

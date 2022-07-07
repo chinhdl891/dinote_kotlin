@@ -13,6 +13,13 @@ class SearchFragmentViewModel(application: Application) : AndroidViewModel(appli
     val listHotTag: MutableLiveData<MutableList<TagModel>?> = MutableLiveData(mutableListOf())
     val searchDAO = DinoteDataBase.getInstance(application)?.searchDAO()
     val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
+    fun listHotTag(): MutableList<TagModel> {
+        listHotTag.value = listHotTag.value.also {
+            tagDAO?.getListTag()?.let { listHotTag -> it?.addAll(listHotTag) }
+        }
+        return listHotTag.value ?: mutableListOf()
+    }
+
     fun listHistorySearch(): MutableList<HistorySearch> {
         listHistorySearch.value = listHistorySearch.value.also {
             searchDAO?.getListHistory()?.let { listSearch -> it?.addAll(listSearch) }

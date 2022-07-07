@@ -10,5 +10,6 @@ class AppConstant {
         const val PERIOD = 3000L
         const val OLD_URI = "send_uri"
         const val SEND_OBJ = "send_obj"
+        const val SEND_CONTENT_SEARCH = "send_con"
     }
 }

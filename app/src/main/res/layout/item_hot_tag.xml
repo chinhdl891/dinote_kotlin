@@ -4,6 +4,9 @@
 
     <data>
 
+        <variable
+            name="tag"
+            type="com.bzk.dinoteslite.model.TagModel" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -37,7 +40,7 @@
                 android:paddingStart="@dimen/margin_start_text"
                 android:paddingEnd="@dimen/margin_start_text"
                 android:singleLine="true"
-                android:text="@string/text_remind"
+                android:text="@{tag.contentTag}"
                 android:textColor="@color/text_color" />
 
         </LinearLayout>
