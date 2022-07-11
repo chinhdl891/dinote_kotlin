@@ -265,7 +265,7 @@
                 android:src="@drawable/ic_text_love" />
 
             <ImageView
-                android:id="@+id/imv_create_text_tag"
+                android:id="@+id/imv_create_text_add_tag"
                 style="@style/imageTools"
                 android:src="@drawable/ic_text_tag" />
 

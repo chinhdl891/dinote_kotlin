@@ -17,9 +17,12 @@ interface DinoteDAO {
     @Query("select * from dinote where isLike = 1 order by dateCreate desc ")
     fun getAllDinoteFavorite(): List<Dinote>
 
-    @Query("select * from dinote")
-    fun getAllDinote(): List<Dinote>
-
     @Query("select * from dinote where title like '%' ||:search || '%' or content like '%' || :search || '%' or ListTag like '%' || :search || '%'")
     fun getListBySearch(search: String): List<Dinote>
+
+    @Query("select * from dinote order by dateCreate desc limit :limit offset :next ")
+    fun getAllDinote(limit: Int, next: Int): List<Dinote>
+
+    @Query("select COUNT(id) from dinote")
+    fun getTotalItemCount(): Int
 }

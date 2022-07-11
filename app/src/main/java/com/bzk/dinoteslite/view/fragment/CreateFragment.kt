@@ -1,4 +1,4 @@
-    package com.bzk.dinoteslite.view.fragment
+package com.bzk.dinoteslite.view.fragment
 
 
 import android.app.DatePickerDialog
@@ -7,18 +7,20 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.AddTagAdapter
 import com.bzk.dinoteslite.base.BaseFragment
-import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.databinding.FragmentCreateBinding
+import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.Motion
+import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.dialog.CancelDialog
 import com.bzk.dinoteslite.view.dialog.DialogMotion
+import com.bzk.dinoteslite.view.dialog.SaveDinoteDialog
 import com.bzk.dinoteslite.viewmodel.CreateFragmentViewModel
 import java.io.File
 import java.text.SimpleDateFormat
@@ -26,8 +28,7 @@ import java.util.*
 
 private const val TAG = "CreateFragment"
 
-class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListener {
-
+class CreateFragment(var onAddDinote : (Dinote) -> Unit, var onAddTag : (TagModel) -> Unit) : BaseFragment<FragmentCreateBinding>(), View.OnClickListener {
     private val viewModel: CreateFragmentViewModel by lazy {
         CreateFragmentViewModel(requireActivity().application)
     }
@@ -38,6 +39,7 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
     }
     private var mUri: String? = null
     private var nameFile: String? = null
+    private var cancelDialog: CancelDialog? = null
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_create
@@ -74,7 +76,6 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
             }
         }
         viewModel.tagModelList.observe(this) {
-            Log.d(TAG, "observer: " + it.size)
             addTagAdapter?.apply {
                 initData(viewModel.getListTag())
             }
@@ -94,6 +95,7 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
             tvCreateSave.setOnClickListener(this@CreateFragment::onClick)
             imvCreateCancel.setOnClickListener(this@CreateFragment::onClick)
             tvDateSelection.setOnClickListener(this@CreateFragment::onClick)
+            imvCreateTextAddTag.setOnClickListener(this@CreateFragment::onClick)
         }
     }
 
@@ -113,6 +115,7 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
             R.id.tv_create_save -> saveDinote()
             R.id.imv_create_cancel -> cancelCreateFragment()
             R.id.tv_date_selection -> setDateSelect()
+            R.id.imv_create_text_add_tag -> viewModel.addTag()
         }
     }
 
@@ -139,8 +142,13 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
     }
 
     private fun cancelCreateFragment() {
-        deleteFile()
-        getMainActivity()?.onBackPressed()
+        cancelDialog = context?.let {
+            CancelDialog(it, onCancel = {
+                deleteFile()
+                getMainActivity()?.onBackPressed()
+            })
+        }
+        cancelDialog?.show()
     }
 
     private fun deleteFile() {
@@ -161,7 +169,22 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
             imageUri = nameFile?.toString() ?: getString(R.string.txt_no_des)
             insertDinote()
         }
+        viewModel.dinote?.let { onAddDinote(it) }
+        activity?.let {
+            SaveDinoteDialog(it, onSave = {
+                checkTagEmpty()
+                it.onBackPressed()
+            }).show()
+        }
     }
+
+    private fun checkTagEmpty() {
+        viewModel.checkTagIsEmpty()
+        viewModel.lisTagIsEmpty.forEach {
+            onAddTag(it)
+        }
+    }
+
 
     private fun onShowImage(nameFile: String) {
         this.nameFile = nameFile
@@ -185,11 +208,11 @@ class CreateFragment : BaseFragment<FragmentCreateBinding>(), View.OnClickListen
 
     private fun openDialogMotion() {
         val dialogMotion =
-            getMainActivity()?.let {
-                DialogMotion(it, viewModel.listMotion, onSelectItem = {
-                    mMotion = it
-                    mBinding.imvCreateMotion.setImageResource(it.imgMotion)
-                    mBinding.edtCreateStatus.text = getText(it.contentMotion)
+            getMainActivity()?.let { it ->
+                DialogMotion(it, viewModel.listMotion, onSelectItem = { motion ->
+                    mMotion = motion
+                    mBinding.imvCreateMotion.setImageResource(motion.imgMotion)
+                    mBinding.edtCreateStatus.text = getText(motion.contentMotion)
                 })
             }
         dialogMotion?.show()

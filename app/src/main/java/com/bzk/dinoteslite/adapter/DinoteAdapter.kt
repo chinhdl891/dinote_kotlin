@@ -13,7 +13,7 @@ import com.bzk.dinoteslite.databinding.ItemDionteBinding
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.view.dialog.DialogDelete
 
-class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote) -> Unit) :
+class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote, Int) -> Unit) :
     RecyclerView.Adapter<DinoteAdapter.DinoteViewHolder>() {
     private var listDinote: ArrayList<Dinote> = arrayListOf<Dinote>()
     private lateinit var mContext: Context
@@ -33,7 +33,7 @@ class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote) -
     }
 
     override fun onBindViewHolder(holder: DinoteViewHolder, position: Int) {
-        val dinote: Dinote = listDinote!![position]
+        val dinote: Dinote = listDinote[position]
         holder.init(dinote)
         holder.itemView.setOnLongClickListener(View.OnLongClickListener {
             DialogDelete(mContext, onDelete = {
@@ -43,7 +43,7 @@ class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote) -
             true
         })
         holder.itemView.setOnClickListener(View.OnClickListener {
-            onGotoDetail(dinote)
+            onGotoDetail(dinote, position)
         })
     }
 
@@ -57,6 +57,5 @@ class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote) -
             mBinding.setVariable(BR.dinote, dinote)
             mBinding.executePendingBindings()
         }
-
     }
 }

@@ -21,7 +21,8 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
     var desImage: String = ""
     var imageUri: String = ""
     var motionId: Int = 0
-
+    var dinote: Dinote? = null
+    var lisTagIsEmpty = mutableListOf<TagModel>()
     var tagModelList: MutableLiveData<MutableList<TagModel>> =
         MutableLiveData(mutableListOf(TagModel(0, "")))
     var isFavorite: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -41,7 +42,6 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
     val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
 
     fun getListTag(): MutableList<TagModel> {
-        Log.d(TAG, "getListTag: ${tagModelList.value!!.size}")
         return tagModelList.value!!
     }
 
@@ -74,7 +74,7 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
 
     fun insertDinote() {
         removeTag()
-        val dinote = Dinote(0,
+        dinote = Dinote(0,
             title,
             content,
             imageUri,
@@ -82,9 +82,28 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
             timeCreate,
             motionId,
             isFavorite.value!!,
-            getListTag())
-        dinoteDAO?.onInsert(dinote)
+            setIdForTag())
+        dinoteDAO?.onInsert(dinote!!)
+    }
 
+    private fun setIdForTag(): List<TagModel> {
+        tagModelList.value?.let {
+            it.forEach { tagModel ->
+                val tag = tagDAO?.getListTag(tagModel.contentTag)?.get(0)
+                tagModel.id = tag?.id ?: 0
+            }
+        }
+        return tagModelList.value ?: mutableListOf(TagModel(0, ""))
+    }
+
+    fun checkTagIsEmpty(): MutableList<TagModel> {
+        tagModelList.value?.forEach {
+            var count: Int = tagDAO?.countTag(it.contentTag) ?: 0
+            if (count == 0) {
+                lisTagIsEmpty.add(it)
+            }
+        }
+        return lisTagIsEmpty
     }
 
     private fun removeTag() {

@@ -37,7 +37,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         })
         mBinding.rcvSearchHistory.adapter = searchAdapter
 
-        hotTagAdapter = HotTagAdapter()
+        hotTagAdapter = HotTagAdapter(onSearch = {
+            mBinding.editSearchContent.setText(it)
+        })
         mBinding.rcvSearchTagHot.adapter = hotTagAdapter
         mBinding.rcvSearchTagHot.layoutManager = layoutManager()
         viewModel.listHotTag()
@@ -72,6 +74,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         mBinding.imvSearchShow.setOnClickListener(this)
         mBinding.imvSearchCancel.setOnClickListener(this)
         mBinding.tvSearchDelete.setOnClickListener(this)
+        mBinding.btnSearchShowMore.setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {
@@ -81,7 +84,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
                 activity?.onBackPressed()
             }
             R.id.tv_search_delete -> viewModel.onDeleteSearch()
+            R.id.btn_search_show_more -> showMore()
         }
+    }
+
+    private fun showMore() {
+
     }
 
     private fun onSearch() {
@@ -89,7 +97,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         val search = HistorySearch(content = contentSearch)
         viewModel.onInsertHistory(search)
         val resultSearchFragment = ResultSearchFragment.newInstance(contentSearch)
-        getMainActivity()?.loadFragment(resultSearchFragment, ResultSearchFragment::class.simpleName.toString())
+        getMainActivity()?.loadFragment(resultSearchFragment,
+            ResultSearchFragment::class.simpleName.toString())
     }
-
 }

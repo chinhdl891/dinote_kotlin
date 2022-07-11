@@ -2,6 +2,7 @@ package com.bzk.dinoteslite.view.fragment
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,8 @@ import com.bzk.dinoteslite.adapter.DinoteAdapter
 import com.bzk.dinoteslite.adapter.PhotoAdapter
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentMainBinding
+import com.bzk.dinoteslite.model.Dinote
+import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.MainFragmentViewModel
@@ -20,15 +23,14 @@ import java.util.*
 import kotlin.math.abs
 
 private const val TAG = "MainFragment"
+private lateinit var viewModel: MainFragmentViewModel
 
-class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
+class MainFragment(var onAddNewTag: (TagModel) -> Unit) : BaseFragment<FragmentMainBinding>(),
+    View.OnClickListener {
 
-    private val viewModel: MainFragmentViewModel by lazy {
-        ViewModelProvider(this)[MainFragmentViewModel::class.java]
-    }
-    private lateinit var photoAdapter: PhotoAdapter
+    private var photoAdapter: PhotoAdapter? = null
     private var mTimer: Timer? = null
-    private lateinit var dinoteAdapter: DinoteAdapter
+    private var dinoteAdapter: DinoteAdapter? = null
     private lateinit var compositePageTransformer: CompositePageTransformer
 
     override fun getLayoutResource(): Int {
@@ -40,6 +42,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     override fun setUpdata() {
+        viewModel = ViewModelProvider(this)[MainFragmentViewModel::class.java]
         photoAdapter = PhotoAdapter().apply {
             submitData(viewModel.list.value!!)
         }
@@ -54,12 +57,25 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
             onDelete = {
                 viewModel.deleteDinote(it)
             },
-            onGotoDetail = { dinote ->
-                val detailFragment = DetailFragment.newInstance(dinote)
-                getMainActivity()?.loadFragment(detailFragment, DetailFragment::class.simpleName.toString())
+            onGotoDetail = { dinote, position ->
+                val detailFragment = DetailFragment.newInstance(dinote, position)
+                getMainActivity()?.loadFragment(detailFragment,
+                    DetailFragment::class.simpleName.toString())
             })
         mBinding.rcvMainDinote.adapter = dinoteAdapter
         viewModel.getListDinote()
+        mBinding.rcvMainDinote.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (layoutManager.findLastVisibleItemPosition() == (viewModel.listDinote.value?.size!! - 1)) {
+                    if (viewModel.totalDinote > 50) {
+                        if (viewModel.isLoading.value == false) {
+                            viewModel.setUpLoadData()
+                        }
+                    }
+                }
+            }
+        })
     }
 
     private fun setViewPage() {
@@ -96,9 +112,18 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     private fun observeViewModel() {
-        viewModel.listDinote.observe(this) {
-            dinoteAdapter.initData(it)
+        viewModel.listDinote.observe(viewLifecycleOwner) {
+            Log.e(TAG, "observeViewModel: ")
+            dinoteAdapter?.initData(it)
         }
+        viewModel.isLoading.observe(this) {
+            if (it) {
+                mBinding.pbMainLoadMore.visibility = View.VISIBLE
+            } else {
+                mBinding.pbMainLoadMore.visibility = View.GONE
+            }
+        }
+
     }
 
     override fun onReSize() {
@@ -118,7 +143,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
     }
 
     private fun openCreateDinote() {
-        getMainActivity()?.loadFragment(CreateFragment(), CreateFragment().javaClass.simpleName)
+        getMainActivity()?.loadFragment(CreateFragment(onAddDinote = { dinote ->
+            viewModel.listDinote.value = viewModel.listDinote.value.also {
+                it?.add(0, dinote)
+            }
+        }, onAddTag = {
+            onAddNewTag(it)
+        }), CreateFragment(onAddDinote = {}, onAddTag = {}).javaClass.simpleName)
     }
 
     override fun onStop() {
@@ -133,6 +164,21 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), View.OnClickListener {
             autoRunAds()
         }
     }
+
+    companion object {
+        fun onRemoveDinote(dinote: Dinote) {
+            viewModel.listDinote.value = viewModel.listDinote.value.also {
+                it?.remove(dinote)
+            }
+        }
+
+        fun onUpdate(position: Int, dinote: Dinote) {
+            viewModel.listDinote.value = viewModel.listDinote.value.also {
+                it?.set(position, dinote)
+            }
+        }
+    }
 }
+
 
 
