@@ -24,6 +24,8 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     var isFavorite: MutableLiveData<Boolean> = MutableLiveData(false)
     var enableView : ObservableField<Boolean> = ObservableField(false)
     var txtUpdate :  ObservableField<String> = ObservableField(application.getString(R.string.update))
+    var isUpdate : MutableLiveData<Boolean> = MutableLiveData(false)
+    var setUpdate : MutableLiveData<Boolean> = MutableLiveData(false)
 
     var listMotion = mutableListOf<Motion>(
         Motion(0, R.drawable.ic_motion_item_fun, R.string.funny),
@@ -76,6 +78,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     fun updateDinote() {
+        removeTag()
         mDinote.apply {
             ListTag = getListTag()
             isLike = getFavorite()
@@ -85,5 +88,22 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     fun onClickEnableView(){
         enableView.set(true)
         txtUpdate.set(getApplication<GlobalApp>().applicationContext.getString(R.string.save))
+        if (isUpdate.value == true){
+            setUpdate.value = true
+        }
+        isUpdate.value = !isUpdate.value!!
+    }
+    private fun removeTag() {
+        for (i in getListTag()) {
+            if (i.contentTag.isEmpty()) {
+                tagModelList.value = tagModelList.value.also {
+                    it?.remove(i)
+                }
+            } else {
+                if (tagDAO?.countTag(i.contentTag) == 0) {
+                    tagDAO.insert(i)
+                }
+            }
+        }
     }
 }

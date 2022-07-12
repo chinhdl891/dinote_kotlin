@@ -1,21 +1,25 @@
 package com.bzk.dinoteslite.view.activity
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
+import com.bzk.dinoteslite.adapter.HotTagAdapter
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
-import com.bzk.dinoteslite.databinding.HeaderAccBinding
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.fragment.*
+import com.bzk.dinoteslite.viewmodel.MainActivityViewModel
+import com.google.android.flexbox.FlexboxLayoutManager
 import java.util.*
 
 private const val TAG = "MainActivity"
@@ -23,19 +27,34 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var headerAccBinding: HeaderAccBinding
+    private lateinit var headerAccBinding: View
     private lateinit var fragmentTransaction: FragmentTransaction
-
+    private lateinit var viewModel: MainActivityViewModel
+    private var hotTagAdapter: HotTagAdapter? = null
+    private lateinit var imvHeadRate: ImageView
+    private lateinit var imvHeadTheme: ImageView
+    private lateinit var imvHeadFavorite: ImageView
+    private lateinit var imvHeaderStar: ImageView
+    private lateinit var rcvHeadHotTag: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        onsetUpTheme()
         setContentView(mBinding.root)
-        setupHeader()
+        viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
+        headerAccBinding = mBinding.ngvMainAction.getHeaderView(0)
+        Log.e(TAG, "onCreate: ")
+        initView()
+        setUpDataHead()
         setupToolBarMain()
-        loadFragment(MainFragment(), MainFragment::class.java.simpleName)
+        loadFragment(MainFragment(onAddNewTag = { newTag ->
+            viewModel.listHotTag.value = viewModel.listHotTag.value.also {
+                it?.add(newTag)
+            }
+        }), MainFragment::class.java.simpleName)
         reSizeView()
         setClick()
+        observer()
+        viewModel.getListHotTag()
 
         val timeDefault: Long = MySharedPreferences(context = this).getTimeRemindDefault()
         if (timeDefault == 0L) {
@@ -52,19 +71,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    private fun onsetUpTheme() {
-        val theme: Int = MySharedPreferences(this).getTheme()
-        if (theme == 1) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    private fun setUpDataHead() {
+        rcvHeadHotTag.layoutManager = FlexboxLayoutManager(this)
+        hotTagAdapter = HotTagAdapter(onSearch = {
+            loadFragment(ResultSearchFragment.newInstance(it),
+                ResultSearchFragment::class.simpleName.toString())
+        })
+        rcvHeadHotTag.adapter = hotTagAdapter
+    }
+
+    private fun initView() {
+        imvHeadFavorite = headerAccBinding.findViewById(R.id.imv_head_favorite)
+        imvHeadRate = headerAccBinding.findViewById(R.id.imv_head_rate)
+        imvHeadTheme = headerAccBinding.findViewById(R.id.imv_head_theme)
+        imvHeaderStar = headerAccBinding.findViewById(R.id.imv_header_star)
+        rcvHeadHotTag = headerAccBinding.findViewById(R.id.rcv_head_tag_hot)
+    }
+
+    private fun observer() {
+        viewModel.listHotTag.observe(this) {
+            hotTagAdapter?.initData(it.toMutableList())
         }
     }
 
     fun loadFragment(fragment: Fragment, tag: String) {
 
         fragmentTransaction = supportFragmentManager.beginTransaction()
-        if (tag != MainFragment().javaClass.simpleName) {
+        if (tag != MainFragment(onAddNewTag = {}).javaClass.simpleName) {
             if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
             }
@@ -72,10 +105,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (tag == DrawableFragment::class.simpleName) {
                 addFragment(fragment, tag)
             } else {
-                replaceFragment(fragment, tag)
+                addFragment(fragment, tag)
             }
         } else {
-            replaceFragment(fragment, tag)
+            addFragment(fragment, tag)
         }
 
     }
@@ -115,10 +148,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     supportFragmentManager.popBackStack()
                 }
                 ResultSearchFragment::class.simpleName -> {
-                    mBinding.tlbMainAction.visibility = View.GONE
+                    val isVisitable =
+                        if (supportFragmentManager.fragments.size > 2) View.GONE else View.VISIBLE
+                    mBinding.tlbMainAction.visibility = isVisitable
                     supportFragmentManager.popBackStack()
                 }
-
             }
         }
     }
@@ -137,15 +171,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ReSizeView.resizeView(mBinding.imvMainNotification, 64)
         ReSizeView.resizeView(mBinding.imvMainSearch, 64)
         ReSizeView.resizeView(mBinding.imvMainWatch, 64)
-        ReSizeView.resizeView(headerAccBinding.imvHeadRate, 64)
-        ReSizeView.resizeView(headerAccBinding.imvHeadTheme, 64)
-        ReSizeView.resizeView(headerAccBinding.imvHeadFavorite, 64)
-        ReSizeView.resizeView(headerAccBinding.imvHeaderStar, 128)
+        ReSizeView.resizeView(imvHeadRate, 64)
+        ReSizeView.resizeView(imvHeadTheme, 64)
+        ReSizeView.resizeView(imvHeadFavorite, 64)
+        ReSizeView.resizeView(imvHeaderStar, 128)
 
-    }
-
-    private fun setupHeader() {
-        headerAccBinding = HeaderAccBinding.inflate(LayoutInflater.from(this))
     }
 
     private fun setupToolBarMain() {

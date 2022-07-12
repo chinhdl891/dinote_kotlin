@@ -1,12 +1,11 @@
 package com.bzk.dinoteslite.view.fragment
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.descendants
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
@@ -18,13 +17,19 @@ import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.dialog.CancelDialog
 import com.bzk.dinoteslite.view.dialog.DialogMotion
+import com.bzk.dinoteslite.view.dialog.SaveDinoteDialog
 import com.bzk.dinoteslite.viewmodel.DetailFragmentViewModel
 import java.io.File
+import java.text.FieldPosition
 
 private const val TAG = "DetailFragment"
+private var mPosition: Int = 0
 
-class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListener {
+class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote, Int) -> Unit) :
+    BaseFragment<FragmentDetailBinding>(),
+    View.OnClickListener {
     private lateinit var nameImageNew: String
     private val viewModel by lazy {
         DetailFragmentViewModel(requireActivity().application)
@@ -34,18 +39,23 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
         LinearLayoutManager(getMainActivity(), RecyclerView.HORIZONTAL, false)
     }
     private var addTagAdapter: AddTagAdapter? = null
+    private var cancelDialog: CancelDialog? = null
 
     companion object {
-        fun newInstance(dinote: Dinote): DetailFragment {
+        fun newInstance(dinote: Dinote, position: Int): DetailFragment {
+            mPosition = position
             val args = Bundle()
             args.putSerializable(AppConstant.SEND_OBJ, dinote)
-            val fragment = DetailFragment()
+            val fragment = DetailFragment(onDelete = { dionte ->
+                MainFragment.Companion.onRemoveDinote(dinote)
+            }, onUpdateDinote = { dinote, position ->
+                MainFragment.Companion.onUpdate(position, dinote)
+            })
             fragment.arguments = args
             return fragment
         }
     }
 
-    private var isUpdate = false
     override fun getLayoutResource(): Int {
         return R.layout.fragment_detail
     }
@@ -88,6 +98,11 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
             addTagAdapter?.initData(it)
             mBinding.rcvCreateTag.layoutManager?.scrollToPosition(it.size - 1)
 
+        }
+        viewModel.setUpdate.observe(this) {
+            if (it) {
+                onUpdateDinote()
+            }
         }
     }
 
@@ -149,17 +164,21 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     }
 
     private fun onCancel() {
-        val nameOld = viewModel.mDinote.uriImage
-        if (nameOld.equals(nameImageNew)) {
-            getMainActivity()?.onBackPressed()
-        } else {
-            val filePath: String = getMainActivity()?.filesDir?.absolutePath + "/$nameImageNew"
-            val file = File(filePath)
-            if (file.exists()) {
-                file.delete()
-            }
-            activity?.onBackPressed()
+        cancelDialog = activity?.let {
+            CancelDialog(it, onCancel = {
+                val nameOld = viewModel.mDinote.uriImage
+                if (nameOld != nameImageNew) {
+                    val filePath: String =
+                        getMainActivity()?.filesDir?.absolutePath + "/$nameImageNew"
+                    val file = File(filePath)
+                    if (file.exists()) {
+                        file.delete()
+                    }
+                    activity?.onBackPressed()
+                }
+            })
         }
+        cancelDialog?.show()
     }
 
     private fun onGotoDrawFragment() {
@@ -170,25 +189,32 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
 
     private fun onShowDraw(nameImage: String) {
         nameImageNew = nameImage
-        val uri = getMainActivity()?.filesDir?.absolutePath + "/$nameImage"
+        var uri: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getMainActivity()?.filesDir?.absolutePath + "/$nameImage"
+        } else {
+            nameImage
+        }
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
         mBinding.imvCreateDrawer.setImageURI(Uri.parse(uri))
+        viewModel.mDinote.uriImage = uri
     }
 
     private fun onSelectMotion() {
         val dialogMotion =
             getMainActivity()?.let {
-                DialogMotion(it, viewModel.listMotion, onSelectItem = {
-                    viewModel.mDinote.motion = it.id
-                    mBinding.imvCreateMotion.setImageResource(it.imgMotion)
-                    mBinding.edtCreateStatus.setText(it.contentMotion)
+                DialogMotion(it, viewModel.listMotion, onSelectItem = { motion ->
+                    viewModel.mDinote.motion = motion.id
+                    mBinding.imvCreateMotion.setImageResource(motion.imgMotion)
+                    mBinding.edtCreateStatus.setText(motion.contentMotion)
                 }).show()
             }
     }
 
     private fun onDropDinote() {
         viewModel.dropDinote(mDinote)
+        onDelete(mDinote)
+        activity?.onBackPressed()
     }
 
     private fun onSetFavorite() {
@@ -204,17 +230,17 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(), View.OnClickListen
     }
 
     private fun onUpdateDinote() {
-//        if (!isUpdate) {
-            mBinding.tvDetailUpdate.text = getString(R.string.txt_save)
-//            onViewEnable()
-//        }
-//        viewModel.mDinote.apply {
-//            title = mBinding.edtCreateTitle.text.toString().trim()
-//            desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
-//            content = mBinding.edtCreateContent.text.toString().trim()
-//            uriImage = nameImageNew
-//        }
-//        viewModel.updateDinote()
+        viewModel.mDinote.apply {
+            title = mBinding.edtCreateTitle.text.toString().trim()
+            content = mBinding.edtCreateContent.text.toString().trim()
+            desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
+            onUpdate()
+        }
+    }
+
+    private fun onUpdate() {
+        viewModel.updateDinote()
+        onUpdateDinote(viewModel.mDinote, mPosition)
     }
 
 }

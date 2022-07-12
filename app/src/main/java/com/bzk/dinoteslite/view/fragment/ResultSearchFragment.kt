@@ -13,6 +13,7 @@ import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.RemindFragmentViewModel
 import com.bzk.dinoteslite.viewmodel.ResultFragmentViewModel
+import java.text.FieldPosition
 
 class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.OnClickListener {
     private val viewModel by lazy {
@@ -44,8 +45,8 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
         mBinding.tvSearchResultContent.text = content
         dinoteAdapter = DinoteAdapter(onDelete = {
             viewModel.onDelete(it)
-        }, onGotoDetail = {
-            onGotoDetail(it)
+        }, onGotoDetail = { dinote, position ->
+            onGotoDetail(dinote, position)
         })
         mBinding.rcvSearchResult.adapter = dinoteAdapter
         mBinding.rcvSearchResult.layoutManager = LinearLayoutManager(activity)
@@ -53,8 +54,8 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
         observer()
     }
 
-    private fun onGotoDetail(dinote: Dinote) {
-        val detailFragment = DetailFragment.newInstance(dinote)
+    private fun onGotoDetail(dinote: Dinote, position: Int) {
+        val detailFragment = DetailFragment.newInstance(dinote, position)
         getMainActivity()?.loadFragment(detailFragment,
             DetailFragment::class.java.simpleName.toString())
     }

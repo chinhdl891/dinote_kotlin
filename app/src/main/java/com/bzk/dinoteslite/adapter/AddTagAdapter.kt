@@ -1,5 +1,6 @@
 package com.bzk.dinoteslite.adapter
 
+import android.content.Context
 import android.nfc.Tag
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ private const val TAG = "AddTagAdapter"
 class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -> Unit) :
     RecyclerView.Adapter<AddTagAdapter.AddTagViewHolder>() {
     private var listTagModel: MutableList<TagModel> = mutableListOf<TagModel>()
+    private lateinit var mContext: Context
 
     fun initData(list: MutableList<TagModel>) {
         this.listTagModel = list
@@ -25,6 +27,7 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddTagViewHolder {
+        mContext = parent.context
         val binding: ItemAddTagBinding =
             DataBindingUtil.inflate(LayoutInflater.from(parent.context),
                 R.layout.item_add_tag,
@@ -34,14 +37,16 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
     }
 
     override fun onBindViewHolder(holder: AddTagViewHolder, position: Int) {
-        val tagModel: com.bzk.dinoteslite.model.TagModel = listTagModel[position]
+        val tagModel: TagModel = listTagModel[position]
         holder.bind(tagModel)
         holder.mBinding.lnlAddTag.setBackgroundResource(R.drawable.un_focused_background)
         holder.mBinding.imvTagCancel.visibility = View.INVISIBLE
         holder.onClick()
         holder.onFocus()
-        if (holder.mBinding.edtAddTag.text.isNotEmpty()) {
+        if (holder.mBinding.edtAddTag.text.trim().isNotEmpty()) {
             holder.mBinding.edtAddTag.hint = ""
+        } else {
+            holder.mBinding.edtAddTag.hint = mContext.getString(R.string.add_tag)
         }
 
     }
@@ -52,7 +57,7 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
 
     inner class AddTagViewHolder(var mBinding: ItemAddTagBinding) :
         RecyclerView.ViewHolder(mBinding.root) {
-        fun bind(tagModel: com.bzk.dinoteslite.model.TagModel) {
+        fun bind(tagModel: TagModel) {
             mBinding.setVariable(BR.tag, tagModel)
             mBinding.executePendingBindings()
         }
