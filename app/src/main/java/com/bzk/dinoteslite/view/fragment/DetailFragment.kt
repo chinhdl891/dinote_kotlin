@@ -47,9 +47,9 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
             val args = Bundle()
             args.putSerializable(AppConstant.SEND_OBJ, dinote)
             val fragment = DetailFragment(onDelete = { dionte ->
-                MainFragment.Companion.onRemoveDinote(dinote)
+                MainFragment.onRemoveDinote(dinote)
             }, onUpdateDinote = { dinote, position ->
-                MainFragment.Companion.onUpdate(position, dinote)
+                MainFragment.onUpdate(position, dinote)
             })
             fragment.arguments = args
             return fragment

@@ -25,13 +25,28 @@ import kotlin.math.abs
 private const val TAG = "MainFragment"
 private lateinit var viewModel: MainFragmentViewModel
 
-class MainFragment(var onAddNewTag: (TagModel) -> Unit) : BaseFragment<FragmentMainBinding>(),
+class MainFragment : BaseFragment<FragmentMainBinding>(),
     View.OnClickListener {
 
     private var photoAdapter: PhotoAdapter? = null
     private var mTimer: Timer? = null
     private var dinoteAdapter: DinoteAdapter? = null
     private lateinit var compositePageTransformer: CompositePageTransformer
+
+    companion object {
+        fun onRemoveDinote(dinote: Dinote) {
+            viewModel.listDinote.value = viewModel.listDinote.value.also {
+                it?.remove(dinote)
+            }
+        }
+
+        fun onUpdate(position: Int, dinote: Dinote) {
+            viewModel.listDinote.value = viewModel.listDinote.value.also {
+                it?.set(position, dinote)
+            }
+        }
+
+    }
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_main
@@ -148,7 +163,7 @@ class MainFragment(var onAddNewTag: (TagModel) -> Unit) : BaseFragment<FragmentM
                 it?.add(0, dinote)
             }
         }, onAddTag = {
-            onAddNewTag(it)
+            addTagListener?.onAddTag(it)
         }), CreateFragment(onAddDinote = {}, onAddTag = {}).javaClass.simpleName)
     }
 
@@ -165,18 +180,10 @@ class MainFragment(var onAddNewTag: (TagModel) -> Unit) : BaseFragment<FragmentM
         }
     }
 
-    companion object {
-        fun onRemoveDinote(dinote: Dinote) {
-            viewModel.listDinote.value = viewModel.listDinote.value.also {
-                it?.remove(dinote)
-            }
-        }
+    var addTagListener: AddTagListener? = null
 
-        fun onUpdate(position: Int, dinote: Dinote) {
-            viewModel.listDinote.value = viewModel.listDinote.value.also {
-                it?.set(position, dinote)
-            }
-        }
+    interface AddTagListener {
+        fun onAddTag(tagModel: TagModel)
     }
 }
 

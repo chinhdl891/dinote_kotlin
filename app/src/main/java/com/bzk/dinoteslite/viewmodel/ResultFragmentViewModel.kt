@@ -9,6 +9,9 @@ import com.bzk.dinoteslite.model.Dinote
 class ResultFragmentViewModel(application: Application) : AndroidViewModel(application) {
     var listDinote = MutableLiveData(mutableListOf<Dinote>())
     val dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
+    var limit = 50
+    var count = 0
+    var contentSearch = ""
     fun listDinoteSearch(search: String): List<Dinote> {
         dinoteDAO?.let {
             listDinote.value?.addAll(

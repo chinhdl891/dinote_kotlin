@@ -1,8 +1,11 @@
 package com.bzk.dinoteslite.view.fragment
 
+import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.util.Log
 import android.view.View
+import androidx.databinding.DataBindingUtil.setContentView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -78,7 +81,15 @@ class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.imv_theme_cancel -> activity?.onBackPressed()
-            R.id.btn_theme_change -> activity?.recreate()
+            R.id.btn_theme_change -> {
+                if (Build.VERSION.SDK_INT >= 11) {
+                    activity?.recreate();
+                }
+                //activity?.recreate()
+//                activity?.finish()
+//                activity?.startActivity(activity?.intent)
+
+            }
         }
     }
 

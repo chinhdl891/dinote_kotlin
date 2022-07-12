@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.HotTagAdapter
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
+import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.fragment.*
 import com.bzk.dinoteslite.viewmodel.MainActivityViewModel
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var imvHeaderStar: ImageView
     private lateinit var rcvHeadHotTag: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
+        onsetUpTheme()
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setContentView(mBinding.root)
@@ -46,16 +49,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         initView()
         setUpDataHead()
         setupToolBarMain()
-        loadFragment(MainFragment(onAddNewTag = { newTag ->
-            viewModel.listHotTag.value = viewModel.listHotTag.value.also {
-                it?.add(newTag)
-            }
-        }), MainFragment::class.java.simpleName)
+        addMainFragment()
         reSizeView()
         setClick()
         observer()
         viewModel.getListHotTag()
+        setupTimeDefault()
+    }
 
+    private fun setupTimeDefault() {
         val timeDefault: Long = MySharedPreferences(context = this).getTimeRemindDefault()
         if (timeDefault == 0L) {
             val calendar = Calendar.getInstance().apply {
@@ -65,10 +67,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
             }
-            val mySharedPreferences =
-                MySharedPreferences(this).pushTimeRemindDefault(calendar.timeInMillis)
+            MySharedPreferences(this).pushTimeRemindDefault(calendar.timeInMillis)
         }
+    }
 
+    private fun addMainFragment() {
+        val mainFragment = MainFragment()
+        mainFragment.addTagListener = object : MainFragment.AddTagListener {
+            override fun onAddTag(tagModel: TagModel) {
+                viewModel.listHotTag.value = viewModel.listHotTag.value.also {
+                    it?.add(tagModel)
+                }
+            }
+
+        }
+        loadFragment(mainFragment, MainFragment::class.java.simpleName)
+    }
+
+    private fun onsetUpTheme() {
+        val theme: Int = MySharedPreferences(this).getTheme()
+        val nightMode =
+            if (theme == 1) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        AppCompatDelegate.setDefaultNightMode(nightMode)
     }
 
     private fun setUpDataHead() {
@@ -97,7 +117,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     fun loadFragment(fragment: Fragment, tag: String) {
 
         fragmentTransaction = supportFragmentManager.beginTransaction()
-        if (tag != MainFragment(onAddNewTag = {}).javaClass.simpleName) {
+        if (tag != MainFragment().javaClass.simpleName) {
             if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
             }
@@ -143,6 +163,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 RemindFragment::class.simpleName,
                 SearchFragment::class.simpleName,
                 ThemeFragment::class.simpleName,
+                FavoriteFragment::class.simpleName,
                 -> {
                     mBinding.tlbMainAction.visibility = View.VISIBLE
                     supportFragmentManager.popBackStack()
@@ -196,11 +217,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.imv_main_search -> gotoSearch()
             R.id.lnl_head_openTheme -> goToTheme()
             R.id.imv_head_rate -> gotoWatch()
-            R.id.imv_head_favorite -> gotoWatch()
+            R.id.lnl_head_open_favorite -> goToFavorite()
 
         }
     }
 
+    private fun goToFavorite() {
+        loadFragment(FavoriteFragment(), FavoriteFragment::class.java.simpleName.toString())
+    }
 
     private fun goToTheme() {
         loadFragment(ThemeFragment(), ThemeFragment::class.simpleName.toString())
