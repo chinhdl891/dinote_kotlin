@@ -3,6 +3,7 @@ package com.bzk.dinoteslite.viewmodel
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
@@ -22,10 +23,11 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     var tagModelList: MutableLiveData<MutableList<TagModel>> =
         MutableLiveData(mutableListOf(TagModel(0, "")))
     var isFavorite: MutableLiveData<Boolean> = MutableLiveData(false)
-    var enableView : ObservableField<Boolean> = ObservableField(false)
-    var txtUpdate :  ObservableField<String> = ObservableField(application.getString(R.string.update))
-    var isUpdate : MutableLiveData<Boolean> = MutableLiveData(false)
-    var setUpdate : MutableLiveData<Boolean> = MutableLiveData(false)
+    var enableView: ObservableField<Boolean> = ObservableField(false)
+    var txtUpdate: ObservableField<String> = ObservableField(application.getString(R.string.update))
+    var isUpdate: MutableLiveData<Boolean> = MutableLiveData(false)
+    var setUpdate: MutableLiveData<Boolean> = MutableLiveData(false)
+    var blockView: ObservableField<Int> = ObservableField(ViewGroup.FOCUS_BLOCK_DESCENDANTS)
 
     var listMotion = mutableListOf<Motion>(
         Motion(0, R.drawable.ic_motion_item_fun, R.string.funny),
@@ -41,17 +43,12 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     val dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
     val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
 
-    fun getListTag(): MutableList<TagModel> {
-        Log.d(TAG, "getListTag: ${tagModelList.value!!.size}")
+    private fun getListTag(): MutableList<TagModel> {
         return tagModelList.value!!
     }
 
-    fun setFavorite(favorite: Boolean) {
-        isFavorite.value = favorite
-    }
-
-    fun getFavorite(): Boolean {
-        return isFavorite.value!!
+    fun getFavorite() {
+        isFavorite.value = mDinote.isLike
     }
 
     fun addTag() {
@@ -81,18 +78,21 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
         removeTag()
         mDinote.apply {
             ListTag = getListTag()
-            isLike = getFavorite()
+            isLike = isFavorite.value!!
         }
         dinoteDAO?.onUpdate(mDinote)
     }
-    fun onClickEnableView(){
+
+    fun onClickEnableView() {
         enableView.set(true)
+        blockView.set(ViewGroup.FOCUS_BEFORE_DESCENDANTS)
         txtUpdate.set(getApplication<GlobalApp>().applicationContext.getString(R.string.save))
-        if (isUpdate.value == true){
+        if (isUpdate.value == true) {
             setUpdate.value = true
         }
         isUpdate.value = !isUpdate.value!!
     }
+
     private fun removeTag() {
         for (i in getListTag()) {
             if (i.contentTag.isEmpty()) {
@@ -105,5 +105,10 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
                 }
             }
         }
+    }
+
+    fun setFavoriteDinote(favorite: Boolean) {
+        mDinote.isLike = favorite
+        dinoteDAO?.onUpdate(mDinote)
     }
 }

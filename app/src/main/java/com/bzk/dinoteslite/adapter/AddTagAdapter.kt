@@ -93,7 +93,7 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
                         mBinding.imvTagCancel.visibility = View.INVISIBLE
                         val contentTag = mBinding.edtAddTag.text.toString().trim()
                         if (contentTag.isNotEmpty()) {
-                            listTagModel!![layoutPosition].contentTag = contentTag
+                            listTagModel[layoutPosition].contentTag = contentTag
                             mBinding.edtAddTag.hint = ""
                         }
                         false

@@ -43,7 +43,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding>(), View.OnClickLi
                 super.onScrolled(recyclerView, dx, dy)
                 if (layoutManager.findLastVisibleItemPosition() == (viewModel.listFavorite.value?.size!! - 1)) {
                     if (viewModel.totalItem!! > 50) {
-                        if (viewModel.isLoading.value == false) {
+                        if (!viewModel.isLoading.value!!) {
                             viewModel.setUpLoadData()
                         }
                     }

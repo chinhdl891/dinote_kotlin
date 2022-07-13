@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/conner_view"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/question_delete_title"
+            android:textColor="@color/text_color"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Question_Delete"
+            android:textColor="@color/text_color" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_view_to_view_largest"
+            android:weightSum="10">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_dialog_continues_cancel"
+                style="@style/twoButton"
+                android:background="@drawable/coner_view_button_cancel"
+                android:text="@string/give"
+                android:textColor="@color/text_color_exit" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_dialog_delete"
+                style="@style/twoButton"
+                android:layout_marginStart="@dimen/margin_start"
+                android:background="@drawable/coner_view_button_continues"
+                android:text="@string/txt_delete"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
+

@@ -28,7 +28,7 @@ import java.util.*
 
 private const val TAG = "CreateFragment"
 
-class CreateFragment(var onAddDinote: (Dinote) -> Unit, var onAddTag: (TagModel) -> Unit) :
+class CreateFragment :
     BaseFragment<FragmentCreateBinding>(), View.OnClickListener {
     private val viewModel: CreateFragmentViewModel by lazy {
         CreateFragmentViewModel(requireActivity().application)
@@ -170,12 +170,12 @@ class CreateFragment(var onAddDinote: (Dinote) -> Unit, var onAddTag: (TagModel)
             imageUri = nameFile?.toString() ?: getString(R.string.txt_no_des)
             insertDinote()
         }
-        viewModel.dinote?.let { onAddDinote(it) }
+        viewModel.dinote?.let { createFragmentListener?.onAdd(it) }
         activity?.let {
             SaveDinoteDialog(it, onSave = {
                 viewModel.checkTagIsEmpty()
                 viewModel.lisTagIsEmpty.forEach { tag ->
-                    onAddTag(tag)
+                    createFragmentListener?.onAddTag(tag)
                 }
                 it.onBackPressed()
             }).show()
@@ -214,4 +214,10 @@ class CreateFragment(var onAddDinote: (Dinote) -> Unit, var onAddTag: (TagModel)
         dialogMotion?.show()
     }
 
+    var createFragmentListener: CreateFragmentListener? = null
+
+    interface CreateFragmentListener {
+        fun onAddTag(tagModel: TagModel)
+        fun onAdd(dinote: Dinote)
+    }
 }

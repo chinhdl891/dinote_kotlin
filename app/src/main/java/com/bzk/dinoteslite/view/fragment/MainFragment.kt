@@ -158,13 +158,19 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     }
 
     private fun openCreateDinote() {
-        getMainActivity()?.loadFragment(CreateFragment(onAddDinote = { dinote ->
-            viewModel.listDinote.value = viewModel.listDinote.value.also {
-                it?.add(0, dinote)
+        val createFragment = CreateFragment()
+        createFragment.createFragmentListener = object : CreateFragment.CreateFragmentListener {
+            override fun onAdd(dinote: Dinote) {
+                viewModel.listDinote.value = viewModel.listDinote.value.also {
+                    it?.add(0, dinote)
+                }
             }
-        }, onAddTag = {
-            addTagListener?.onAddTag(it)
-        }), CreateFragment(onAddDinote = {}, onAddTag = {}).javaClass.simpleName)
+
+            override fun onAddTag(tagModel: TagModel) {
+                addTagListener?.onAddTag(tagModel)
+            }
+        }
+        getMainActivity()?.loadFragment(createFragment, CreateFragment::class.java.simpleName)
     }
 
     override fun onStop() {

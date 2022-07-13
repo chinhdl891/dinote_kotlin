@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     fun loadFragment(fragment: Fragment, tag: String) {
 
         fragmentTransaction = supportFragmentManager.beginTransaction()
-        if (tag != MainFragment().javaClass.simpleName) {
+        if (tag != MainFragment::class.simpleName) {
             if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
             }
