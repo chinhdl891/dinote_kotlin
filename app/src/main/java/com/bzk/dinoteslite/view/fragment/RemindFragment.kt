@@ -96,7 +96,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
         calendar.timeInMillis = System.currentTimeMillis()
         val hour = calendar[Calendar.HOUR_OF_DAY]
         val minus = calendar[Calendar.MINUTE]
-        val timePickerDialog = TimePickerDialog(activity,
+        TimePickerDialog(activity,
             { timePicker, i1, i2 ->
                 calendar[Calendar.HOUR_OF_DAY] = i1
                 calendar[Calendar.MINUTE] = i2
@@ -123,7 +123,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
         calendar.timeInMillis = System.currentTimeMillis()
         val hour = calendar[Calendar.HOUR_OF_DAY]
         val minus = calendar[Calendar.MINUTE]
-        val timePickerDialog = TimePickerDialog(activity,
+        TimePickerDialog(activity,
             { timePicker, i, i2 ->
                 calendar[Calendar.HOUR_OF_DAY] = i
                 calendar[Calendar.MINUTE] = i2
@@ -140,6 +140,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             show()
         }
     }
+
 
     private fun setAlarmRemind(time: Long) {
         val alarmManager = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
