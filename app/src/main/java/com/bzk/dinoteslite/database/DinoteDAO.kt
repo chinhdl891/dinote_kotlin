@@ -20,6 +20,9 @@ interface DinoteDAO {
     @Query("select * from dinote where title like '%' ||:search || '%' or content like '%' || :search || '%' or ListTag like '%' || :search || '%'")
     fun getListBySearch(search: String): List<Dinote>
 
+    @Query("select COUNT(id) from dinote where title like '%' ||:search || '%' or content like '%' || :search || '%' or ListTag like '%' || :search || '%'")
+    fun getTotalItemSearch(search: String): Int
+
     @Query("select * from dinote order by dateCreate desc limit :limit offset :next ")
     fun getAllDinote(limit: Int, next: Int): List<Dinote>
 

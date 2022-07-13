@@ -2,6 +2,7 @@ package com.bzk.dinoteslite.view.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bzk.dinoteslite.R
@@ -43,6 +44,8 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
         val bundle = arguments
         val content = bundle?.getString(AppConstant.SEND_CONTENT_SEARCH) as String
         mBinding.tvSearchResultContent.text = content
+        viewModel.contentSearch = content
+        Toast.makeText(activity, viewModel.contentSearch, Toast.LENGTH_SHORT).show()
         dinoteAdapter = DinoteAdapter(onDelete = {
             viewModel.onDelete(it)
         }, onGotoDetail = { dinote, position ->

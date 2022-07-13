@@ -98,10 +98,7 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
 
     fun checkTagIsEmpty(): MutableList<TagModel> {
         tagModelList.value?.forEach {
-            var count: Int = tagDAO?.countTag(it.contentTag) ?: 0
-            if (count == 0) {
-                lisTagIsEmpty.add(it)
-            }
+            lisTagIsEmpty.add(it)
         }
         return lisTagIsEmpty
     }

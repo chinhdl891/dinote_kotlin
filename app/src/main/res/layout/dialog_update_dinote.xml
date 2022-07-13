@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/conner_view"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_view_to_view_largest">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_save_change"
+            android:textColor="@color/text_color"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/question_and_answer_change_dinote"
+            android:textColor="@color/text_color" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_view_to_view_largest"
+            android:weightSum="10">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_change_dinote_continue"
+                style="@style/twoButton"
+                android:background="@drawable/coner_view_button_cancel"
+                android:text="@string/txt_continue"
+                android:textColor="@color/text_color_exit" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_change_dinote_save"
+                style="@style/twoButton"
+                android:layout_marginStart="@dimen/margin_start"
+                android:background="@drawable/coner_view_button_continues"
+                android:text="@string/txt_change"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
+

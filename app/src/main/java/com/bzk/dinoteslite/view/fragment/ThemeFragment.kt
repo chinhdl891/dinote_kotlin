@@ -1,8 +1,12 @@
 package com.bzk.dinoteslite.view.fragment
 
+import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.databinding.DataBindingUtil.setContentView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -16,6 +20,7 @@ import com.bzk.dinoteslite.utils.ReSizeView
 import kotlin.math.abs
 
 private const val TAG = "ThemeFragment"
+
 class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener {
     private var themeAdapter: ThemeAdapter? = null
     override fun getLayoutResource(): Int {
@@ -59,9 +64,6 @@ class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener
                         btnThemeChange.setTextColor(Color.WHITE)
                     }
                 }
-                val mySharedPreferences = activity?.let { MySharedPreferences(it) }
-                mySharedPreferences?.pushTheme(position)
-                Log.d(TAG, "onPageSelected: ${mySharedPreferences?.getTheme()}")
             }
         })
     }
@@ -78,7 +80,11 @@ class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.imv_theme_cancel -> activity?.onBackPressed()
-            R.id.btn_theme_change -> activity?.recreate()
+            R.id.btn_theme_change -> {
+                val mySharedPreferences = activity?.let { MySharedPreferences(it) }
+                mySharedPreferences?.pushTheme(mBinding.vpgThemeChange.currentItem)
+                activity?.recreate()
+            }
         }
     }
 

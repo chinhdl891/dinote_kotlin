@@ -5,13 +5,13 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.AddTagAdapter
 import com.bzk.dinoteslite.base.BaseFragment
+import com.bzk.dinoteslite.base.setImage
 import com.bzk.dinoteslite.databinding.FragmentDetailBinding
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.TagModel
@@ -19,10 +19,10 @@ import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.CancelDialog
 import com.bzk.dinoteslite.view.dialog.DialogMotion
-import com.bzk.dinoteslite.view.dialog.SaveDinoteDialog
+import com.bzk.dinoteslite.view.dialog.RemoveDialog
+import com.bzk.dinoteslite.view.dialog.UpdateDialog
 import com.bzk.dinoteslite.viewmodel.DetailFragmentViewModel
 import java.io.File
-import java.text.FieldPosition
 
 private const val TAG = "DetailFragment"
 private var mPosition: Int = 0
@@ -47,9 +47,9 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
             val args = Bundle()
             args.putSerializable(AppConstant.SEND_OBJ, dinote)
             val fragment = DetailFragment(onDelete = { dionte ->
-                MainFragment.Companion.onRemoveDinote(dinote)
+                MainFragment.onRemoveDinote(dinote)
             }, onUpdateDinote = { dinote, position ->
-                MainFragment.Companion.onUpdate(position, dinote)
+                MainFragment.onUpdate(position, dinote)
             })
             fragment.arguments = args
             return fragment
@@ -75,7 +75,6 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
             viewModel.mDinote = mDinote
             mBinding.setVariable(BR.dinoteDetail, mDinote)
             mBinding.executePendingBindings()
-            viewModel.setFavorite(mDinote.isLike)
             if (mDinote.ListTag.isNotEmpty()) {
                 viewModel.tagModelList.value = mDinote.ListTag as MutableList<TagModel>
             }
@@ -90,6 +89,7 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
             mBinding.rcvCreateTag.adapter = addTagAdapter
             mBinding.rcvCreateTag.layoutManager = layoutManager
             observer()
+            viewModel.getFavorite()
         }
     }
 
@@ -104,6 +104,16 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
                 onUpdateDinote()
             }
         }
+        viewModel.isFavorite.observe(this) {
+            var src = if (it) R.drawable.ic_text_loved else R.drawable.ic_text_love
+            setImageLove(src)
+            viewModel.setFavoriteDinote(it)
+        }
+    }
+
+    private fun setImageLove(src: Int) {
+        mBinding.imvCreateTextLove.setImageResource(src)
+        mBinding.imvDetailIsLoved.setImageResource(src)
     }
 
     override fun onReSize() {
@@ -174,8 +184,8 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
                     if (file.exists()) {
                         file.delete()
                     }
-                    activity?.onBackPressed()
                 }
+                activity?.onBackPressed()
             })
         }
         cancelDialog?.show()
@@ -201,40 +211,41 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
     }
 
     private fun onSelectMotion() {
-        val dialogMotion =
-            getMainActivity()?.let {
-                DialogMotion(it, viewModel.listMotion, onSelectItem = { motion ->
-                    viewModel.mDinote.motion = motion.id
-                    mBinding.imvCreateMotion.setImageResource(motion.imgMotion)
-                    mBinding.edtCreateStatus.setText(motion.contentMotion)
-                }).show()
-            }
-    }
-
-    private fun onDropDinote() {
-        viewModel.dropDinote(mDinote)
-        onDelete(mDinote)
-        activity?.onBackPressed()
-    }
-
-    private fun onSetFavorite() {
-        val isLike = viewModel.getFavorite()
-        viewModel.setFavorite(!isLike)
-        if (isLike) {
-            mBinding.imvCreateTextLove.setImageResource(R.drawable.ic_text_loved)
-            mBinding.imvDetailIsLoved.setImageResource(R.drawable.ic_text_loved)
-        } else {
-            mBinding.imvCreateTextLove.setImageResource(R.drawable.ic_text_love)
-            mBinding.imvDetailIsLoved.setImageResource(R.drawable.ic_text_love)
+        getMainActivity()?.let {
+            DialogMotion(it, viewModel.listMotion, onSelectItem = { motion ->
+                viewModel.mDinote.motion = motion.id
+                mBinding.imvCreateMotion.setImageResource(motion.imgMotion)
+                mBinding.edtCreateStatus.setText(motion.contentMotion)
+            }).show()
         }
     }
 
+    private fun onDropDinote() {
+        context?.let {
+            RemoveDialog(it, onDelete = {
+                viewModel.dropDinote(mDinote)
+                onDelete(mDinote)
+                activity?.onBackPressed()
+            }).show()
+        }
+
+    }
+
+    private fun onSetFavorite() {
+        viewModel.isFavorite.value = !viewModel.isFavorite.value!!
+    }
+
     private fun onUpdateDinote() {
-        viewModel.mDinote.apply {
-            title = mBinding.edtCreateTitle.text.toString().trim()
-            content = mBinding.edtCreateContent.text.toString().trim()
-            desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
-            onUpdate()
+        context?.let {
+            UpdateDialog(it, onUpdate = {
+                viewModel.mDinote.apply {
+                    title = mBinding.edtCreateTitle.text.toString().trim()
+                    content = mBinding.edtCreateContent.text.toString().trim()
+                    desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
+                    onUpdate()
+                    activity?.onBackPressed()
+                }
+            }).show()
         }
     }
 
@@ -242,5 +253,4 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
         viewModel.updateDinote()
         onUpdateDinote(viewModel.mDinote, mPosition)
     }
-
 }
