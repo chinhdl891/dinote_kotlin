@@ -7,7 +7,6 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -101,6 +100,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
                 calendar[Calendar.HOUR_OF_DAY] = i1
                 calendar[Calendar.MINUTE] = i2
                 calendar[Calendar.SECOND] = 0
+                calendar[Calendar.MILLISECOND] = 0
                 onAddTimeRemind(calendar.timeInMillis)
             }, hour, minus, false).show()
     }
@@ -113,9 +113,13 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             timeInMillis
         }
         val timeRemind = TimeRemind(id = 0, time = time, active = true)
-        setAlarmRemind(time)
         remindFragmentViewModel.insertTimeRemind(timeRemind)
+        if (!remindFragmentViewModel.check) {
+            remindFragmentViewModel.getTimeForPush()
+            setAlarmRemind(remindFragmentViewModel.getTimeForPush())
+        }
     }
+
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun selectTimeDialog() {
@@ -140,7 +144,6 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             show()
         }
     }
-
 
     private fun setAlarmRemind(time: Long) {
         val alarmManager = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager

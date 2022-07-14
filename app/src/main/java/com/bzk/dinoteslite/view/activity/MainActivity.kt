@@ -30,6 +30,7 @@ import com.bzk.dinoteslite.view.fragment.*
 import com.bzk.dinoteslite.viewmodel.MainActivityViewModel
 import com.google.android.flexbox.FlexboxLayoutManager
 import java.util.*
+import kotlin.system.exitProcess
 
 private const val TAG = "MainActivity"
 
@@ -211,7 +212,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun onExitApp() {
-
+      this.finish()
     }
 
     private fun setClick() {
