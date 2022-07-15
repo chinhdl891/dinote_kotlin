@@ -104,10 +104,10 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
     }
 
     private fun saveBitMapToStores(bitmap: Bitmap): String {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return saveImageInQ(bitmap)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            saveImageInQ(bitmap)
         } else {
-            return saveImageUnQ(bitmap)
+            saveImageUnQ(bitmap)
         }
     }
 
@@ -117,7 +117,7 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
         val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
         val fos = FileOutputStream(image)
         fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
-        return image.toURI().toString()
+        return image.toURI().path
     }
 
     private fun saveImageInQ(bitmap: Bitmap): String {

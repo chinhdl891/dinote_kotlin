@@ -4,7 +4,7 @@
     <data>
         <variable
             name="slide"
-            type="com.bzk.dinoteslite.adapter.TutorialAdapter.SlideModel" />
+            type="com.bzk.dinoteslite.model.SlideModel" />
     </data>
 
     <LinearLayout

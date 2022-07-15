@@ -1,7 +1,9 @@
 package com.bzk.dinoteslite.adapter
 
 import android.content.Context
+import android.graphics.Path
 import android.nfc.Tag
+import android.text.Layout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -72,6 +74,7 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     Log.d(TAG, "onClick: enter")
                     if (mBinding.edtAddTag.text.toString().isNotEmpty()) {
+                        mBinding.edtAddTag.clearFocus()
                         onAddTag()
                     }
                     true

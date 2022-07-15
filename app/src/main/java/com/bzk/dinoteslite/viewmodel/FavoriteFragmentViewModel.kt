@@ -19,6 +19,9 @@ class FavoriteFragmentViewModel(application: Application) : AndroidViewModel(app
 
     fun getListDinote(): MutableList<Dinote> {
         listFavorite.value = listFavorite.value.also {
+            limit = 50
+            count = 0
+            it?.clear()
             dinoteDAO?.let { listDinote ->
                 it?.addAll(listDinote.getAllDinoteFavorite(limit,
                     count))

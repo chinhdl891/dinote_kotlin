@@ -9,8 +9,10 @@ import android.view.LayoutInflater
 import android.view.Window
 import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.ViewBinding
+import com.bzk.dinoteslite.R
 
-abstract class BaseDialog<T : ViewBinding>(context: Context) : Dialog(context) {
+abstract class BaseDialog<T : ViewBinding>(context: Context) :
+    Dialog(context) {
     protected lateinit var mBinding: T
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

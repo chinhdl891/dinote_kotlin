@@ -1,12 +1,13 @@
 package com.bzk.dinoteslite.view.activity
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
-import android.view.WindowManager
-import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bzk.dinoteslite.R
@@ -14,11 +15,11 @@ import com.bzk.dinoteslite.adapter.TutorialAdapter
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityTutorialBinding
 import com.bzk.dinoteslite.model.SlideModel
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.*
 
 class TutorialActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var mBinding: ActivityTutorialBinding
@@ -120,4 +121,5 @@ class TutorialActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
     }
+
 }

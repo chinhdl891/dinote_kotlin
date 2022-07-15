@@ -7,6 +7,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.descendants
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
@@ -116,7 +118,11 @@ class CreateFragment :
             R.id.tv_create_save -> saveDinote()
             R.id.imv_create_cancel -> cancelCreateFragment()
             R.id.tv_date_selection -> setDateSelect()
-            R.id.imv_create_text_add_tag -> viewModel.addTag()
+            R.id.imv_create_text_add_tag -> {
+                mBinding.edtCreateTitle.requestFocus()
+                viewModel.addTag()
+                mBinding.edtCreateTitle.clearFocus()
+            }
         }
     }
 
@@ -128,11 +134,11 @@ class CreateFragment :
         val day = calendar.get(Calendar.DATE)
         val month = calendar.get(Calendar.MONTH)
         val year = calendar.get(Calendar.YEAR)
-        val datePickerDialog = getMainActivity()?.let {
+        getMainActivity()?.let {
             DatePickerDialog(it,
                 { datePicker, i, i2, i3 ->
                     calendar.set(i, i2, i3)
-                    val simpleDateFormat = SimpleDateFormat("dd/mm/yyyy")
+                    val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
                     mBinding.tvDateSelection.text = simpleDateFormat.format(calendar.time)
                     viewModel.timeCreate = calendar.timeInMillis
                 },
@@ -162,6 +168,7 @@ class CreateFragment :
     }
 
     private fun saveDinote() {
+        mBinding.edtCreateContent.requestFocus()
         viewModel.apply {
             title = mBinding.edtCreateTitle.text.toString().trim()
             content = mBinding.edtCreateContent.text.toString().trim()
@@ -192,6 +199,7 @@ class CreateFragment :
         } else {
             mBinding.imvCreateDrawer.setImageURI(Uri.parse(nameFile))
         }
+        mBinding.lnlCreateImvDes.visibility = View.VISIBLE
     }
 
     private fun setFavoriteDionte() {

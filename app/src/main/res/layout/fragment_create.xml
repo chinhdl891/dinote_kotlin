@@ -167,6 +167,8 @@
                     app:layout_constraintTop_toBottomOf="@id/llTop">
 
                     <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/lnl_create_imv_des"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/milky"
@@ -186,7 +188,7 @@
                             <ImageView
                                 android:id="@+id/imv_create_drawer"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:scaleType="centerCrop" />
 
                         </androidx.cardview.widget.CardView>
