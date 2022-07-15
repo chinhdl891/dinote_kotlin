@@ -1,5 +1,10 @@
 package com.bzk.dinoteslite.view.activity
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -18,11 +23,14 @@ import com.bzk.dinoteslite.adapter.HotTagAdapter
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.model.TagModel
+import com.bzk.dinoteslite.model.TimeRemind
+import com.bzk.dinoteslite.reciver.TimeRemindReceiver
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.fragment.*
 import com.bzk.dinoteslite.viewmodel.MainActivityViewModel
 import com.google.android.flexbox.FlexboxLayoutManager
 import java.util.*
+import kotlin.system.exitProcess
 
 private const val TAG = "MainActivity"
 
@@ -67,7 +75,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
             }
-            MySharedPreferences(this).pushTimeRemindDefault(calendar.timeInMillis)
+            val time =
+                if (calendar.timeInMillis > System.currentTimeMillis())
+                    calendar.timeInMillis
+                else
+                    calendar.timeInMillis + AlarmManager.INTERVAL_DAY
+            MySharedPreferences(this).pushTimeRemindDefault(time)
+            setNotificationDefault(time)
+        }
+    }
+
+    private fun setNotificationDefault(time: Long) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, TimeRemindReceiver::class.java)
+        val random = Random(1000).nextInt()
+        val pendingIntent =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.getBroadcast(this,
+                random,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE) else PendingIntent.getBroadcast(this,
+                random,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+        val type = AlarmManager.RTC_WAKEUP
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(type, time, pendingIntent)
+        } else {
+            alarmManager.set(type, time, pendingIntent)
         }
     }
 
@@ -79,7 +113,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     it?.add(tagModel)
                 }
             }
-
         }
         loadFragment(mainFragment, MainFragment::class.java.simpleName)
     }
@@ -179,7 +212,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun onExitApp() {
-
+      this.finish()
     }
 
     private fun setClick() {

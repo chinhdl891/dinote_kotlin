@@ -26,7 +26,7 @@ private const val TAG = "MainFragment"
 private lateinit var viewModel: MainFragmentViewModel
 
 class MainFragment : BaseFragment<FragmentMainBinding>(),
-    View.OnClickListener {
+    View.OnClickListener, DetailFragment.DetailFragmentListener {
 
     private var photoAdapter: PhotoAdapter? = null
     private var mTimer: Timer? = null
@@ -45,6 +45,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
                 it?.set(position, dinote)
             }
         }
+
 
     }
 
@@ -76,6 +77,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
                 val detailFragment = DetailFragment.newInstance(dinote, position)
                 getMainActivity()?.loadFragment(detailFragment,
                     DetailFragment::class.simpleName.toString())
+                detailFragment.detailFragmentListener = this
             })
         mBinding.rcvMainDinote.adapter = dinoteAdapter
         viewModel.getListDinote()
@@ -190,6 +192,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
 
     interface AddTagListener {
         fun onAddTag(tagModel: TagModel)
+    }
+
+    override fun onAddTag(tagModel: TagModel) {
+        addTagListener?.onAddTag(tagModel)
     }
 }
 

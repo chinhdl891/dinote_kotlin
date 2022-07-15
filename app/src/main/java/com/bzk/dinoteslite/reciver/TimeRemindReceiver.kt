@@ -1,5 +1,6 @@
 package com.bzk.dinoteslite.reciver
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -21,9 +22,9 @@ import kotlin.random.Random
 private const val TAG = "TimeRemindReceiver"
 
 class TimeRemindReceiver : BroadcastReceiver() {
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onReceive(context: Context, p1: Intent) {
         createNotification(context)
-
         var timeRemindDefault: Long = MySharedPreferences(context).getTimeRemindDefault()
         if (timeRemindDefault < System.currentTimeMillis() + 10000) {
             timeRemindDefault += AlarmManager.INTERVAL_DAY
@@ -37,25 +38,15 @@ class TimeRemindReceiver : BroadcastReceiver() {
         val timeRemind = TimeRemind(0, timeRemindDefault, true)
         timeRemindList.add(timeRemind)
 
-        timeRemindList.forEach {
-            Log.e(TAG, "onReceive: " + it.time + " -- " + System.currentTimeMillis())
-        }
-
         val timeRemindPendingIntent = timeRemindList.filter {
             it.time > System.currentTimeMillis() && it.active
         }.sortedBy { time -> time.time }[0]
 
-        val list = timeRemindList.filter {
-            it.time < System.currentTimeMillis() && it.active
-        }
-        Log.e(TAG, "onReceive1: " + list.size)
 
         timeRemindList.filter {
             it.time < System.currentTimeMillis() && it.active
         }.forEach {
-            Log.d("aaa", "onReceive before: ${it.time}")
             it.time += AlarmManager.INTERVAL_DAY
-            Log.d("aaa", "onReceive: " + it.time)
             DinoteDataBase.getInstance(context)?.timeRemindDAO()?.onUpdateTime(it)
         }
 
@@ -75,7 +66,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val type = AlarmManager.RTC_WAKEUP
-        Log.e(TAG, "onReceive: " + timeRemindPendingIntent.time)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(type,
                 timeRemindPendingIntent.time,
@@ -85,13 +76,15 @@ class TimeRemindReceiver : BroadcastReceiver() {
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun createNotification(context: Context) {
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
         val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getActivity(context, Random(50000).nextInt(), intent, PendingIntent.FLAG_IMMUTABLE)
         } else {
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(context, Random(50000).nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
         val builder = NotificationCompat.Builder(context, createNotificationChannel(context))
@@ -112,7 +105,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
         val name = context.getString(R.string.dinote_channel)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val description = context.getString(R.string.des_notifi)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val notificationChannel = NotificationChannel("dinoteId", name, importance)
             notificationChannel.description = description
             val notificationManager = context.getSystemService(NotificationManager::class.java)

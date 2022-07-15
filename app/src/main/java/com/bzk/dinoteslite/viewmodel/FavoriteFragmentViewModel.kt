@@ -15,11 +15,14 @@ class FavoriteFragmentViewModel(application: Application) : AndroidViewModel(app
     private var count: Int = 0
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private var dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
-    var totalItem: Int? = dinoteDAO?.getAllDinoteFavorite()?.size
+    var totalItem: Int? = dinoteDAO?.getAllDinoteFavorite(limit, count)?.size
 
     fun getListDinote(): MutableList<Dinote> {
         listFavorite.value = listFavorite.value.also {
-            dinoteDAO?.let { listDinote -> it?.addAll(listDinote.getAllDinote(limit, count)) }
+            dinoteDAO?.let { listDinote ->
+                it?.addAll(listDinote.getAllDinoteFavorite(limit,
+                    count))
+            }
         }
         return listFavorite.value ?: mutableListOf()
     }

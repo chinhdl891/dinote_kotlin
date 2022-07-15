@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
@@ -51,6 +52,11 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
             }, onUpdateDinote = { dinote, position ->
                 MainFragment.onUpdate(position, dinote)
             })
+            fragment.detailFragmentListener = object  :DetailFragment.DetailFragmentListener{
+                override fun onAddTag(tagModel: TagModel) {
+
+                }
+            }
             fragment.arguments = args
             return fragment
         }
@@ -238,13 +244,20 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
     private fun onUpdateDinote() {
         context?.let {
             UpdateDialog(it, onUpdate = {
+                viewModel.blockView.set(ViewGroup.FOCUS_BLOCK_DESCENDANTS)
+                mBinding.edtCreateContent.isFocused
                 viewModel.mDinote.apply {
                     title = mBinding.edtCreateTitle.text.toString().trim()
                     content = mBinding.edtCreateContent.text.toString().trim()
                     desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
                     onUpdate()
+                    viewModel.tagModelList.value?.forEach {tag ->
+                        detailFragmentListener?.onAddTag(tag)
+                    }
                     activity?.onBackPressed()
                 }
+            }, onCancel = {
+                viewModel.blockView.set(ViewGroup.FOCUS_BEFORE_DESCENDANTS)
             }).show()
         }
     }
@@ -252,5 +265,11 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
     private fun onUpdate() {
         viewModel.updateDinote()
         onUpdateDinote(viewModel.mDinote, mPosition)
+    }
+
+    var detailFragmentListener: DetailFragmentListener? = null
+
+    interface DetailFragmentListener {
+        fun onAddTag(tagModel: TagModel)
     }
 }
