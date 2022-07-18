@@ -1,27 +1,26 @@
 package com.bzk.dinoteslite.view.fragment
 
-import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
+import android.util.Log
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.core.view.drawToBitmap
+import androidx.lifecycle.lifecycleScope
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentDrawableBinding
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.DialogColor
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
 import java.util.*
+import kotlin.math.log
 
 private const val TAG = "DrawableFragment"
 
@@ -104,10 +103,10 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
     }
 
     private fun saveBitMapToStores(bitmap: Bitmap): String {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return saveImageInQ(bitmap)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            saveImageInQ(bitmap)
         } else {
-            return saveImageUnQ(bitmap)
+            saveImageUnQ(bitmap)
         }
     }
 
@@ -116,17 +115,20 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
             Environment.getExternalStorageDirectory()
         val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
         val fos = FileOutputStream(image)
-        fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
-        return image.toURI().toString()
+        val saveData = lifecycleScope.launch {
+            fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+        }
+        return image.toURI().path
     }
 
     private fun saveImageInQ(bitmap: Bitmap): String {
         val filename = getString(R.string.txt_name_image, System.currentTimeMillis())
         val fOutputStream = activity?.openFileOutput(filename, Context.MODE_PRIVATE)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream)
+        val saveData = lifecycleScope.launch {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream)
+        }
         return filename
     }
-
 
     private fun onChangeSize(size: Int) {
         sizeStoke = size

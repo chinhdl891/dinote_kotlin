@@ -173,6 +173,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/margin_view_to_view_small"
+                        android:layout_marginBottom="@dimen/margin_view_to_view_medium"
                         android:background="@color/white"
                         android:enabled="@{detailViewModel.enableView}"
                         android:gravity="center_vertical"
@@ -216,11 +217,11 @@
                         </LinearLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:descendantFocusability="@{detailViewModel.blockView}"
                             android:id="@+id/rcv_create_tag"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:descendantFocusability="@{detailViewModel.blockView}"
                             android:enabled="@{detailViewModel.enableView}" />
                     </LinearLayout>
 
@@ -230,6 +231,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/white"
                         android:orientation="vertical"
+                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@+id/lnl_motion_tag">
 
                         <androidx.cardview.widget.CardView
@@ -316,26 +318,31 @@
             <ImageView
                 android:id="@+id/imv_create_text_custom_text"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text" />
 
             <ImageView
                 android:id="@+id/imv_create_text_edit"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_pen" />
 
             <ImageView
                 android:id="@+id/imv_create_text_love"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_love" />
 
             <ImageView
-                android:id="@+id/imv_create_text_tag"
+                android:id="@+id/imv_create_text_tag_edit"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_tag" />
 
             <ImageView
                 android:id="@+id/imv_create_text_remove"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_drop" />
         </LinearLayout>
 

@@ -4,16 +4,22 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
@@ -23,14 +29,14 @@ import com.bzk.dinoteslite.adapter.HotTagAdapter
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.model.TagModel
-import com.bzk.dinoteslite.model.TimeRemind
 import com.bzk.dinoteslite.reciver.TimeRemindReceiver
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.dialog.ExitDialog
 import com.bzk.dinoteslite.view.fragment.*
 import com.bzk.dinoteslite.viewmodel.MainActivityViewModel
 import com.google.android.flexbox.FlexboxLayoutManager
 import java.util.*
-import kotlin.system.exitProcess
 
 private const val TAG = "MainActivity"
 
@@ -61,6 +67,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         reSizeView()
         setClick()
         observer()
+        checkPermissions()
         viewModel.getListHotTag()
         setupTimeDefault()
     }
@@ -148,8 +155,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadFragment(fragment: Fragment, tag: String) {
-
-        fragmentTransaction = supportFragmentManager.beginTransaction()
         if (tag != MainFragment::class.simpleName) {
             if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
@@ -163,56 +168,64 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             addFragment(fragment, tag)
         }
-
     }
 
     private fun addFragment(fragment: Fragment, tag: String) {
+        fragmentTransaction = supportFragmentManager.beginTransaction()
         with(fragmentTransaction) {
             add(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
             addToBackStack(tag)
             commit()
         }
-    }
-
-    private fun replaceFragment(fragment: Fragment, tag: String) {
-        with(fragmentTransaction) {
-            replace(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
-            addToBackStack(tag)
-            commit()
-        }
+        setDisableDraw()
     }
 
     override fun onBackPressed() {
         if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
             mBinding.drlMain.closeDrawer(GravityCompat.START)
-        }
-        var getTopFragment = getTopFragment()?.tag
-        if (getTopFragment != null) {
-            when (getTopFragment) {
-                MainFragment::class.simpleName -> onExitApp()
-                DrawableFragment::class.simpleName -> super.onBackPressed()
-                CreateFragment::class.simpleName,
-                DetailFragment::class.simpleName,
-                RemindFragment::class.simpleName,
-                SearchFragment::class.simpleName,
-                ThemeFragment::class.simpleName,
-                FavoriteFragment::class.simpleName,
-                -> {
-                    mBinding.tlbMainAction.visibility = View.VISIBLE
-                    supportFragmentManager.popBackStack()
+        } else {
+            val getTopFragment = getTopFragment()?.tag
+            if (getTopFragment != null) {
+                when (getTopFragment) {
+                    MainFragment::class.simpleName -> onExitApp()
+                    DrawableFragment::class.simpleName -> supportFragmentManager.popBackStack()
+                    CreateFragment::class.simpleName,
+                    DetailFragment::class.simpleName,
+                    RemindFragment::class.simpleName,
+                    SearchFragment::class.simpleName,
+                    ThemeFragment::class.simpleName,
+                    FavoriteFragment::class.simpleName,
+                    -> {
+                        setDisableDraw()
+                        mBinding.tlbMainAction.visibility = View.VISIBLE
+                        supportFragmentManager.popBackStack()
+                    }
+                    ResultSearchFragment::class.simpleName -> {
+                        val isVisitable =
+                            if (supportFragmentManager.fragments.size > 2) View.GONE else View.VISIBLE
+                        mBinding.tlbMainAction.visibility = isVisitable
+                        supportFragmentManager.popBackStack()
+                    }
                 }
-                ResultSearchFragment::class.simpleName -> {
-                    val isVisitable =
-                        if (supportFragmentManager.fragments.size > 2) View.GONE else View.VISIBLE
-                    mBinding.tlbMainAction.visibility = isVisitable
-                    supportFragmentManager.popBackStack()
+                if (supportFragmentManager.fragments.size == 2) {
+                    setEnableDraw()
                 }
             }
         }
     }
 
     private fun onExitApp() {
-      this.finish()
+        val exitDialog = ExitDialog(this, onFinish = {
+            finish()
+        })
+
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(exitDialog.window?.attributes)
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT * 0.8.toInt()
+        Log.d(TAG, "onExitApp: width" + lp.width)
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT * 0.8.toInt()
+        exitDialog.window?.attributes = lp
+        exitDialog.show()
     }
 
     private fun setClick() {
@@ -280,5 +293,39 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val backEntry = supportFragmentManager.getBackStackEntryAt(index)
         val tag = backEntry.name
         return supportFragmentManager.findFragmentByTag(tag)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == AppConstant.PERMISSION_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, R.string.write_debied, Toast.LENGTH_SHORT).show()
+            }
+            checkPermissions()
+        }
+
+    }
+
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
+        ) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                AppConstant.PERMISSION_WRITE_EXTERNAL_STORAGE)
+        }
+    }
+
+    fun setEnableDraw() {
+        mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
+
+    private fun setDisableDraw() {
+        mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 }

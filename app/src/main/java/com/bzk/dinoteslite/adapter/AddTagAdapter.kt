@@ -1,7 +1,6 @@
 package com.bzk.dinoteslite.adapter
 
 import android.content.Context
-import android.nfc.Tag
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +12,6 @@ import com.bzk.dinoteslite.BR
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.databinding.ItemAddTagBinding
 import com.bzk.dinoteslite.model.TagModel
-
-private const val TAG = "AddTagAdapter"
 
 class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -> Unit) :
     RecyclerView.Adapter<AddTagAdapter.AddTagViewHolder>() {
@@ -48,7 +45,6 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
         } else {
             holder.mBinding.edtAddTag.hint = mContext.getString(R.string.add_tag)
         }
-
     }
 
     override fun getItemCount(): Int {
@@ -70,8 +66,8 @@ class AddTagAdapter(var onAddTag: () -> Unit, var onDeleteTag: (position: Int) -
 
             mBinding.edtAddTag.setOnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    Log.d(TAG, "onClick: enter")
                     if (mBinding.edtAddTag.text.toString().isNotEmpty()) {
+                        mBinding.edtAddTag.clearFocus()
                         onAddTag()
                     }
                     true

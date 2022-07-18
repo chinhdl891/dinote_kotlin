@@ -49,7 +49,11 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
 
     fun addTag() {
         tagModelList.value = tagModelList.value!!.also {
-            it.add(TagModel(0, ""))
+            val size = tagModelList.value!!.size
+            val lastContentTag = tagModelList.value!![size - 1].contentTag
+            if (lastContentTag.isNotEmpty()) {
+                it.add(TagModel(0, ""))
+            }
         }
     }
 
@@ -97,7 +101,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
                 }
             } else {
                 if (tagDAO?.countTag(i.contentTag) == 0) {
-                    val tagModel = TagModel(0,i.contentTag)
+                    val tagModel = TagModel(0, i.contentTag)
                     tagDAO.insert(tagModel)
                 }
             }

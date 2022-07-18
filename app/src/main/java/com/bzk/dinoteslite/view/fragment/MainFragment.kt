@@ -1,9 +1,14 @@
 package com.bzk.dinoteslite.view.fragment
 
+import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.drawerlayout.widget.DrawerLayout.*
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -182,6 +187,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     }
 
     override fun onResume() {
+        getMainActivity()?.setEnableDraw()
         super.onResume()
         if (mTimer == null) {
             autoRunAds()
