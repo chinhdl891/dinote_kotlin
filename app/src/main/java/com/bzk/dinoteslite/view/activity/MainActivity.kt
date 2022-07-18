@@ -38,7 +38,6 @@ import com.bzk.dinoteslite.viewmodel.MainActivityViewModel
 import com.google.android.flexbox.FlexboxLayoutManager
 import java.util.*
 
-
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -156,8 +155,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadFragment(fragment: Fragment, tag: String) {
-
-        fragmentTransaction = supportFragmentManager.beginTransaction()
         if (tag != MainFragment::class.simpleName) {
             if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
                 mBinding.drlMain.closeDrawer(GravityCompat.START)
@@ -171,53 +168,47 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             addFragment(fragment, tag)
         }
-
     }
 
     private fun addFragment(fragment: Fragment, tag: String) {
+        fragmentTransaction = supportFragmentManager.beginTransaction()
         with(fragmentTransaction) {
             add(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
             addToBackStack(tag)
             commit()
         }
-        if (supportFragmentManager.fragments.size > 0) {
-            mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        }
-    }
-
-    private fun replaceFragment(fragment: Fragment, tag: String) {
-        with(fragmentTransaction) {
-            replace(R.id.frl_main_content, fragment, fragment.javaClass.simpleName)
-            addToBackStack(tag)
-            commit()
-        }
+        setDisableDraw()
     }
 
     override fun onBackPressed() {
         if (mBinding.drlMain.isDrawerOpen(GravityCompat.START)) {
             mBinding.drlMain.closeDrawer(GravityCompat.START)
-        }
-        var getTopFragment = getTopFragment()?.tag
-        if (getTopFragment != null) {
-            when (getTopFragment) {
-                MainFragment::class.simpleName -> onExitApp()
-                DrawableFragment::class.simpleName -> supportFragmentManager.popBackStack()
-                CreateFragment::class.simpleName,
-                DetailFragment::class.simpleName,
-                RemindFragment::class.simpleName,
-                SearchFragment::class.simpleName,
-                ThemeFragment::class.simpleName,
-                FavoriteFragment::class.simpleName,
-                -> {
-                    mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-                    mBinding.tlbMainAction.visibility = View.VISIBLE
-                    supportFragmentManager.popBackStack()
+        } else {
+            val getTopFragment = getTopFragment()?.tag
+            if (getTopFragment != null) {
+                when (getTopFragment) {
+                    MainFragment::class.simpleName -> onExitApp()
+                    DrawableFragment::class.simpleName -> supportFragmentManager.popBackStack()
+                    CreateFragment::class.simpleName,
+                    DetailFragment::class.simpleName,
+                    RemindFragment::class.simpleName,
+                    SearchFragment::class.simpleName,
+                    ThemeFragment::class.simpleName,
+                    FavoriteFragment::class.simpleName,
+                    -> {
+                        setDisableDraw()
+                        mBinding.tlbMainAction.visibility = View.VISIBLE
+                        supportFragmentManager.popBackStack()
+                    }
+                    ResultSearchFragment::class.simpleName -> {
+                        val isVisitable =
+                            if (supportFragmentManager.fragments.size > 2) View.GONE else View.VISIBLE
+                        mBinding.tlbMainAction.visibility = isVisitable
+                        supportFragmentManager.popBackStack()
+                    }
                 }
-                ResultSearchFragment::class.simpleName -> {
-                    val isVisitable =
-                        if (supportFragmentManager.fragments.size > 2) View.GONE else View.VISIBLE
-                    mBinding.tlbMainAction.visibility = isVisitable
-                    supportFragmentManager.popBackStack()
+                if (supportFragmentManager.fragments.size == 2) {
+                    setEnableDraw()
                 }
             }
         }
@@ -328,5 +319,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     android.Manifest.permission.READ_EXTERNAL_STORAGE),
                 AppConstant.PERMISSION_WRITE_EXTERNAL_STORAGE)
         }
+    }
+
+    fun setEnableDraw() {
+        mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
+
+    private fun setDisableDraw() {
+        mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 }

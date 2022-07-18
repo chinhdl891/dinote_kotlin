@@ -11,9 +11,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.ViewBinding
 import com.bzk.dinoteslite.R
 
-abstract class BaseDialog<T : ViewBinding>(context: Context) :
-    Dialog(context) {
+abstract class BaseDialog<T : ViewBinding>(
+    context: Context,
+    theme: Int = R.style.ThemeDialogExit,
+) :
+    Dialog(context, theme) {
     protected lateinit var mBinding: T
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -34,3 +38,4 @@ abstract class BaseDialog<T : ViewBinding>(context: Context) :
 
     abstract fun getLayoutResource(): Int
 }
+

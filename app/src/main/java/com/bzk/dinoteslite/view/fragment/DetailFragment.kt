@@ -6,14 +6,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.AddTagAdapter
 import com.bzk.dinoteslite.base.BaseFragment
-import com.bzk.dinoteslite.base.setImage
 import com.bzk.dinoteslite.databinding.FragmentDetailBinding
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.TagModel
@@ -25,7 +23,7 @@ import com.bzk.dinoteslite.view.dialog.RemoveDialog
 import com.bzk.dinoteslite.view.dialog.UpdateDialog
 import com.bzk.dinoteslite.viewmodel.DetailFragmentViewModel
 import java.io.File
-import kotlin.math.log
+
 
 private const val TAG = "DetailFragment"
 private var mPosition: Int = 0
@@ -33,6 +31,7 @@ private var mPosition: Int = 0
 class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote, Int) -> Unit) :
     BaseFragment<FragmentDetailBinding>(),
     View.OnClickListener {
+
     private lateinit var nameImageNew: String
     private val viewModel by lazy {
         DetailFragmentViewModel(requireActivity().application)
@@ -73,7 +72,6 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
     }
 
     override fun setUpdata() {
-//        onViewDisable()
         mBinding.detailViewModel = viewModel
         val bundle = arguments
         bundle?.let {
@@ -226,6 +224,7 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
 
     private fun onShowDraw(nameImage: String) {
         nameImageNew = nameImage
+
         var uri: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getMainActivity()?.filesDir?.absolutePath + "/$nameImage"
         } else {

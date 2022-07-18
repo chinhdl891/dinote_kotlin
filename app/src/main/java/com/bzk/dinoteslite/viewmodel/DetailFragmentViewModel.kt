@@ -101,7 +101,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
                 }
             } else {
                 if (tagDAO?.countTag(i.contentTag) == 0) {
-                    val tagModel = TagModel(0,i.contentTag)
+                    val tagModel = TagModel(0, i.contentTag)
                     tagDAO.insert(tagModel)
                 }
             }

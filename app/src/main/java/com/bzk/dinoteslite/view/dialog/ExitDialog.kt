@@ -14,21 +14,9 @@ import com.bzk.dinoteslite.utils.ReSizeView
 
 
 class ExitDialog(context: Context, var onFinish: () -> Unit) :
-    BaseDialog<DialogExitBinding>(context) {
+    BaseDialog<DialogExitBinding>(context, R.style.ThemeDialogExit) {
 
     override fun setUpdata() {
-        window?.let {
-            val marginLeft = 80
-            val attributes: WindowManager.LayoutParams = it.attributes
-            attributes.x = marginLeft
-            attributes.y = 0
-            it.attributes = attributes
-            it.setGravity(Gravity.START )
-            val displaySize: Point = getDisplayDimensions(context)
-            val width: Int = displaySize.x - marginLeft - marginLeft
-
-            it.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
-        }
     }
 
     override fun setClick() {
@@ -48,35 +36,4 @@ class ExitDialog(context: Context, var onFinish: () -> Unit) :
         return R.layout.dialog_exit
     }
 
-    fun getDisplayDimensions(context: Context): Point {
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display: Display = wm.defaultDisplay
-        val metrics = DisplayMetrics()
-        display.getMetrics(metrics)
-        val screenWidth = metrics.widthPixels
-        var screenHeight = metrics.heightPixels
-
-        // find out if status bar has already been subtracted from screenHeight
-        display.getRealMetrics(metrics)
-        val physicalHeight = metrics.heightPixels
-        val statusBarHeight = getStatusBarHeight(context)
-        val navigationBarHeight = getNavigationBarHeight(context)
-        val heightDelta = physicalHeight - screenHeight
-        if (heightDelta == 0 || heightDelta == navigationBarHeight) {
-            screenHeight -= statusBarHeight
-        }
-        return Point(screenWidth, screenHeight)
-    }
-
-    fun getStatusBarHeight(context: Context): Int {
-        val resources: Resources = context.resources
-        val resourceId: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
-        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
-    }
-
-    fun getNavigationBarHeight(context: Context): Int {
-        val resources: Resources = context.resources
-        val resourceId: Int = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
-    }
 }

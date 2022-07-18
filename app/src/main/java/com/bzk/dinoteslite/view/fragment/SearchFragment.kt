@@ -47,11 +47,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         observer()
     }
 
-    private fun layoutManager(): RecyclerView.LayoutManager? {
+    private fun layoutManager(): FlexboxLayoutManager {
         val layoutManager = FlexboxLayoutManager(activity).apply {
             flexDirection = FlexDirection.ROW
             justifyContent = JustifyContent.FLEX_START
             alignItems = AlignItems.FLEX_START
+            maxLine = 3
         }
         return layoutManager
     }
@@ -75,6 +76,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         mBinding.imvSearchCancel.setOnClickListener(this)
         mBinding.tvSearchDelete.setOnClickListener(this)
         mBinding.btnSearchShowMore.setOnClickListener(this)
+        mBinding.btnSearchShowMore.setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {
@@ -89,9 +91,15 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
     }
 
     private fun showMore() {
-
+        if (isShow) {
+            mBinding.rcvSearchHistory.layoutManager = layoutManager().apply { maxLine = 10 }
+        } else {
+            mBinding.rcvSearchHistory.layoutManager = layoutManager().apply { maxLine = 3 }
+        }
+        isShow = !isShow
     }
 
+    private var isShow = true
     private fun onSearch() {
         val contentSearch = mBinding.editSearchContent.text.toString().trim()
         val search = HistorySearch(content = contentSearch)

@@ -1,23 +1,18 @@
 package com.bzk.dinoteslite.view.activity
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.TutorialAdapter
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityTutorialBinding
 import com.bzk.dinoteslite.model.SlideModel
-import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -42,7 +37,7 @@ class TutorialActivity : AppCompatActivity(), View.OnClickListener {
         mBinding.lnlTutorial.visibility = View.GONE
         mBinding.imvTutorialSplash.visibility = View.VISIBLE
         ReSizeView.resizeView(mBinding.imvTutorialSplash, 300)
-        GlobalScope.launch {
+        lifecycleScope.launch {
             delay(2000L)
             val intent = Intent(this@TutorialActivity, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

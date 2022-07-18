@@ -34,7 +34,7 @@ class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener
     override fun setUpdata() {
         themeAdapter = ThemeAdapter()
         mBinding.vpgThemeChange.adapter = themeAdapter
-        mBinding.dot.setViewPager2(mBinding.vpgThemeChange)
+        mBinding.dot.attachTo(mBinding.vpgThemeChange)
         val compositePageTransformer = CompositePageTransformer()
         compositePageTransformer.addTransformer(MarginPageTransformer(50))
         compositePageTransformer.addTransformer { page: View, position: Float ->

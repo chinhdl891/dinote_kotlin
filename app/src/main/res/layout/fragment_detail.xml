@@ -318,26 +318,31 @@
             <ImageView
                 android:id="@+id/imv_create_text_custom_text"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text" />
 
             <ImageView
                 android:id="@+id/imv_create_text_edit"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_pen" />
 
             <ImageView
                 android:id="@+id/imv_create_text_love"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_love" />
 
             <ImageView
                 android:id="@+id/imv_create_text_tag_edit"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_tag" />
 
             <ImageView
                 android:id="@+id/imv_create_text_remove"
                 style="@style/imageTools"
+                android:enabled="@{detailViewModel.enableView}"
                 android:src="@drawable/ic_text_drop" />
         </LinearLayout>
 
