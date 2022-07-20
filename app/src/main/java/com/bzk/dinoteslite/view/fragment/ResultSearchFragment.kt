@@ -58,9 +58,9 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
     }
 
     private fun onGotoDetail(dinote: Dinote, position: Int) {
-        val detailFragment = DetailFragment.newInstance(dinote, position)
-        getMainActivity()?.loadFragment(detailFragment,
-            DetailFragment::class.java.simpleName.toString())
+//        val detailFragment = DetailFragment.newInstance(dinote, position)
+//        getMainActivity()?.loadFragment(detailFragment,
+//            DetailFragment::class.java.simpleName.toString())
     }
 
     private fun observer() {

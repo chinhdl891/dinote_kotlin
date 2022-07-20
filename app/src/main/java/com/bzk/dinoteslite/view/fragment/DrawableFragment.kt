@@ -8,8 +8,10 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.drawToBitmap
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentDrawableBinding
@@ -24,11 +26,12 @@ import kotlin.math.log
 
 private const val TAG = "DrawableFragment"
 
-class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDrawableBinding>(),
+class DrawableFragment() : BaseFragment<FragmentDrawableBinding>(),
     View.OnClickListener {
     private var sizeStoke = 16
     private var mColor = Color.BLACK
     private lateinit var stringUri: String
+    private var address: String = ""
     override fun getLayoutResource(): Int {
         return R.layout.fragment_drawable
     }
@@ -100,8 +103,10 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
     private fun saveImage() {
         var bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
         saveBitMapToStores(bitmap)
-        onSave(stringUri)
-        activity?.onBackPressed()
+        val bundle = bundleOf(
+            AppConstant.SEND_URI to stringUri
+        )
+        findNavController().navigate(R.id.createFragment, bundle)
     }
 
     private fun saveBitMapToStores(bitmap: Bitmap) {

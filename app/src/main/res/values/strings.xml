@@ -119,4 +119,6 @@
     <string name="txt_exit">Thoát</string>
     <string name="txt_add">Thêm</string>
     <string name="txt_add_data">Nhập số lượng</string>
+    <string name="txt_title_search">Search</string>
+    <string name="txt_watch">Xem QC</string>
 </resources>

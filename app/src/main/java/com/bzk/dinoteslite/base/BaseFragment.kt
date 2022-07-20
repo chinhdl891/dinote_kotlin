@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.bzk.dinoteslite.view.activity.MainActivity
 
 abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     protected lateinit var mBinding: VB
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

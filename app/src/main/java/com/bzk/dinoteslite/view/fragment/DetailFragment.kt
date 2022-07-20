@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
@@ -28,8 +29,7 @@ import java.util.*
 private const val TAG = "DetailFragment"
 private var mPosition: Int = 0
 
-class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote, Int) -> Unit) :
-    BaseFragment<FragmentDetailBinding>(),
+class DetailFragment : BaseFragment<FragmentDetailBinding>(),
     View.OnClickListener {
 
     private lateinit var nameImageNew: String
@@ -43,26 +43,6 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
     private var addTagAdapter: AddTagAdapter? = null
     private var cancelDialog: CancelDialog? = null
 
-    companion object {
-        fun newInstance(dinote: Dinote, position: Int): DetailFragment {
-            mPosition = position
-            val args = Bundle()
-            args.putSerializable(AppConstant.SEND_OBJ, dinote)
-            val fragment = DetailFragment(onDelete = { dionte ->
-                MainFragment.onRemoveDinote(dinote)
-            }, onUpdateDinote = { dinote, position ->
-                MainFragment.onUpdate(position, dinote)
-            })
-            fragment.detailFragmentListener = object : DetailFragment.DetailFragmentListener {
-                override fun onAddTag(tagModel: TagModel) {
-
-                }
-            }
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     override fun getLayoutResource(): Int {
         return R.layout.fragment_detail
     }
@@ -73,9 +53,9 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
 
     override fun setUpdata() {
         mBinding.detailViewModel = viewModel
-        val bundle = arguments
-        bundle?.let {
-            mDinote = bundle.getSerializable(AppConstant.SEND_OBJ) as Dinote
+        val bundle: DetailFragmentArgs by navArgs()
+        bundle.let {
+            mDinote = bundle.dinote
             Log.d(TAG, "setUpdata: " + mDinote.uriImage)
             checkImageIsExits(mDinote.uriImage)
             nameImageNew = mDinote.uriImage
@@ -180,7 +160,7 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
                 onSetFavorite()
             }
             R.id.imv_create_text_remove -> {
-               remoteContent()
+                remoteContent()
             }
             R.id.imv_detail_cancel -> {
                 onCancel()
@@ -251,9 +231,9 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
     }
 
     private fun onGotoDrawFragment() {
-        getMainActivity()?.loadFragment(DrawableFragment(onSave = { nameImage ->
-            onShowDraw(nameImage)
-        }), DrawableFragment::class.simpleName.toString())
+//        getMainActivity()?.loadFragment(DrawableFragment(onSave = { nameImage ->
+//            onShowDraw(nameImage)
+//        }), DrawableFragment::class.simpleName.toString())
     }
 
     private fun onShowDraw(nameImage: String) {
@@ -284,7 +264,6 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
         context?.let {
             RemoveDialog(it, onDelete = {
                 viewModel.dropDinote(mDinote)
-                onDelete(mDinote)
                 activity?.onBackPressed()
             }).show()
         }
@@ -319,7 +298,6 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
 
     private fun onUpdate() {
         viewModel.updateDinote()
-        onUpdateDinote(viewModel.mDinote, mPosition)
     }
 
     var detailFragmentListener: DetailFragmentListener? = null

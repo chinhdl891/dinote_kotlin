@@ -4,11 +4,9 @@ package com.bzk.dinoteslite.view.fragment
 import android.app.DatePickerDialog
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.descendants
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
@@ -38,9 +36,6 @@ class CreateFragment :
     }
     private lateinit var mMotion: Motion
     private var addTagAdapter: AddTagAdapter? = null
-    private val layoutManager: RecyclerView.LayoutManager by lazy {
-        LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-    }
     private var mUri: String? = null
     private var nameFile: String? = null
     private var cancelDialog: CancelDialog? = null
@@ -54,21 +49,21 @@ class CreateFragment :
     }
 
     override fun setUpdata() {
+        setUpBundle()
         mMotion = viewModel.listMotion[1]
         mBinding.imvCreateMotion.setImageResource(mMotion.imgMotion)
         mBinding.edtCreateStatus.text = getText(mMotion.contentMotion)
-        mBinding.rcvCreateListTag.layoutManager = layoutManager
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
-        addTagAdapter = AddTagAdapter(
-            onAddTag = {
-                viewModel.addTag()
-            },
-            onDeleteTag = { position ->
-                viewModel.deleteTag(position)
-            })
-        mBinding.rcvCreateListTag.adapter = addTagAdapter
         observer()
+    }
+
+    private fun setUpBundle() {
+        val bundle = arguments
+        if (bundle != null) {
+            val stringUri: String = bundle.getString(AppConstant.SEND_URI, "")
+            onShowImage(stringUri)
+        }
     }
 
     private fun observer() {
@@ -80,6 +75,16 @@ class CreateFragment :
             }
         }
         viewModel.tagModelList.observe(this) {
+            mBinding.rcvCreateListTag.layoutManager =
+                LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
+            addTagAdapter = AddTagAdapter(
+                onAddTag = {
+                    viewModel.addTag()
+                },
+                onDeleteTag = { position ->
+                    viewModel.deleteTag(position)
+                })
+            mBinding.rcvCreateListTag.adapter = addTagAdapter
             addTagAdapter?.apply {
                 initData(viewModel.getListTag())
             }
@@ -109,13 +114,10 @@ class CreateFragment :
             R.id.lnl_crate_status -> openDialogMotion()
             R.id.imv_create_text_love -> setFavoriteDionte()
             R.id.imv_create_text_edit -> {
-                getMainActivity()?.loadFragment(DrawableFragment(onSave = {
-                    onShowImage(it)
-                }).apply {
-                    val bundle = Bundle()
-                    bundle.putString(AppConstant.OLD_URI, mUri)
-                    arguments = bundle
-                }, DrawableFragment::class.java.simpleName)
+                val bundle = bundleOf(
+                    AppConstant.SEND_ADDRESS to CreateFragment::class.java.simpleName
+                )
+                findNavController().navigate(R.id.drawableFragment, bundle)
             }
             R.id.imv_create_text_remove -> remoteContent()
             R.id.tv_create_save -> saveDinote()
@@ -195,7 +197,7 @@ class CreateFragment :
                 viewModel.lisTagIsEmpty.forEach { tag ->
                     createFragmentListener?.onAddTag(tag)
                 }
-                it.onBackPressed()
+                findNavController().navigate(R.id.mainFragment)
             }).show()
         }
     }
@@ -204,13 +206,17 @@ class CreateFragment :
         this.nameFile = nameFile
         mBinding.imvCreateDrawer.visibility = View.VISIBLE
         mBinding.edtCreateDesDrawer.visibility = View.VISIBLE
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mUri = getMainActivity()?.filesDir?.absolutePath + "/$nameFile"
-            mBinding.imvCreateDrawer.setImageURI(Uri.parse(mUri))
-        } else {
-            mBinding.imvCreateDrawer.setImageURI(Uri.parse(nameFile))
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                mUri = getMainActivity()?.filesDir?.absolutePath + "/$nameFile"
+                mBinding.imvCreateDrawer.setImageURI(Uri.parse(mUri))
+            } else {
+                mBinding.imvCreateDrawer.setImageURI(Uri.parse(nameFile))
+            }
+            mBinding.lnlCreateImvDes.visibility = View.VISIBLE
+        } catch (e: Exception) {
+            mBinding.imvCreateDrawer.visibility = View.GONE
         }
-        mBinding.lnlCreateImvDes.visibility = View.VISIBLE
     }
 
     private fun setFavoriteDionte() {
