@@ -44,6 +44,27 @@
                 android:paddingStart="@dimen/margin_view_to_view_small"
                 android:paddingEnd="@dimen/margin_view_to_view_small" />
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_main_background_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_view_to_view_medium"
+                android:layout_marginBottom="@dimen/margin_view_to_view_largest"
+                android:padding="10dp"
+                app:cardBackgroundColor="@color/button_action_dionte"
+                app:cardCornerRadius="360dp"
+                app:layout_constraintBottom_toTopOf="@+id/bg_main_background"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_goneMarginBottom="@dimen/margin_view_to_view_largest">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:id="@+id/imv_main_plus_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_plus_data" />
+            </androidx.cardview.widget.CardView>
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/bg_main_background"
                 android:layout_width="wrap_content"

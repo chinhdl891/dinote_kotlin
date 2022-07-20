@@ -22,6 +22,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
@@ -190,11 +191,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     MainFragment::class.simpleName -> onExitApp()
                     DrawableFragment::class.simpleName -> supportFragmentManager.popBackStack()
                     CreateFragment::class.simpleName,
-                    DetailFragment::class.simpleName,
                     RemindFragment::class.simpleName,
                     SearchFragment::class.simpleName,
                     ThemeFragment::class.simpleName,
-                    FavoriteFragment::class.simpleName,
                     -> {
                         setDisableDraw()
                         mBinding.tlbMainAction.visibility = View.VISIBLE
@@ -206,9 +205,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         mBinding.tlbMainAction.visibility = isVisitable
                         supportFragmentManager.popBackStack()
                     }
+                    DetailFragment::class.simpleName -> {
+                        if (supportFragmentManager.fragments.size > 3) {
+                            mBinding.tlbMainAction.visibility = View.GONE
+                        } else {
+                            mBinding.tlbMainAction.visibility = View.VISIBLE
+                        }
+                        supportFragmentManager.popBackStack()
+                    }
                 }
-                if (supportFragmentManager.fragments.size == 2) {
+                val myFragment: MainFragment? =
+                    supportFragmentManager.findFragmentByTag(MainFragment::class.simpleName) as MainFragment?
+                if (myFragment != null && myFragment.isVisible) {
                     setEnableDraw()
+                    mBinding.tlbMainAction.visibility = View.VISIBLE
                 }
             }
         }

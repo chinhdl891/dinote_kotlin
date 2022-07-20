@@ -1,5 +1,6 @@
 package com.bzk.dinoteslite.view.fragment
 
+import android.app.DatePickerDialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,12 +18,11 @@ import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
-import com.bzk.dinoteslite.view.dialog.CancelDialog
-import com.bzk.dinoteslite.view.dialog.DialogMotion
-import com.bzk.dinoteslite.view.dialog.RemoveDialog
-import com.bzk.dinoteslite.view.dialog.UpdateDialog
+import com.bzk.dinoteslite.view.dialog.*
 import com.bzk.dinoteslite.viewmodel.DetailFragmentViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 private const val TAG = "DetailFragment"
@@ -161,6 +161,7 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
             imvCreateTextTagEdit.setOnClickListener(this@DetailFragment::onClick)
             imvCreateTextRemove.setOnClickListener(this@DetailFragment::onClick)
             lnlCrateStatus.setOnClickListener(this@DetailFragment::onClick)
+            tvDateSelection.setOnClickListener(this@DetailFragment::onClick)
         }
     }
 
@@ -179,7 +180,7 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
                 onSetFavorite()
             }
             R.id.imv_create_text_remove -> {
-                mBinding.edtCreateContent.setText("")
+               remoteContent()
             }
             R.id.imv_detail_cancel -> {
                 onCancel()
@@ -195,6 +196,39 @@ class DetailFragment(var onDelete: (Dinote) -> Unit, var onUpdateDinote: (Dinote
                 viewModel.addTag()
                 mBinding.edtCreateTitle.clearFocus()
             }
+            R.id.tv_date_selection -> {
+                onSelectDate()
+            }
+        }
+    }
+
+    private fun remoteContent() {
+        activity?.let {
+            DeleteContentDialog(it, onDelete = {
+                mBinding.edtCreateContent.setText("")
+            }).show()
+        }
+    }
+
+    private fun onSelectDate() {
+        var date = Date()
+        date.time = mDinote.dateCreate
+        var calendar = Calendar.getInstance()
+        calendar.timeInMillis = date.time
+        val day = calendar.get(Calendar.DATE)
+        val month = calendar.get(Calendar.MONTH)
+        val year = calendar.get(Calendar.YEAR)
+        getMainActivity()?.let {
+            DatePickerDialog(it,
+                { datePicker, i, i2, i3 ->
+                    calendar.set(i, i2, i3)
+                    val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+                    mBinding.tvDateSelection.text = simpleDateFormat.format(calendar.timeInMillis)
+                    viewModel.mDinote.dateCreate = calendar.timeInMillis
+                },
+                year,
+                month,
+                day).show()
         }
     }
 

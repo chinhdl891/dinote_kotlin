@@ -28,6 +28,7 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
     View.OnClickListener {
     private var sizeStoke = 16
     private var mColor = Color.BLACK
+    private lateinit var stringUri: String
     override fun getLayoutResource(): Int {
         return R.layout.fragment_drawable
     }
@@ -98,11 +99,12 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
 
     private fun saveImage() {
         var bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
-        onSave(saveBitMapToStores(bitmap))
+        saveBitMapToStores(bitmap)
+        onSave(stringUri)
         activity?.onBackPressed()
     }
 
-    private fun saveBitMapToStores(bitmap: Bitmap): String {
+    private fun saveBitMapToStores(bitmap: Bitmap) {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveImageInQ(bitmap)
         } else {
@@ -110,24 +112,24 @@ class DrawableFragment(var onSave: (String) -> Unit) : BaseFragment<FragmentDraw
         }
     }
 
-    private fun saveImageUnQ(bitmap: Bitmap): String {
-        val imagesDir =
-            Environment.getExternalStorageDirectory()
-        val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
-        val fos = FileOutputStream(image)
-        val saveData = lifecycleScope.launch {
+    private fun saveImageUnQ(bitmap: Bitmap) {
+        lifecycleScope.launch {
+            val imagesDir =
+                Environment.getExternalStorageDirectory()
+            val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
+            stringUri = image.toURI().path
+            val fos = FileOutputStream(image)
             fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
         }
-        return image.toURI().path
     }
 
-    private fun saveImageInQ(bitmap: Bitmap): String {
-        val filename = getString(R.string.txt_name_image, System.currentTimeMillis())
-        val fOutputStream = activity?.openFileOutput(filename, Context.MODE_PRIVATE)
-        val saveData = lifecycleScope.launch {
+    private fun saveImageInQ(bitmap: Bitmap) {
+        lifecycleScope.launch {
+            val filename = getString(R.string.txt_name_image, System.currentTimeMillis())
+            stringUri = filename
+            val fOutputStream = activity?.openFileOutput(filename, Context.MODE_PRIVATE)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream)
         }
-        return filename
     }
 
     private fun onChangeSize(size: Int) {
