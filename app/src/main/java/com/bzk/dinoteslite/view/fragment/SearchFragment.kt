@@ -105,7 +105,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         val search = HistorySearch(content = contentSearch)
         viewModel.onInsertHistory(search)
         val resultSearchFragment = ResultSearchFragment.newInstance(contentSearch)
-        getMainActivity()?.loadFragment(resultSearchFragment,
-            ResultSearchFragment::class.simpleName.toString())
+//        getMainActivity()?.loadFragment(resultSearchFragment,
+//            ResultSearchFragment::class.simpleName.toString())
     }
 }

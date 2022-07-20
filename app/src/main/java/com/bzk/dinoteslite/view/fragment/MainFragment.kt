@@ -1,22 +1,21 @@
 package com.bzk.dinoteslite.view.fragment
 
-import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.widget.Toast
-import androidx.core.view.GravityCompat
+import android.widget.ImageView
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.drawerlayout.widget.DrawerLayout.*
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.DinoteAdapter
+import com.bzk.dinoteslite.adapter.HotTagAdapter
 import com.bzk.dinoteslite.adapter.PhotoAdapter
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentMainBinding
@@ -26,6 +25,7 @@ import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.DialogFakeData
 import com.bzk.dinoteslite.viewmodel.MainFragmentViewModel
+import com.google.android.flexbox.FlexboxLayoutManager
 import java.util.*
 import kotlin.math.abs
 
@@ -36,9 +36,19 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     View.OnClickListener, DetailFragment.DetailFragmentListener {
 
     private var photoAdapter: PhotoAdapter? = null
+    private var layoutManager: LinearLayoutManager? = null
     private var mTimer: Timer? = null
     private var dinoteAdapter: DinoteAdapter? = null
     private lateinit var compositePageTransformer: CompositePageTransformer
+    private lateinit var headerView: View
+    private lateinit var imvHeadRate: ImageView
+    private lateinit var imvHeadTheme: ImageView
+    private lateinit var imvHeadFavorite: ImageView
+    private lateinit var imvHeaderStar: ImageView
+    private lateinit var imvHeaderHotTag: ImageView
+    private var hotTagAdapter: HotTagAdapter? = null
+    private lateinit var rcvHeadHotTag: RecyclerView
+    private lateinit var toggle: ActionBarDrawerToggle
 
     companion object {
         fun onRemoveDinote(dinote: Dinote) {
@@ -52,8 +62,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
                 it?.set(position, dinote)
             }
         }
-
-
     }
 
     override fun getLayoutResource(): Int {
@@ -65,33 +73,68 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     }
 
     override fun setUpdata() {
+        headerView = mBinding.ngvMainAction.getHeaderView(0)
+        initHeadView()
+        reSizeView()
         viewModel = ViewModelProvider(this)[MainFragmentViewModel::class.java]
-        photoAdapter = PhotoAdapter().apply {
-            submitData(viewModel.list.value!!)
-        }
-        observeViewModel()
-        mBinding.vpgMainFragment.adapter = photoAdapter
-        setViewPage()
-        autoRunAds()
-
-        val layoutManager = LinearLayoutManager(context)
+        layoutManager = LinearLayoutManager(activity)
         mBinding.rcvMainDinote.layoutManager = layoutManager
-        dinoteAdapter = DinoteAdapter(
-            onDelete = {
-                viewModel.deleteDinote(it)
-            },
-            onGotoDetail = { dinote, position ->
-                val detailFragment = DetailFragment.newInstance(dinote, position)
-                getMainActivity()?.loadFragment(detailFragment,
-                    DetailFragment::class.simpleName.toString())
-                detailFragment.detailFragmentListener = this
-            })
-        mBinding.rcvMainDinote.adapter = dinoteAdapter
+        setUpPhotoAdapter()
+        setUpDinoteAdpter()
         viewModel.getListDinote()
+        layoutManager = LinearLayoutManager(context)
+        setupLoadMore()
+        setupToolBarMain()
+    }
+
+    private fun reSizeView() {
+        ReSizeView.resizeView(imvHeadFavorite, 64)
+        ReSizeView.resizeView(imvHeadTheme, 64)
+        ReSizeView.resizeView(imvHeadRate, 64)
+        ReSizeView.resizeView(imvHeaderStar, 128)
+        ReSizeView.resizeView(imvHeaderHotTag, 64)
+    }
+
+    private fun setupToolBarMain() {
+        mBinding.mtbMain.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.item_menu_search -> {
+                    findNavController().navigate(R.id.searchFragment)
+                    true
+                }
+                R.id.item_menu_notification -> {
+                    findNavController().navigate(R.id.remindFragment)
+                    true
+                }
+                R.id.item_menu_watch -> {
+                    true
+                }
+                else -> false
+            }
+        }
+        toggle = ActionBarDrawerToggle(activity,
+            mBinding.drlMain,
+            mBinding.mtbMain,
+            R.string.open,
+            R.string.close)
+        mBinding.drlMain.addDrawerListener(toggle)
+        toggle.syncState()
+    }
+
+    private fun initHeadView() {
+        imvHeadFavorite = headerView.findViewById(R.id.imv_head_favorite)
+        imvHeadRate = headerView.findViewById(R.id.imv_head_rate)
+        imvHeadTheme = headerView.findViewById(R.id.imv_head_theme)
+        imvHeaderStar = headerView.findViewById(R.id.imv_header_star)
+        rcvHeadHotTag = headerView.findViewById(R.id.rcv_head_tag_hot)
+        imvHeaderHotTag = headerView.findViewById(R.id.imv_head_tag)
+    }
+
+    private fun setupLoadMore() {
         mBinding.rcvMainDinote.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (layoutManager.findLastVisibleItemPosition() == (viewModel.listDinote.value?.size!! - 1)) {
+                if (layoutManager?.findLastVisibleItemPosition() == (viewModel.listDinote.value?.size!! - 1)) {
                     if (viewModel.totalDinote > 50) {
                         if (viewModel.isLoading.value == false) {
                             viewModel.setUpLoadData()
@@ -100,6 +143,29 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
                 }
             }
         })
+    }
+
+    private fun setUpDinoteAdpter() {
+        dinoteAdapter = DinoteAdapter(
+            onDelete = {
+                viewModel.deleteDinote(it)
+            },
+            onGotoDetail = { dinote, position ->
+                val action = MainFragmentDirections.actionMainFragmentToDetailFragment(dinote)
+                findNavController().navigate(action)
+            })
+        mBinding.rcvMainDinote.adapter = dinoteAdapter
+    }
+
+    private fun setUpPhotoAdapter() {
+        photoAdapter = PhotoAdapter().apply {
+            submitData(viewModel.list.value!!)
+        }
+        observeViewModel()
+        mBinding.vpgMainFragment.adapter = photoAdapter
+        setViewPage()
+        autoRunAds()
+
     }
 
     private fun setViewPage() {
@@ -160,16 +226,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     override fun onClick() {
         mBinding.bgMainBackground.setOnClickListener(this)
         mBinding.cvMainBackgroundPlus.setOnClickListener(this)
+
     }
 
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.bg_main_background -> openCreateDinote()
-            R.id.cv_main_background_plus -> opendFakeData()
+            R.id.cv_main_background_plus -> openFakeData()
         }
     }
 
-    private fun opendFakeData() {
+    private fun openFakeData() {
         activity?.let {
             DialogFakeData(it, onAddData = {
                 requireActivity().recreate()
@@ -178,19 +245,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     }
 
     private fun openCreateDinote() {
-        val createFragment = CreateFragment()
-        createFragment.createFragmentListener = object : CreateFragment.CreateFragmentListener {
-            override fun onAdd(dinote: Dinote) {
-                viewModel.listDinote.value = viewModel.listDinote.value.also {
-                    it?.add(0, dinote)
-                }
-            }
-
-            override fun onAddTag(tagModel: TagModel) {
-                addTagListener?.onAddTag(tagModel)
-            }
-        }
-        getMainActivity()?.loadFragment(createFragment, CreateFragment::class.java.simpleName)
+        findNavController().navigate(R.id.createFragment)
     }
 
     override fun onStop() {
@@ -200,7 +255,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     }
 
     override fun onResume() {
-        getMainActivity()?.setEnableDraw()
         super.onResume()
         if (mTimer == null) {
             autoRunAds()
@@ -216,6 +270,28 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     override fun onAddTag(tagModel: TagModel) {
         addTagListener?.onAddTag(tagModel)
     }
+
+    fun setEnableDraw() {
+        mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
+
+    private fun setDisableDraw() {
+        mBinding.drlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    private fun setUpDataHead() {
+        rcvHeadHotTag.layoutManager = FlexboxLayoutManager(activity)
+        hotTagAdapter = HotTagAdapter(onSearch = {
+
+        })
+        rcvHeadHotTag.adapter = hotTagAdapter
+    }
+
+    override fun onDestroyView() {
+        viewModel.clearData()
+        super.onDestroyView()
+    }
+
 }
 
 

@@ -7,72 +7,16 @@
 
     </data>
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drl_main"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".views.activities.MainActivity"
-        tools:openDrawer="start">
+        android:layout_height="match_parent">
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/flo_main_tutorial"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/tlb_main_action"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:theme="@style/ShapeAppearanceOverlay.Material3.NavigationView.Item"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <FrameLayout
-                android:id="@+id/frl_main_content"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tlb_main_action" />
-
-            <ImageView
-                android:id="@+id/imv_main_watch"
-                style="@style/imv_option_main"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tlb_main_action"
-                app:layout_constraintEnd_toEndOf="@+id/tlb_main_action"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/ic_menu_delete_ads" />
-
-            <ImageView
-                android:id="@+id/imv_main_notification"
-                style="@style/imv_option_main"
-                app:layout_constraintBottom_toBottomOf="@+id/tlb_main_action"
-                app:layout_constraintRight_toLeftOf="@+id/imv_main_watch"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_notification" />
-
-            <ImageView
-                android:id="@+id/imv_main_search"
-                style="@style/imv_option_main"
-                app:layout_constraintBottom_toBottomOf="@+id/tlb_main_action"
-                app:layout_constraintRight_toLeftOf="@+id/imv_main_notification"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_search" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/ngv_main_action"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            app:headerLayout="@layout/header_acc" />
-
-    </androidx.drawerlayout.widget.DrawerLayout>
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph" />
+    </LinearLayout>
 </layout>
