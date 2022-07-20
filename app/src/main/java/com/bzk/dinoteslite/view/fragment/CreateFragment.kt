@@ -21,6 +21,7 @@ import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.CancelDialog
+import com.bzk.dinoteslite.view.dialog.DeleteContentDialog
 import com.bzk.dinoteslite.view.dialog.DialogMotion
 import com.bzk.dinoteslite.view.dialog.SaveDinoteDialog
 import com.bzk.dinoteslite.viewmodel.CreateFragmentViewModel
@@ -99,6 +100,7 @@ class CreateFragment :
             imvCreateCancel.setOnClickListener(this@CreateFragment::onClick)
             tvDateSelection.setOnClickListener(this@CreateFragment::onClick)
             imvCreateTextAddTag.setOnClickListener(this@CreateFragment::onClick)
+            imvCreateTextRemove.setOnClickListener(this@CreateFragment::onClick)
         }
     }
 
@@ -115,6 +117,7 @@ class CreateFragment :
                     arguments = bundle
                 }, DrawableFragment::class.java.simpleName)
             }
+            R.id.imv_create_text_remove -> remoteContent()
             R.id.tv_create_save -> saveDinote()
             R.id.imv_create_cancel -> cancelCreateFragment()
             R.id.tv_date_selection -> setDateSelect()
@@ -123,6 +126,14 @@ class CreateFragment :
                 viewModel.addTag()
                 mBinding.edtCreateTitle.clearFocus()
             }
+        }
+    }
+
+    private fun remoteContent() {
+        activity?.let {
+            DeleteContentDialog(it, onDelete = {
+                mBinding.edtCreateContent.setText("")
+            }).show()
         }
     }
 

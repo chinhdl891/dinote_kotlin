@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/conner_view"
+        android:padding="@dimen/margin_view_to_view_medium">
+
+        <EditText
+            android:id="@+id/edt_fake_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/conner_view"
+            android:hint="@string/txt_add_data"
+            android:inputType="number"
+            android:padding="@dimen/margin_view_to_view_small"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_view_to_view_medium"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            app:layout_constraintTop_toBottomOf="@id/edt_fake_number">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_fake_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_start"
+                android:layout_marginEnd="@dimen/margin_start"
+                android:layout_weight="5"
+                android:background="@drawable/coner_view_button_cancel"
+                android:text="@string/txt_exit"
+                android:textColor="@color/purple_500" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_fake_add"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_start"
+                android:layout_marginEnd="@dimen/margin_start"
+                android:layout_weight="5"
+                android:background="@drawable/coner_view_button_continues"
+                android:text="@string/txt_add"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

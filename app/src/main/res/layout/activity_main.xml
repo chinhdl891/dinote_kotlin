@@ -42,6 +42,7 @@
             <ImageView
                 android:id="@+id/imv_main_watch"
                 style="@style/imv_option_main"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tlb_main_action"
                 app:layout_constraintEnd_toEndOf="@+id/tlb_main_action"
                 app:layout_constraintTop_toTopOf="parent"

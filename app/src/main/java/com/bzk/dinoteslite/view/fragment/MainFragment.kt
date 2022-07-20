@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.*
@@ -23,6 +24,7 @@ import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.dialog.DialogFakeData
 import com.bzk.dinoteslite.viewmodel.MainFragmentViewModel
 import java.util.*
 import kotlin.math.abs
@@ -151,16 +153,27 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     override fun onReSize() {
         ReSizeView.resizeView(mBinding.imvMainCreateDinote, 80)
         ReSizeView.resizeView(mBinding.bgMainBackground, 160)
-
+        ReSizeView.resizeView(mBinding.imvMainPlusData, 80)
+        ReSizeView.resizeView(mBinding.cvMainBackgroundPlus, 160)
     }
 
     override fun onClick() {
         mBinding.bgMainBackground.setOnClickListener(this)
+        mBinding.cvMainBackgroundPlus.setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.bg_main_background -> openCreateDinote()
+            R.id.cv_main_background_plus -> opendFakeData()
+        }
+    }
+
+    private fun opendFakeData() {
+        activity?.let {
+            DialogFakeData(it, onAddData = {
+                requireActivity().recreate()
+            }).show()
         }
     }
 
