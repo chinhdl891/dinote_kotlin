@@ -59,8 +59,8 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding>(), View.OnClickLi
         dinoteAdapter = DinoteAdapter(onDelete = {
 
         }, onGotoDetail = { dionote, position ->
-            val detailFragment = DetailFragment.newInstance(dionote, position)
-            getMainActivity()?.loadFragment(detailFragment, DetailFragment::class.java.simpleName)
+//            val detailFragment = DetailFragment.newInstance(dionote, position)
+//            getMainActivity()?.loadFragment(detailFragment, DetailFragment::class.java.simpleName)
         })
         mBinding.rcvFavoriteDinote.adapter = dinoteAdapter
         mBinding.rcvFavoriteDinote.layoutManager = layoutManager

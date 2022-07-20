@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/item_menu_search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="ifRoom"
+        android:title="@string/txt_title_search" />
+    <item
+        app:showAsAction="always"
+        android:id="@+id/item_menu_notification"
+        android:icon="@drawable/ic_menu_remind"
+        android:title="@string/text_remind" />
+    <item
+        app:showAsAction="always"
+        android:id="@+id/item_menu_watch"
+        android:icon="@drawable/ic_watch"
+        android:title="@string/txt_watch" />
+</menu>

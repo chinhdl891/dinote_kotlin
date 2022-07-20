@@ -25,6 +25,7 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
     private var count: Int = 0
 
     var list = MutableLiveData(
+
         mutableListOf(
             PhotoModel(R.drawable.imv_ads_1),
             PhotoModel(R.drawable.imv_ads_2),
@@ -32,6 +33,12 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
             PhotoModel(R.drawable.imv_ads_4)
         )
     )
+
+    fun clearData() {
+        limit = 50
+        count = 0
+        totalDinote = dinoteDAO?.getTotalItemCount()!!
+    }
 
     fun getListDinote(): MutableList<Dinote> {
         listDinote.value = listDinote.value?.also {
@@ -71,10 +78,6 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
                 }
             })
         }
-    }
-
-    fun clearList() {
-        listDinote.value = listDinote.value.also { it?.clear() }
     }
 
     override fun onCleared() {

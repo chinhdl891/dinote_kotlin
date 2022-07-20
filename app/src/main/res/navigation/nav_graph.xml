@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.MainFragment"
+        android:label="MainFragment" >
+        <action
+            android:id="@+id/action_mainFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_createFragment"
+            app:destination="@id/createFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_themeFragment"
+            app:destination="@id/themeFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_remindFragment"
+            app:destination="@id/remindFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.DetailFragment"
+        android:label="DetailFragment" >
+        <action
+            android:id="@+id/action_detailFragment_to_drawableFragment"
+            app:destination="@id/drawableFragment" />
+        <argument
+            android:name="dinote"
+            app:argType="com.bzk.dinoteslite.model.Dinote" />
+    </fragment>
+    <fragment
+        android:id="@+id/createFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.CreateFragment"
+        android:label="CreateFragment" >
+        <action
+            android:id="@+id/action_createFragment_to_drawableFragment"
+            app:destination="@id/drawableFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/drawableFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.DrawableFragment"
+        android:label="DrawableFragment" >
+        <action
+            android:id="@+id/action_drawableFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_drawableFragment_to_createFragment"
+            app:destination="@id/createFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.FavoriteFragment"
+        android:label="FavoriteFragment" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.SearchFragment"
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_resultSearchFragment"
+            app:destination="@id/resultSearchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/remindFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.RemindFragment"
+        android:label="RemindFragment" />
+    <fragment
+        android:id="@+id/resultSearchFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.ResultSearchFragment"
+        android:label="ResultSearchFragment" >
+        <action
+            android:id="@+id/action_resultSearchFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/themeFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.ThemeFragment"
+        android:label="ThemeFragment" />
+</navigation>
