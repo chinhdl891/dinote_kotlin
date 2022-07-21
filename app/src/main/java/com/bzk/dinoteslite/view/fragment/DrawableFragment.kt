@@ -103,10 +103,10 @@ class DrawableFragment() : BaseFragment<FragmentDrawableBinding>(),
     private fun saveImage() {
         var bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
         saveBitMapToStores(bitmap)
-        val bundle = bundleOf(
-            AppConstant.SEND_URI to stringUri
-        )
-        findNavController().navigate(R.id.createFragment, bundle)
+        //pass data
+        findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_URI,
+            stringUri)
+        findNavController().popBackStack()
     }
 
     private fun saveBitMapToStores(bitmap: Bitmap) {

@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,9 +39,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
         DetailFragmentViewModel(requireActivity().application)
     }
     private lateinit var mDinote: Dinote
-    private val layoutManager by lazy {
-        LinearLayoutManager(getMainActivity(), RecyclerView.HORIZONTAL, false)
-    }
     private var addTagAdapter: AddTagAdapter? = null
     private var cancelDialog: CancelDialog? = null
 
@@ -51,37 +50,54 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
 
     }
 
-    override fun setUpdata() {
-        mBinding.detailViewModel = viewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val bundle: DetailFragmentArgs by navArgs()
         bundle.let {
             mDinote = bundle.dinote
-            Log.d(TAG, "setUpdata: " + mDinote.uriImage)
-            checkImageIsExits(mDinote.uriImage)
             nameImageNew = mDinote.uriImage
             viewModel.mDinote = mDinote
-            mBinding.setVariable(BR.dinoteDetail, mDinote)
-            mBinding.executePendingBindings()
             if (mDinote.ListTag.isNotEmpty()) {
-                viewModel.tagModelList.value = mDinote.ListTag as MutableList<TagModel>
-            }
-            addTagAdapter = AddTagAdapter(
-                onAddTag = {
-                    viewModel.addTag()
-                },
-                onDeleteTag = { position ->
-                    viewModel.deleteTag(position)
+                viewModel.tagModelList.value = viewModel.tagModelList.value.also {
+                    it?.addAll(0, mDinote.ListTag)
                 }
-            )
-            mBinding.rcvCreateTag.adapter = addTagAdapter
-            mBinding.rcvCreateTag.layoutManager = layoutManager
-            observer()
+            }
+            viewModel.getListTag()
             viewModel.getFavorite()
+            observer()
         }
     }
 
+    override fun setUpdata() {
+        checkImageIsExits(mDinote.uriImage)
+        getDataFromDrawFragment()
+        mBinding.detailViewModel = viewModel
+        mBinding.setVariable(BR.dinoteDetail, mDinote)
+        mBinding.executePendingBindings()
+        setUpTagAdapter()
+    }
+
+    private fun setUpTagAdapter() {
+        addTagAdapter = AddTagAdapter(
+            onAddTag = {
+                viewModel.addTag()
+            },
+            onDeleteTag = { position ->
+                viewModel.deleteTag(position)
+            }
+        )
+        mBinding.rcvCreateTag.adapter = addTagAdapter
+    }
+
+    private fun getDataFromDrawFragment() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(AppConstant.SEND_URI)
+            ?.observe(viewLifecycleOwner) { uri ->
+                onShowDraw(uri)
+            }
+    }
+
     private fun checkImageIsExits(uriImage: String) {
-        val file = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+        val file = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             File(context?.filesDir?.absolutePath + "/$uriImage")
         } else {
             File(Uri.parse(uriImage).toString())
@@ -97,13 +113,15 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
 
     private fun observer() {
         viewModel.tagModelList.observe(this) {
+            mBinding.rcvCreateTag.layoutManager =
+                LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
             addTagAdapter?.initData(it)
             mBinding.rcvCreateTag.layoutManager?.scrollToPosition(it.size - 1)
-
         }
         viewModel.setUpdate.observe(this) {
             if (it) {
                 onUpdateDinote()
+                viewModel.setUpdate.value = !it
             }
         }
         viewModel.isFavorite.observe(this) {
@@ -224,16 +242,15 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                         file.delete()
                     }
                 }
-                activity?.onBackPressed()
+                cancelDialog?.dismiss()
+                findNavController().popBackStack()
             })
         }
         cancelDialog?.show()
     }
 
     private fun onGotoDrawFragment() {
-//        getMainActivity()?.loadFragment(DrawableFragment(onSave = { nameImage ->
-//            onShowDraw(nameImage)
-//        }), DrawableFragment::class.simpleName.toString())
+        findNavController().navigate(R.id.drawableFragment)
     }
 
     private fun onShowDraw(nameImage: String) {
@@ -264,7 +281,13 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
         context?.let {
             RemoveDialog(it, onDelete = {
                 viewModel.dropDinote(mDinote)
-                activity?.onBackPressed()
+                val bundle = bundleOf(
+                    AppConstant.SEND_OBJ to viewModel.mDinote,
+                    AppConstant.SEND_STATUS_DELETE to 0
+                )
+                findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_BUNDLE,
+                    bundle)
+                findNavController().popBackStack()
             }).show()
         }
 
@@ -288,7 +311,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                     viewModel.tagModelList.value?.forEach { tag ->
                         detailFragmentListener?.onAddTag(tag)
                     }
-                    activity?.onBackPressed()
+                    findNavController().popBackStack()
                 }
             }, onCancel = {
                 viewModel.blockView.set(ViewGroup.FOCUS_BEFORE_DESCENDANTS)

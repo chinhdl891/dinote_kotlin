@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.DinoteAdapter
@@ -48,8 +49,8 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
         Toast.makeText(activity, viewModel.contentSearch, Toast.LENGTH_SHORT).show()
         dinoteAdapter = DinoteAdapter(onDelete = {
             viewModel.onDelete(it)
-        }, onGotoDetail = { dinote, position ->
-            onGotoDetail(dinote, position)
+        }, onGotoDetail = { dinote ->
+            onGotoDetail(dinote)
         })
         mBinding.rcvSearchResult.adapter = dinoteAdapter
         mBinding.rcvSearchResult.layoutManager = LinearLayoutManager(activity)
@@ -57,10 +58,10 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
         observer()
     }
 
-    private fun onGotoDetail(dinote: Dinote, position: Int) {
-//        val detailFragment = DetailFragment.newInstance(dinote, position)
-//        getMainActivity()?.loadFragment(detailFragment,
-//            DetailFragment::class.java.simpleName.toString())
+    private fun onGotoDetail(dinote: Dinote) {
+        val action =
+            ResultSearchFragmentDirections.actionResultSearchFragmentToDetailFragment(dinote)
+        findNavController().navigate(action)
     }
 
     private fun observer() {
