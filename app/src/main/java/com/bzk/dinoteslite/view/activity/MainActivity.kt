@@ -7,36 +7,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
-import com.bzk.dinoteslite.adapter.HotTagAdapter
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
-import com.bzk.dinoteslite.model.TagModel
 import com.bzk.dinoteslite.reciver.TimeRemindReceiver
 import com.bzk.dinoteslite.utils.AppConstant
-import com.bzk.dinoteslite.utils.ReSizeView
-import com.bzk.dinoteslite.view.dialog.ExitDialog
-import com.bzk.dinoteslite.view.fragment.*
-import com.bzk.dinoteslite.viewmodel.MainActivityViewModel
-import com.google.android.flexbox.FlexboxLayoutManager
 import java.util.*
 
 private const val TAG = "MainActivity"

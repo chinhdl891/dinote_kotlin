@@ -59,11 +59,10 @@ class CreateFragment :
     }
 
     private fun setUpBundle() {
-        val bundle = arguments
-        if (bundle != null) {
-            val stringUri: String = bundle.getString(AppConstant.SEND_URI, "")
-            onShowImage(stringUri)
-        }
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(AppConstant.SEND_URI)
+            ?.observe(viewLifecycleOwner) {
+                onShowImage(it)
+            }
     }
 
     private fun observer() {
@@ -197,7 +196,9 @@ class CreateFragment :
                 viewModel.lisTagIsEmpty.forEach { tag ->
                     createFragmentListener?.onAddTag(tag)
                 }
-                findNavController().navigate(R.id.mainFragment)
+                findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_OBJ,
+                    viewModel.dinote)
+                findNavController().popBackStack()
             }).show()
         }
     }

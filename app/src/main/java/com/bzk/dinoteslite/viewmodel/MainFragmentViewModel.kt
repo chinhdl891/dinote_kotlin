@@ -9,6 +9,7 @@ import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.PhotoModel
+import com.bzk.dinoteslite.model.TagModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,15 +18,28 @@ private const val TAG = "MainFragmentViewModel"
 
 class MainFragmentViewModel(application: Application) : AndroidViewModel(application) {
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
+    var dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
     var totalDinote: Int = dinoteDAO?.getTotalItemCount()!!
     var listDinote: MutableLiveData<MutableList<Dinote>> = MutableLiveData(mutableListOf())
-
     private var limit: Int = 50
     private var count: Int = 0
+    var listHotTag: MutableLiveData<HashSet<TagModel>> = MutableLiveData(hashSetOf())
+    var tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
+
+    fun getListHotTag(): HashSet<TagModel> {
+        listHotTag.value = listHotTag.value.also {
+            tagDAO?.let { listTag -> it?.addAll(listTag.getListHotTag()) }
+        }
+        return listHotTag.value ?: hashSetOf()
+    }
+
+    fun addHotTag(tagModel: TagModel) {
+        listHotTag.value = listHotTag.value.also {
+            it?.add(tagModel)
+        }
+    }
 
     var list = MutableLiveData(
-
         mutableListOf(
             PhotoModel(R.drawable.imv_ads_1),
             PhotoModel(R.drawable.imv_ads_2),
@@ -35,9 +49,15 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
     )
 
     fun clearData() {
+        totalDinote = dinoteDAO?.getTotalItemCount()!!
+        isLoading = MutableLiveData(false)
+        dinoteDAO = DinoteDataBase.getInstance(getApplication())?.dinoteDAO()
+        totalDinote = dinoteDAO?.getTotalItemCount()!!
+        listDinote = MutableLiveData(mutableListOf())
         limit = 50
         count = 0
-        totalDinote = dinoteDAO?.getTotalItemCount()!!
+        listHotTag = MutableLiveData(hashSetOf())
+        tagDAO = DinoteDataBase.getInstance(getApplication())?.tagDAO()
     }
 
     fun getListDinote(): MutableList<Dinote> {

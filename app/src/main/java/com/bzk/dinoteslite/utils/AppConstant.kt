@@ -14,5 +14,7 @@ class AppConstant {
         const val SEND_CONTENT_SEARCH = "send_con"
         const val SEND_URI = "send_uri"
         const val SEND_ADDRESS = "send_address"
+        const val SEND_STATUS_DELETE = "send_status_delete"
+        const val SEND_BUNDLE = "send_bundle"
     }
 }

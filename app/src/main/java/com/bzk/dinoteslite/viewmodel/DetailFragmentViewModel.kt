@@ -39,7 +39,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     val dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
     val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
 
-    private fun getListTag(): MutableList<TagModel> {
+    fun getListTag(): MutableList<TagModel> {
         return tagModelList.value!!
     }
 
@@ -97,7 +97,9 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
         for (i in getListTag()) {
             if (i.contentTag.isEmpty()) {
                 tagModelList.value = tagModelList.value.also {
-                    it?.remove(i)
+                    if (it?.size!! > 0) {
+                        it.remove(i)
+                    }
                 }
             } else {
                 if (tagDAO?.countTag(i.contentTag) == 0) {
