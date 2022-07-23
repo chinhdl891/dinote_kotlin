@@ -1,14 +1,18 @@
 package com.bzk.dinoteslite.view.fragment
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.HistorySearchAdapter
 import com.bzk.dinoteslite.adapter.HotTagAdapter
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentSearchBinding
+import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.HistorySearch
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.SearchFragmentViewModel
 import com.google.android.flexbox.AlignItems
@@ -30,6 +34,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
 
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.listHotTag()
+        viewModel.listHistorySearch()
+    }
+
     override fun setUpdata() {
         mBinding.rcvSearchHistory.layoutManager = layoutManager()
         searchAdapter = HistorySearchAdapter(onSearch = {
@@ -42,8 +52,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         })
         mBinding.rcvSearchTagHot.adapter = hotTagAdapter
         mBinding.rcvSearchTagHot.layoutManager = layoutManager()
-        viewModel.listHotTag()
-        viewModel.listHistorySearch()
         observer()
     }
 
@@ -104,8 +112,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
         val contentSearch = mBinding.editSearchContent.text.toString().trim()
         val search = HistorySearch(content = contentSearch)
         viewModel.onInsertHistory(search)
-        val resultSearchFragment = ResultSearchFragment.newInstance(contentSearch)
-//        getMainActivity()?.loadFragment(resultSearchFragment,
-//            ResultSearchFragment::class.simpleName.toString())
+        val action =
+            SearchFragmentDirections.actionSearchFragmentToResultSearchFragment(contentSearch)
+        findNavController().navigate(action)
     }
 }

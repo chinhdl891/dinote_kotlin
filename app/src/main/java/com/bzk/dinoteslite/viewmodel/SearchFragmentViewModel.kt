@@ -8,6 +8,7 @@ import com.bzk.dinoteslite.model.HistorySearch
 import com.bzk.dinoteslite.model.TagModel
 
 class SearchFragmentViewModel(application: Application) : AndroidViewModel(application) {
+    val contentSearch: String = ""
     val listHistorySearch: MutableLiveData<MutableList<HistorySearch>?> = MutableLiveData(
         mutableListOf())
     val listHotTag: MutableLiveData<MutableList<TagModel>?> = MutableLiveData(mutableListOf())

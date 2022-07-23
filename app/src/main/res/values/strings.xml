@@ -121,4 +121,7 @@
     <string name="txt_add_data">Nhập số lượng</string>
     <string name="txt_title_search">Search</string>
     <string name="txt_watch">Xem QC</string>
+    <string name="my_notification">My notification</string>
+    <string name="content_notification">Much longer text that cannot fit one line...</string>
+    <string name="big_content_text">Much longer text that cannot fit one line...</string>
 </resources>

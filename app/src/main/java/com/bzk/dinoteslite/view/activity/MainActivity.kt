@@ -30,26 +30,45 @@ class MainActivity : AppCompatActivity() {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setContentView(mBinding.root)
         checkPermissions()
+        setTimeMemory()
         setupTimeDefault()
     }
 
-    private fun setupTimeDefault() {
-        val timeDefault: Long = MySharedPreferences(context = this).getTimeRemindDefault()
-        if (timeDefault == 0L) {
-            val calendar = Calendar.getInstance().apply {
-                timeInMillis = System.currentTimeMillis()
-                set(Calendar.HOUR_OF_DAY, 9)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
+    private fun setTimeMemory() {
+        val timeMemory: Long = MySharedPreferences(this).getTimeMemoryDefault()
+        if (timeMemory == 0L) {
+            val calendar = timeDefault(7)
             val time =
-                if (calendar.timeInMillis > System.currentTimeMillis())
-                    calendar.timeInMillis
+                if (calendar > System.currentTimeMillis())
+                    calendar
                 else
-                    calendar.timeInMillis + AlarmManager.INTERVAL_DAY
-            MySharedPreferences(this).pushTimeRemindDefault(time)
+                    calendar + AlarmManager.INTERVAL_DAY
+            MySharedPreferences(this).pushTimeMemoryDefault(time)
             setNotificationDefault(time)
+        }
+    }
+
+    private fun timeDefault(hour: Int, minus : Int = 0): Long {
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minus)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return calendar.timeInMillis
+    }
+
+    private fun setupTimeDefault() {
+        val timeDefault: Long = MySharedPreferences(this).getTimeRemindDefault()
+        if (timeDefault == 0L) {
+            val calendar = timeDefault(9, 30)
+            val time =
+                if (calendar > System.currentTimeMillis())
+                    calendar
+                else
+                    calendar + AlarmManager.INTERVAL_DAY
+            MySharedPreferences(this).pushTimeRemindDefault(time)
         }
     }
 

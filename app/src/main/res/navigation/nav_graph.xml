@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_mainFragment_to_remindFragment"
             app:destination="@id/remindFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_resultSearchFragment"
+            app:destination="@id/resultSearchFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -84,6 +87,9 @@
         <action
             android:id="@+id/action_resultSearchFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <argument
+            android:name="search_content"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/themeFragment"
