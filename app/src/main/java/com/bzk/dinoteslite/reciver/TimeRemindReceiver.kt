@@ -9,26 +9,34 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.os.bundleOf
+import androidx.navigation.NavDeepLinkBuilder
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.model.TimeRemind
+import com.bzk.dinoteslite.utils.AppConstant.Companion.CHANNEL_ID
+import com.bzk.dinoteslite.utils.AppConstant.Companion.DEEP_LINK_ID
 import com.bzk.dinoteslite.view.activity.MainActivity
 import kotlin.random.Random
-
-private const val TAG = "TimeRemindReceiver"
 
 class TimeRemindReceiver : BroadcastReceiver() {
     @SuppressLint("UnspecifiedImmutableFlag")
     override fun onReceive(context: Context, p1: Intent) {
         createNotification(context)
         var timeRemindDefault: Long = MySharedPreferences(context).getTimeRemindDefault()
+        var timeMemoryDefault: Long = MySharedPreferences(context).getTimeMemoryDefault()
+
         if (timeRemindDefault < System.currentTimeMillis() + 10000) {
             timeRemindDefault += AlarmManager.INTERVAL_DAY
             MySharedPreferences(context).pushTimeRemindDefault(timeRemindDefault)
+        }
+
+        if (timeMemoryDefault < System.currentTimeMillis() + 10000) {
+            timeMemoryDefault += AlarmManager.INTERVAL_DAY
+            MySharedPreferences(context).pushTimeRemindDefault(timeMemoryDefault)
         }
 
         val timeRemindList: MutableList<TimeRemind> = mutableListOf()
@@ -37,17 +45,36 @@ class TimeRemindReceiver : BroadcastReceiver() {
 
         val timeRemind = TimeRemind(0, timeRemindDefault, true)
         timeRemindList.add(timeRemind)
+        val timeMemory = TimeRemind(1, timeMemoryDefault, true)
+        timeRemindList.add(timeMemory)
 
-        val timeRemindPendingIntent = timeRemindList.filter {
+        val listTimeSort = timeRemindList.filter {
             it.time > System.currentTimeMillis() && it.active
-        }.sortedBy { time -> time.time }[0]
+        }.sortedBy { timeModel -> timeModel.time }
 
+        var timeRemindPendingIntent = listTimeSort[0]
+        val timeRemindNext = listTimeSort[1]
 
         timeRemindList.filter {
             it.time < System.currentTimeMillis() && it.active
         }.forEach {
             it.time += AlarmManager.INTERVAL_DAY
             DinoteDataBase.getInstance(context)?.timeRemindDAO()?.onUpdateTime(it)
+        }
+
+        if (timeRemindPendingIntent.time == timeMemoryDefault) {
+            val listIdDinote: List<Int>? =
+                DinoteDataBase.getInstance(context)?.dinoteDAO()?.getAllId()
+            val sizeList = listIdDinote?.size
+            val random = sizeList?.let {
+                Random(sizeList - 1).nextInt()
+            }
+            random?.let {
+                createNotificationDeepLink(context, it)
+            }
+            timeRemindPendingIntent = timeRemindNext
+        } else {
+            createNotification(context)
         }
 
         val reIntent = Intent(context, TimeRemindReceiver::class.java)
@@ -76,15 +103,50 @@ class TimeRemindReceiver : BroadcastReceiver() {
         }
     }
 
+    private fun createNotificationDeepLink(context: Context, id: Int) {
+        val pendingIntent = NavDeepLinkBuilder(context).apply {
+            setGraph(R.navigation.nav_graph)
+            setDestination(R.id.detailFragment)
+            setArguments(bundleOf().apply {
+                putInt(DEEP_LINK_ID, id)
+            })
+        }.createPendingIntent()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(context)
+        }
+        val builder = context.let {
+            NotificationCompat.Builder(it, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle(context.getString(R.string.my_notification))
+                .setContentText(context.getString(R.string.content_notification))
+                .setStyle(
+                    NotificationCompat.BigTextStyle()
+                        .bigText(context.getString(R.string.big_content_text))
+                )
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+        }
+        with(NotificationManagerCompat.from(context)) {
+            notify(Random(10000).nextInt(), builder.build())
+        }
+    }
+
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun createNotification(context: Context) {
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
+        val requestCode = 89
         val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getActivity(context, Random(50000).nextInt(), intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getActivity(context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE)
         } else {
-            PendingIntent.getActivity(context, Random(50000).nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
         val builder = NotificationCompat.Builder(context, createNotificationChannel(context))

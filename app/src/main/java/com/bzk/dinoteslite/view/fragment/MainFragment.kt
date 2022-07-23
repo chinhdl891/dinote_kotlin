@@ -83,16 +83,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     }
 
     private fun setUpBundle() {
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Dinote>(AppConstant.SEND_OBJ)
-            ?.observe(viewLifecycleOwner) {
-                viewModel.listDinote.value?.add(it)
-            }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(AppConstant.SEND_BUNDLE)
             ?.observe(viewLifecycleOwner) {
-                val status = it.getInt(AppConstant.SEND_STATUS_DELETE)
+                val status = it.getInt(AppConstant.SEND_STATUS)
                 val dinote = it.getSerializable(AppConstant.SEND_OBJ) as Dinote
-                if (status == 0){
+                if (status == 0) {
                     viewModel.deleteDinote(dinote)
+                } else {
+                    viewModel.listDinote.value?.add(dinote)
+                    for (i in 0 until dinote.ListTag.size) {
+                        viewModel.addHotTag(dinote.ListTag[i])
+                    }
                 }
             }
     }
@@ -217,7 +218,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
 
     private fun observeViewModel() {
         viewModel.listDinote.observe(viewLifecycleOwner) {
-            dinoteAdapter?.initData(it)
+            dinoteAdapter?.initData(it.toMutableList())
         }
         viewModel.isLoading.observe(this) {
             if (it) {
@@ -310,7 +311,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     private fun setUpDataHead() {
         rcvHeadHotTag.layoutManager = FlexboxLayoutManager(activity)
         hotTagAdapter = HotTagAdapter(onSearch = {
-
+            val action = MainFragmentDirections.actionMainFragmentToResultSearchFragment(it)
+            findNavController().navigate(action)
         })
         rcvHeadHotTag.adapter = hotTagAdapter
     }

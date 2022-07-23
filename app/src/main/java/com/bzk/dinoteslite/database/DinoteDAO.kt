@@ -28,4 +28,7 @@ interface DinoteDAO {
 
     @Query("select COUNT(id) from dinote")
     fun getTotalItemCount(): Int
+
+    @Query("select id from dinote")
+    fun getAllId(): List<Int>
 }

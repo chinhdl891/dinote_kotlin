@@ -196,8 +196,12 @@ class CreateFragment :
                 viewModel.lisTagIsEmpty.forEach { tag ->
                     createFragmentListener?.onAddTag(tag)
                 }
-                findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_OBJ,
-                    viewModel.dinote)
+                val bundle = bundleOf(
+                    AppConstant.SEND_OBJ to viewModel.dinote,
+                    AppConstant.SEND_STATUS to 1,
+                )
+                findNavController().previousBackStackEntry?.savedStateHandle?.
+                set(AppConstant.SEND_BUNDLE, bundle)
                 findNavController().popBackStack()
             }).show()
         }

@@ -20,7 +20,7 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     var dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
     var totalDinote: Int = dinoteDAO?.getTotalItemCount()!!
-    var listDinote: MutableLiveData<MutableList<Dinote>> = MutableLiveData(mutableListOf())
+    var listDinote: MutableLiveData<MutableSet<Dinote>> = MutableLiveData(mutableSetOf())
     private var limit: Int = 50
     private var count: Int = 0
     var listHotTag: MutableLiveData<HashSet<TagModel>> = MutableLiveData(hashSetOf())
@@ -48,23 +48,11 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
         )
     )
 
-    fun clearData() {
-        totalDinote = dinoteDAO?.getTotalItemCount()!!
-        isLoading = MutableLiveData(false)
-        dinoteDAO = DinoteDataBase.getInstance(getApplication())?.dinoteDAO()
-        totalDinote = dinoteDAO?.getTotalItemCount()!!
-        listDinote = MutableLiveData(mutableListOf())
-        limit = 50
-        count = 0
-        listHotTag = MutableLiveData(hashSetOf())
-        tagDAO = DinoteDataBase.getInstance(getApplication())?.tagDAO()
-    }
-
     fun getListDinote(): MutableList<Dinote> {
         listDinote.value = listDinote.value?.also {
             dinoteDAO?.getAllDinote(limit, count)?.let { list -> it.addAll(list) }
         }
-        return listDinote.value ?: mutableListOf()
+        return listDinote.value?.toMutableList() ?: mutableListOf()
     }
 
     fun deleteDinote(dinote: Dinote) {

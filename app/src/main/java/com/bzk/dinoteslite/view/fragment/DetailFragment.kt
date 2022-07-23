@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
@@ -283,7 +282,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                 viewModel.dropDinote(mDinote)
                 val bundle = bundleOf(
                     AppConstant.SEND_OBJ to viewModel.mDinote,
-                    AppConstant.SEND_STATUS_DELETE to 0
+                    AppConstant.SEND_STATUS to 0
                 )
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_BUNDLE,
                     bundle)

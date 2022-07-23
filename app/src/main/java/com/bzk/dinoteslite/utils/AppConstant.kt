@@ -14,7 +14,11 @@ class AppConstant {
         const val SEND_CONTENT_SEARCH = "send_con"
         const val SEND_URI = "send_uri"
         const val SEND_ADDRESS = "send_address"
-        const val SEND_STATUS_DELETE = "send_status_delete"
+        const val SEND_STATUS = "send_status"
         const val SEND_BUNDLE = "send_bundle"
+        const val SEND_LIST_TAG = "send_list_tag"
+        const val TIME_DEFAULT = "time_default"
+        const val CHANNEL_ID = "channel_id"
+        const val DEEP_LINK_ID = "deep_link_id"
     }
 }
