@@ -42,9 +42,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingStart="@dimen/margin_start"
-            android:paddingTop="30dp"
+            android:paddingTop="@dimen/padding_view_medium"
             android:paddingEnd="@dimen/margin_start"
-            android:paddingBottom="30dp"
+            android:paddingBottom="@dimen/padding_view_medium"
             android:weightSum="2">
 
             <androidx.appcompat.widget.AppCompatButton

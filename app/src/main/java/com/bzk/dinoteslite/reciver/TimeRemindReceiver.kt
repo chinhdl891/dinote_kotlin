@@ -17,7 +17,9 @@ import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.model.TimeRemind
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.AppConstant.Companion.DEEP_LINK_ID
+import com.bzk.dinoteslite.utils.AppConstant.Companion.REQUEST_CODE_NOTIFICATION
 import com.bzk.dinoteslite.view.activity.MainActivity
 import kotlin.random.Random
 
@@ -65,7 +67,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
                 DinoteDataBase.getInstance(context)?.dinoteDAO()?.getAllId()
             val sizeList = listIdDinote?.size
             val random = sizeList?.let {
-                Random.nextInt(it -1)
+                Random.nextInt(it - 1)
             }
             random?.let {
                 createNotificationDeepLink(context, it)
@@ -75,7 +77,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
         }
 
         val reIntent = Intent(context, TimeRemindReceiver::class.java)
-        val requestCode = 50
+        val requestCode = REQUEST_CODE_NOTIFICATION
         val pendingIntentRe: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(context,
                 requestCode,
@@ -122,14 +124,14 @@ class TimeRemindReceiver : BroadcastReceiver() {
                 .setContentIntent(pendingIntent)
         }
         val notificationCoManager = NotificationManagerCompat.from(context)
-        notificationCoManager.notify(123, builder.build())
+        notificationCoManager.notify(AppConstant.ID_NOTIFICATION, builder.build())
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun createNotification(context: Context) {
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val requestCode = 65
+        val requestCode = AppConstant.REQUEST_CODE_NOTIFICATION
         val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getActivity(context,
                 requestCode,
@@ -153,7 +155,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
             priority = NotificationCompat.PRIORITY_HIGH
         }
         val notificationCoManager = NotificationManagerCompat.from(context)
-        notificationCoManager.notify(123, builder.build())
+        notificationCoManager.notify(AppConstant.ID_NOTIFICATION, builder.build())
     }
 
     private fun createNotificationChannel(context: Context): String {
