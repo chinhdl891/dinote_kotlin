@@ -36,7 +36,7 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_change_dinote_continue"
                 style="@style/twoButton"
-                android:background="@drawable/coner_view_button_cancel"
+                android:background="@drawable/conner_view_button_cancel"
                 android:text="@string/txt_continue"
                 android:textColor="@color/text_color_exit" />
 
@@ -44,7 +44,7 @@
                 android:id="@+id/btn_change_dinote_save"
                 style="@style/twoButton"
                 android:layout_marginStart="@dimen/margin_start"
-                android:background="@drawable/coner_view_button_continues"
+                android:background="@drawable/conner_view_button_continues"
                 android:text="@string/txt_change"
                 android:textAllCaps="false"
                 android:textColor="@color/white" />

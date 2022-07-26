@@ -6,9 +6,9 @@
     </data>
 
     <LinearLayout
-        android:background="@drawable/conner_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/conner_view"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -17,51 +17,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_child_to_child"
+            android:layout_marginTop="@dimen/padding_view_medium"
+            android:layout_marginBottom="@dimen/margin_view_to_view_biggest"
             android:src="@drawable/imv_exit_app" />
 
         <TextView
-            android:textColor="@color/text_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_view_to_view_small"
             android:gravity="center"
             android:text="@string/text_commit_exit_app"
+            android:textColor="@color/text_color"
             android:textStyle="bold" />
 
         <TextView
-            android:textColor="@color/text_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_view_to_view_small"
             android:gravity="center"
-            android:text="@string/text_exit_app" />
+            android:text="@string/text_exit_app"
+            android:textColor="@color/text_color" />
 
         <LinearLayout
-            android:weightSum="2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:paddingStart="@dimen/margin_start"
+            android:paddingTop="30dp"
             android:paddingEnd="@dimen/margin_start"
-            android:paddingTop="@dimen/margin_view_to_view_small"
-            android:paddingBottom="@dimen/margin_view_to_view_small"
-            android:orientation="horizontal">
+            android:paddingBottom="30dp"
+            android:weightSum="2">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_exit_continue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_view_to_view_medium"
+                android:layout_marginEnd="@dimen/margin_view_to_view_medium"
                 android:layout_weight="1"
-                android:background="@drawable/coner_view_button_continues"
-                android:text="Tiếp tục"
-                android:layout_marginEnd="@dimen/margin_view_to_view_small"
+                android:background="@drawable/conner_view_button_continues"
+                android:text="@string/txt_continue"
                 android:textColor="@color/white" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_exit_exit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_view_to_view_medium"
+                android:layout_marginEnd="@dimen/margin_view_to_view_medium"
                 android:layout_weight="1"
-                android:background="@drawable/coner_view_button_cancel"
+                android:background="@drawable/conner_view_button_cancel"
                 android:text="@string/text_exit"
                 android:textColor="@color/purple_500" />
 

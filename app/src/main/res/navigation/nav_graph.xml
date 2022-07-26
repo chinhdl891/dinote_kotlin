@@ -2,12 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/tutorialFragment">
 
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.bzk.dinoteslite.view.fragment.MainFragment"
-        android:label="MainFragment" >
+        android:label="MainFragment">
         <action
             android:id="@+id/action_mainFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
@@ -29,22 +29,22 @@
         <action
             android:id="@+id/action_mainFragment_to_resultSearchFragment"
             app:destination="@id/resultSearchFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_detailFragment2"
+            app:destination="@id/detailFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.bzk.dinoteslite.view.fragment.DetailFragment"
-        android:label="DetailFragment" >
+        android:label="DetailFragment">
         <action
             android:id="@+id/action_detailFragment_to_drawableFragment"
             app:destination="@id/drawableFragment" />
-        <argument
-            android:name="dinote"
-            app:argType="com.bzk.dinoteslite.model.Dinote" />
     </fragment>
     <fragment
         android:id="@+id/createFragment"
         android:name="com.bzk.dinoteslite.view.fragment.CreateFragment"
-        android:label="CreateFragment" >
+        android:label="CreateFragment">
         <action
             android:id="@+id/action_createFragment_to_drawableFragment"
             app:destination="@id/drawableFragment" />
@@ -52,7 +52,7 @@
     <fragment
         android:id="@+id/drawableFragment"
         android:name="com.bzk.dinoteslite.view.fragment.DrawableFragment"
-        android:label="DrawableFragment" >
+        android:label="DrawableFragment">
         <action
             android:id="@+id/action_drawableFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
@@ -63,7 +63,7 @@
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.bzk.dinoteslite.view.fragment.FavoriteFragment"
-        android:label="FavoriteFragment" >
+        android:label="FavoriteFragment">
         <action
             android:id="@+id/action_favoriteFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
@@ -71,7 +71,7 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.bzk.dinoteslite.view.fragment.SearchFragment"
-        android:label="SearchFragment" >
+        android:label="SearchFragment">
         <action
             android:id="@+id/action_searchFragment_to_resultSearchFragment"
             app:destination="@id/resultSearchFragment" />
@@ -83,7 +83,7 @@
     <fragment
         android:id="@+id/resultSearchFragment"
         android:name="com.bzk.dinoteslite.view.fragment.ResultSearchFragment"
-        android:label="ResultSearchFragment" >
+        android:label="ResultSearchFragment">
         <action
             android:id="@+id/action_resultSearchFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
@@ -95,4 +95,12 @@
         android:id="@+id/themeFragment"
         android:name="com.bzk.dinoteslite.view.fragment.ThemeFragment"
         android:label="ThemeFragment" />
+    <fragment
+        android:id="@+id/tutorialFragment"
+        android:name="com.bzk.dinoteslite.view.fragment.TutorialFragment"
+        android:label="TutorialFragment">
+        <action
+            android:id="@+id/action_tutorialFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 </navigation>

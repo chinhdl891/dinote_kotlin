@@ -75,7 +75,7 @@
             android:id="@+id/btn_theme_change"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/coner_view_button_continues"
+            android:background="@drawable/conner_view_button_continues"
             android:paddingStart="@dimen/margin_start"
             android:paddingEnd="@dimen/margin_start"
             android:text="@string/text_change"

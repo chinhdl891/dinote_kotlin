@@ -36,7 +36,7 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_dialog_continues_cancel"
                 style="@style/twoButton"
-                android:background="@drawable/coner_view_button_cancel"
+                android:background="@drawable/conner_view_button_cancel"
                 android:text="@string/give"
                 android:textColor="@color/text_color_exit" />
 
@@ -44,7 +44,7 @@
                 android:id="@+id/btn_dialog_delete"
                 style="@style/twoButton"
                 android:layout_marginStart="@dimen/margin_start"
-                android:background="@drawable/coner_view_button_continues"
+                android:background="@drawable/conner_view_button_continues"
                 android:text="@string/txt_delete"
                 android:textAllCaps="false"
                 android:textColor="@color/white" />
