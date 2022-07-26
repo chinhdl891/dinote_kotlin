@@ -2,6 +2,7 @@ package com.bzk.dinoteslite.view.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -62,9 +63,12 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
     }
 
     private fun onGotoDetail(dinote: Dinote) {
-        val action =
-            ResultSearchFragmentDirections.actionResultSearchFragmentToDetailFragment(dinote)
-        findNavController().navigate(action)
+//        val action =
+//            ResultSearchFragmentDirections.actionResultSearchFragmentToDetailFragment(dinote.id)
+        val bundle = bundleOf(
+            AppConstant.DEEP_LINK_ID to dinote.id
+        )
+        findNavController().navigate(R.id.detailFragment, bundle)
     }
 
     private fun observer() {

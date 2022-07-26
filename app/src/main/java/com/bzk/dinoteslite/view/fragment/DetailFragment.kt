@@ -15,6 +15,7 @@ import com.bzk.dinoteslite.BR
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.AddTagAdapter
 import com.bzk.dinoteslite.base.BaseFragment
+import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.databinding.FragmentDetailBinding
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.TagModel
@@ -28,7 +29,6 @@ import java.util.*
 
 
 private const val TAG = "DetailFragment"
-private var mPosition: Int = 0
 
 class DetailFragment : BaseFragment<FragmentDetailBinding>(),
     View.OnClickListener {
@@ -51,19 +51,26 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bundle: DetailFragmentArgs by navArgs()
-        bundle.let {
-            mDinote = bundle.dinote
-            nameImageNew = mDinote.uriImage
-            viewModel.mDinote = mDinote
-            if (mDinote.ListTag.isNotEmpty()) {
-                viewModel.tagModelList.value = viewModel.tagModelList.value.also {
-                    it?.addAll(0, mDinote.ListTag)
-                }
+        val bundle = arguments
+        val id = bundle?.getInt(AppConstant.DEEP_LINK_ID) as Int
+        initData(id)
+        viewModel.getListTag()
+        viewModel.getFavorite()
+        observer()
+    }
+
+    private fun initData(id: Int?) {
+        mDinote = context?.let {
+            id?.let { id ->
+                DinoteDataBase.getInstance(it)?.dinoteDAO()?.getDinoteById(id)
             }
-            viewModel.getListTag()
-            viewModel.getFavorite()
-            observer()
+        } as Dinote
+        nameImageNew = mDinote.uriImage
+        viewModel.mDinote = mDinote
+        if (mDinote.ListTag.isNotEmpty()) {
+            viewModel.tagModelList.value = viewModel.tagModelList.value.also {
+                it?.addAll(0, mDinote.ListTag)
+            }
         }
     }
 

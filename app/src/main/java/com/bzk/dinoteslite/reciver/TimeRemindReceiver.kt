@@ -17,7 +17,6 @@ import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.model.TimeRemind
-import com.bzk.dinoteslite.utils.AppConstant.Companion.CHANNEL_ID
 import com.bzk.dinoteslite.utils.AppConstant.Companion.DEEP_LINK_ID
 import com.bzk.dinoteslite.view.activity.MainActivity
 import kotlin.random.Random
@@ -25,7 +24,6 @@ import kotlin.random.Random
 class TimeRemindReceiver : BroadcastReceiver() {
     @SuppressLint("UnspecifiedImmutableFlag")
     override fun onReceive(context: Context, p1: Intent) {
-        createNotification(context)
         var timeRemindDefault: Long = MySharedPreferences(context).getTimeRemindDefault()
         var timeMemoryDefault: Long = MySharedPreferences(context).getTimeMemoryDefault()
 
@@ -67,26 +65,25 @@ class TimeRemindReceiver : BroadcastReceiver() {
                 DinoteDataBase.getInstance(context)?.dinoteDAO()?.getAllId()
             val sizeList = listIdDinote?.size
             val random = sizeList?.let {
-                Random(sizeList - 1).nextInt()
+                Random.nextInt(it -1)
             }
             random?.let {
                 createNotificationDeepLink(context, it)
             }
-            timeRemindPendingIntent = timeRemindNext
         } else {
             createNotification(context)
         }
 
         val reIntent = Intent(context, TimeRemindReceiver::class.java)
-        val random = Random(50000)
+        val requestCode = 50
         val pendingIntentRe: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(context,
-                random.nextInt(),
+                requestCode,
                 reIntent,
                 PendingIntent.FLAG_IMMUTABLE)
         } else {
             PendingIntent.getBroadcast(context,
-                random.nextInt(),
+                requestCode,
                 reIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
         }
@@ -96,10 +93,10 @@ class TimeRemindReceiver : BroadcastReceiver() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(type,
-                timeRemindPendingIntent.time,
+                timeRemindNext.time,
                 pendingIntentRe)
         } else {
-            alarmManager.set(type, timeRemindPendingIntent.time, pendingIntentRe)
+            alarmManager.set(type, timeRemindNext.time, pendingIntentRe)
         }
     }
 
@@ -112,11 +109,8 @@ class TimeRemindReceiver : BroadcastReceiver() {
             })
         }.createPendingIntent()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel(context)
-        }
         val builder = context.let {
-            NotificationCompat.Builder(it, CHANNEL_ID)
+            NotificationCompat.Builder(it, createNotificationChannel(context))
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(context.getString(R.string.my_notification))
                 .setContentText(context.getString(R.string.content_notification))
@@ -127,16 +121,15 @@ class TimeRemindReceiver : BroadcastReceiver() {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
         }
-        with(NotificationManagerCompat.from(context)) {
-            notify(Random(10000).nextInt(), builder.build())
-        }
+        val notificationCoManager = NotificationManagerCompat.from(context)
+        notificationCoManager.notify(123, builder.build())
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun createNotification(context: Context) {
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val requestCode = 89
+        val requestCode = 65
         val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getActivity(context,
                 requestCode,

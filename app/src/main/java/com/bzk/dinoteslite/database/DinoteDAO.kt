@@ -31,4 +31,7 @@ interface DinoteDAO {
 
     @Query("select id from dinote")
     fun getAllId(): List<Int>
+
+    @Query("SELECT * FROM dinote WHERE id = :id LIMIT 1")
+    fun getDinoteById(id: Int) : Dinote
 }

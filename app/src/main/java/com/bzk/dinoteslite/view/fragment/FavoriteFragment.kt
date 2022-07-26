@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.DinoteAdapter
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.databinding.FragmentFavoriteBinding
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.FavoriteFragmentViewModel
 import com.bzk.dinoteslite.viewmodel.MainFragmentViewModel
@@ -60,8 +62,11 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding>(), View.OnClickLi
         dinoteAdapter = DinoteAdapter(onDelete = {
 
         }, onGotoDetail = { dinote ->
-            val action = MainFragmentDirections.actionMainFragmentToDetailFragment(dinote)
-            findNavController().navigate(action)
+//            val action = MainFragmentDirections.actionMainFragmentToDetailFragment(dinote.id)
+            val bundle  = bundleOf(
+                AppConstant.DEEP_LINK_ID to dinote.id
+            )
+            findNavController().navigate(R.id.detailFragment, bundle)
         })
         mBinding.rcvFavoriteDinote.adapter = dinoteAdapter
         mBinding.rcvFavoriteDinote.layoutManager = layoutManager

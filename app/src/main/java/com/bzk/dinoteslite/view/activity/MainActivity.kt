@@ -13,16 +13,22 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.ActivityMainBinding
 import com.bzk.dinoteslite.reciver.TimeRemindReceiver
 import com.bzk.dinoteslite.utils.AppConstant
+import com.bzk.dinoteslite.view.dialog.ExitDialog
+import com.bzk.dinoteslite.view.fragment.MainFragment
 import java.util.*
+
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
+    var timeRemindDefault: Long = 0L
     private lateinit var mBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         onsetUpTheme()
@@ -30,8 +36,8 @@ class MainActivity : AppCompatActivity() {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setContentView(mBinding.root)
         checkPermissions()
-        setTimeMemory()
-        setupTimeDefault()
+//        setTimeMemory()
+//        setupTimeDefault()
     }
 
     private fun setTimeMemory() {
@@ -41,14 +47,15 @@ class MainActivity : AppCompatActivity() {
             val time =
                 if (calendar > System.currentTimeMillis())
                     calendar
-                else
+                else {
                     calendar + AlarmManager.INTERVAL_DAY
+                }
+            timeRemindDefault = time
             MySharedPreferences(this).pushTimeMemoryDefault(time)
-            setNotificationDefault(time)
         }
     }
 
-    private fun timeDefault(hour: Int, minus : Int = 0): Long {
+    private fun timeDefault(hour: Int, minus: Int = 0): Long {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, hour)
@@ -66,9 +73,12 @@ class MainActivity : AppCompatActivity() {
             val time =
                 if (calendar > System.currentTimeMillis())
                     calendar
-                else
+                else {
                     calendar + AlarmManager.INTERVAL_DAY
+                }
+            timeRemindDefault = if (timeRemindDefault > time) time else timeRemindDefault
             MySharedPreferences(this).pushTimeRemindDefault(time)
+            setNotificationDefault(timeRemindDefault)
         }
     }
 
@@ -107,7 +117,8 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == AppConstant.PERMISSION_WRITE_EXTERNAL_STORAGE) {
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, R.string.write_debied, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.write_debied, Toast.LENGTH_SHORT)
+                    .show()
             }
             checkPermissions()
         }
@@ -123,5 +134,21 @@ class MainActivity : AppCompatActivity() {
                     android.Manifest.permission.READ_EXTERNAL_STORAGE),
                 AppConstant.PERMISSION_WRITE_EXTERNAL_STORAGE)
         }
+    }
+
+    override fun onBackPressed() {
+        if (isMainFragment()) {
+            MainFragment.closeDrawer()
+            ExitDialog(this@MainActivity, onFinish = {
+                finish()
+            }).show()
+        } else {
+            findNavController(R.id.nav_host_fragment).popBackStack()
+        }
+    }
+
+    private fun isMainFragment(): Boolean {
+        val controller = findNavController(R.id.nav_host_fragment)
+        return controller.currentDestination?.id == R.id.mainFragment
     }
 }

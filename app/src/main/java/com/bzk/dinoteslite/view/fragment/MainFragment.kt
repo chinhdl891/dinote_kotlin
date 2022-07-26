@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.os.bundleOf
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +34,7 @@ import kotlin.math.abs
 
 
 private lateinit var viewModel: MainFragmentViewModel
+private lateinit var drawerLayout: DrawerLayout
 
 class MainFragment : BaseFragment<FragmentMainBinding>(),
     View.OnClickListener, DetailFragment.DetailFragmentListener {
@@ -52,6 +56,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
     private lateinit var lnlHeadTheme: LinearLayout
     private lateinit var lnlHeadFavorite: LinearLayout
     private lateinit var lnlHeadRate: LinearLayout
+
+    companion object {
+        fun closeDrawer() {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +92,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
         setupLoadMore()
         setupToolBarMain()
         observeViewModel()
+        drawerLayout = mBinding.drlMain
     }
 
     private fun setUpBundle() {
@@ -167,8 +180,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
                 viewModel.deleteDinote(it)
             },
             onGotoDetail = { dinote ->
-                val action = MainFragmentDirections.actionMainFragmentToDetailFragment(dinote)
-                findNavController().navigate(action)
+                val bundle = bundleOf(
+                    AppConstant.DEEP_LINK_ID to dinote.id
+                )
+//                val action = MainFragmentDirections.actionMainFragmentToDetailFragment(dinote.id)
+                findNavController().navigate(R.id.detailFragment,bundle)
             })
         mBinding.rcvMainDinote.adapter = dinoteAdapter
     }
