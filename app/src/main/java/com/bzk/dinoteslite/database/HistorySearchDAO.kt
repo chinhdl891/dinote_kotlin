@@ -1,5 +1,6 @@
 package com.bzk.dinoteslite.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -15,6 +16,6 @@ interface HistorySearchDAO {
     fun onDelete()
 
     @Query("select * from history_search")
-    fun getListHistory(): List<HistorySearch>
+    fun getListHistory(): LiveData<List<HistorySearch>>
 
 }

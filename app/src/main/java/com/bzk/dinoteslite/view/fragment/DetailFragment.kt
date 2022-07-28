@@ -41,6 +41,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
     private var addTagAdapter: AddTagAdapter? = null
     private var cancelDialog: CancelDialog? = null
 
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_detail
     }
@@ -53,6 +54,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
         super.onCreate(savedInstanceState)
         val bundle = arguments
         val id = bundle?.getInt(AppConstant.DEEP_LINK_ID) as Int
+        viewModel.id = id
         initData(id)
         viewModel.getListTag()
         viewModel.getFavorite()
@@ -64,7 +66,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
             id?.let { id ->
                 DinoteDataBase.getInstance(it)?.dinoteDAO()?.getDinoteById(id)
             }
-        } as Dinote
+        }!!
         nameImageNew = mDinote.uriImage
         viewModel.mDinote = mDinote
         if (mDinote.ListTag.isNotEmpty()) {
@@ -318,6 +320,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                         detailFragmentListener?.onAddTag(tag)
                     }
                     findNavController().popBackStack()
+                    findNavController().navigate(R.id.detailFragment,
+                        bundleOf(AppConstant.DEEP_LINK_ID to viewModel.id))
                 }
             }, onCancel = {
                 viewModel.blockView.set(ViewGroup.FOCUS_BEFORE_DESCENDANTS)

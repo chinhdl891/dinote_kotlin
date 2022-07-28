@@ -24,6 +24,7 @@ class DialogFakeData(context: Context, var onAddData: () -> Unit) :
         val dinote = Dinote(0)
         for (i in 0..count) {
             dinote.title = "fake $i"
+            dinote.ListTag = emptyList()
             DinoteDataBase.getInstance(context)?.dinoteDAO()?.onInsert(dinote)
         }
         dismiss()

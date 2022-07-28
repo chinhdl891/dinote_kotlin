@@ -23,5 +23,6 @@ class AppConstant {
         const val REQUEST_CODE_NOTIFICATION = 6699
         const val REQUEST_CODE_REMIND = 8866
         const val ID_NOTIFICATION = 123
+        const val SEND_THEME = "send_theme"
     }
 }

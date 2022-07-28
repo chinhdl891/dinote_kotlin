@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil.setContentView
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -16,10 +17,10 @@ import com.bzk.dinoteslite.adapter.ThemeAdapter
 import com.bzk.dinoteslite.base.BaseFragment
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.FragmentThemeBinding
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
+import com.bzk.dinoteslite.view.activity.MainActivity
 import kotlin.math.abs
-
-private const val TAG = "ThemeFragment"
 
 class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener {
     private var themeAdapter: ThemeAdapter? = null
@@ -79,13 +80,18 @@ class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener
 
     override fun onClick(p0: View) {
         when (p0.id) {
-            R.id.imv_theme_cancel -> activity?.onBackPressed()
+            R.id.imv_theme_cancel -> {
+                val intent = Intent(requireActivity(), MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+                activity?.let {
+                    it.startActivity(intent)
+                    it.finishAffinity()
+                }
+            }
             R.id.btn_theme_change -> {
                 val mySharedPreferences = activity?.let { MySharedPreferences(it) }
                 mySharedPreferences?.pushTheme(mBinding.vpgThemeChange.currentItem)
-                activity?.recreate()
             }
         }
     }
-
 }

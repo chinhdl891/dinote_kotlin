@@ -39,6 +39,6 @@ class MySharedPreferences(var context: Context) {
 
     fun getTimeMemoryDefault(): Long {
         val mySharedPreferences = context.getSharedPreferences(MY_DATA_LOCAL, 0)
-        return mySharedPreferences.getLong(TIME_REMIND_DEFAULT, 0L)
+        return mySharedPreferences.getLong(TIME_MEMORY_DEFAULT, 0L)
     }
 }

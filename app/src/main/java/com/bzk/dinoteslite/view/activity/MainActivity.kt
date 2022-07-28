@@ -28,7 +28,6 @@ import java.util.*
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
-    var timeRemindDefault: Long = 0L
     private lateinit var mBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         onsetUpTheme()
@@ -36,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setContentView(mBinding.root)
         checkPermissions()
-
     }
 
     private fun onsetUpTheme() {

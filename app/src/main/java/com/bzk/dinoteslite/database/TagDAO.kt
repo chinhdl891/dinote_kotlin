@@ -1,5 +1,6 @@
 package com.bzk.dinoteslite.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -15,13 +16,13 @@ interface TagDAO {
     fun delete(tag: TagModel)
 
     @Query("select * from tag")
-    fun getListTag(): List<TagModel>
+    fun getListTag(): LiveData<List<TagModel>>
 
     @Query("select count(content) from tag where content = :tagContent")
     fun countTag(tagContent: String): Int
 
     @Query("select * from tag limit 10")
-    fun getListHotTag(): List<TagModel>
+    fun getListHotTag(): LiveData<List<TagModel>>
 
     @Query("select * from tag where content = :contentTag")
     fun getListTag(contentTag: String): List<TagModel>

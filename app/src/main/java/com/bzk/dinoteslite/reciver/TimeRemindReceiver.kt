@@ -21,13 +21,14 @@ import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.AppConstant.Companion.DEEP_LINK_ID
 import com.bzk.dinoteslite.utils.AppConstant.Companion.REQUEST_CODE_NOTIFICATION
 import com.bzk.dinoteslite.view.activity.MainActivity
+import java.util.*
 import kotlin.random.Random
 
 class TimeRemindReceiver : BroadcastReceiver() {
     @SuppressLint("UnspecifiedImmutableFlag")
     override fun onReceive(context: Context, p1: Intent) {
-        var timeRemindDefault: Long = MySharedPreferences(context).getTimeRemindDefault()
-        var timeMemoryDefault: Long = MySharedPreferences(context).getTimeMemoryDefault()
+        var timeRemindDefault: Long = getTimeRemind(context)
+        var timeMemoryDefault: Long = getTimeMemory(context)
 
         if (timeRemindDefault < System.currentTimeMillis() + 10000) {
             timeRemindDefault += AlarmManager.INTERVAL_DAY
@@ -38,22 +39,14 @@ class TimeRemindReceiver : BroadcastReceiver() {
             timeMemoryDefault += AlarmManager.INTERVAL_DAY
             MySharedPreferences(context).pushTimeRemindDefault(timeMemoryDefault)
         }
-
         val timeRemindList: MutableList<TimeRemind> = mutableListOf()
         DinoteDataBase.getInstance(context)?.timeRemindDAO()?.getListTimeRemind()
             ?.let { timeRemindList.addAll(it) }
 
-        val timeRemind = TimeRemind(0, timeRemindDefault, true)
-        timeRemindList.add(timeRemind)
-        val timeMemory = TimeRemind(1, timeMemoryDefault, true)
-        timeRemindList.add(timeMemory)
-
-        val listTimeSort = timeRemindList.filter {
-            it.time > System.currentTimeMillis() && it.active
-        }.sortedBy { timeModel -> timeModel.time }
-
-        var timeRemindPendingIntent = listTimeSort[0]
-        val timeRemindNext = listTimeSort[1]
+        val timeRemind = TimeRemind(69, timeRemindDefault, true)
+        timeRemindList.add(0, timeRemind)
+        val timeMemory = TimeRemind(70, timeMemoryDefault, true)
+        timeRemindList.add(0, timeMemory)
 
         timeRemindList.filter {
             it.time < System.currentTimeMillis() && it.active
@@ -61,13 +54,17 @@ class TimeRemindReceiver : BroadcastReceiver() {
             it.time += AlarmManager.INTERVAL_DAY
             DinoteDataBase.getInstance(context)?.timeRemindDAO()?.onUpdateTime(it)
         }
+        val listTimeSort = timeRemindList.filter {
+            it.time > System.currentTimeMillis() && it.active
+        }.sortedBy { timeModel -> timeModel.time }
 
-        if (timeRemindPendingIntent.time == timeMemoryDefault) {
+        val timeRemindPendingIntent = listTimeSort[0]
+        if (getHour(System.currentTimeMillis()) == getHour(timeMemoryDefault)) {
             val listIdDinote: List<Int>? =
                 DinoteDataBase.getInstance(context)?.dinoteDAO()?.getAllId()
             val sizeList = listIdDinote?.size
             val random = sizeList?.let {
-                Random.nextInt(it - 1)
+                Random.nextInt(sizeList - 1)
             }
             random?.let {
                 createNotificationDeepLink(context, it)
@@ -75,14 +72,23 @@ class TimeRemindReceiver : BroadcastReceiver() {
         } else {
             createNotification(context)
         }
+        gotoReceiver(context, timeRemindPendingIntent.time)
+    }
 
+    private fun getHour(time: Long): Int {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = time
+        return calendar.get(Calendar.HOUR_OF_DAY)
+    }
+
+    private fun gotoReceiver(context: Context, time: Long) {
         val reIntent = Intent(context, TimeRemindReceiver::class.java)
         val requestCode = REQUEST_CODE_NOTIFICATION
         val pendingIntentRe: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(context,
                 requestCode,
                 reIntent,
-                PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.FLAG_IMMUTABLE.or(PendingIntent.FLAG_UPDATE_CURRENT))
         } else {
             PendingIntent.getBroadcast(context,
                 requestCode,
@@ -94,11 +100,9 @@ class TimeRemindReceiver : BroadcastReceiver() {
         val type = AlarmManager.RTC_WAKEUP
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(type,
-                timeRemindNext.time,
-                pendingIntentRe)
+            alarmManager.setExactAndAllowWhileIdle(type, time, pendingIntentRe)
         } else {
-            alarmManager.set(type, timeRemindNext.time, pendingIntentRe)
+            alarmManager.set(type, time, pendingIntentRe)
         }
     }
 
@@ -136,7 +140,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
             PendingIntent.getActivity(context,
                 requestCode,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.FLAG_IMMUTABLE.or(PendingIntent.FLAG_UPDATE_CURRENT))
         } else {
             PendingIntent.getActivity(context,
                 requestCode,
@@ -171,4 +175,11 @@ class TimeRemindReceiver : BroadcastReceiver() {
         return name
     }
 
+    private fun getTimeRemind(context: Context): Long {
+        return MySharedPreferences(context).getTimeRemindDefault()
+    }
+
+    private fun getTimeMemory(context: Context): Long {
+        return MySharedPreferences(context).getTimeMemoryDefault()
+    }
 }

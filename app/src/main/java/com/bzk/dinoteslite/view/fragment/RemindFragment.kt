@@ -154,7 +154,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             PendingIntent.getBroadcast(activity,
                 requestCode,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.FLAG_IMMUTABLE.or(PendingIntent.FLAG_UPDATE_CURRENT))
         } else {
             PendingIntent.getBroadcast(activity,
                 requestCode,

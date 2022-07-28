@@ -16,6 +16,7 @@ private const val TAG = "DetailFragmentViewModel"
 
 class DetailFragmentViewModel(application: Application) : AndroidViewModel(application) {
     lateinit var mDinote: Dinote
+    var id: Int = 0
     var tagModelList: MutableLiveData<MutableList<TagModel>> =
         MutableLiveData(mutableListOf(TagModel(0, "")))
     var isFavorite: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -37,7 +38,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     )
 
     val dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
-    val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
+    private val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
 
     fun getListTag(): MutableList<TagModel> {
         return tagModelList.value!!
