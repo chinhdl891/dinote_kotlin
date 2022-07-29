@@ -1,43 +1,27 @@
 package com.bzk.dinoteslite.viewmodel
 
 import android.app.Application
-import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.PhotoModel
 import com.bzk.dinoteslite.model.TagModel
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-private const val TAG = "MainFragmentViewModel"
 
 class MainFragmentViewModel(application: Application) : AndroidViewModel(application) {
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     var dinoteDAO = DinoteDataBase.getInstance(application)?.dinoteDAO()
-    var totalDinote: Int = dinoteDAO?.getTotalItemCount()!!
-    var listDinote: MutableLiveData<MutableSet<Dinote>> = MutableLiveData(mutableSetOf())
-    private var limit: Int = 50
-    private var count: Int = 0
-    var listHotTag: MutableLiveData<HashSet<TagModel>> = MutableLiveData(hashSetOf())
+    var listDinote: LiveData<List<Dinote>>
+    val totalItem: MutableLiveData<Int> = MutableLiveData(0)
+    var listHotTag: LiveData<List<TagModel>>
     var tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
-
-    fun getListHotTag(): HashSet<TagModel> {
-        listHotTag.value = listHotTag.value.also {
-            tagDAO?.let { listTag -> it?.addAll(listTag.getListHotTag()) }
-        }
-        return listHotTag.value ?: hashSetOf()
-    }
-
-    fun addHotTag(tagModel: TagModel) {
-        listHotTag.value = listHotTag.value.also {
-            it?.add(tagModel)
-        }
-    }
+    lateinit var dinoteLoadMore : LiveData<List<Dinote>>
 
     var list = MutableLiveData(
         mutableListOf(
@@ -48,51 +32,43 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
         )
     )
 
-    fun getListDinote(): MutableList<Dinote> {
-        listDinote.value = listDinote.value?.also {
-            dinoteDAO?.getAllDinote(limit, count)?.let { list -> it.addAll(list) }
+    var limit: Int = 50
+    var offSet = 0
+
+    init {
+        listDinote = dinoteDAO?.getAllDinote(limit, offSet * 50)!!
+        listHotTag = tagDAO?.getListTag()!!
+    }
+
+    fun getTotalItem() {
+        totalItem.value = dinoteDAO?.getTotalItem()
+    }
+
+    fun loadMoreItem() {
+        isLoading.postValue(true)
+        offSet = if (limit + offSet >= (totalItem.value?.toInt() ?: 0)) {
+            totalItem.value!!.minus(offSet)
+        } else {
+            offSet + 50
         }
-        return listDinote.value?.toMutableList() ?: mutableListOf()
+        loadData(offSet)
+    }
+
+    fun loadData(offset: Int) {
+        viewModelScope.launch {
+//            listDinote.value?.plus(dinoteDAO?.getAllDinote(limit, offset))
+//            dinoteLoadMore.value = dinoteDAO.getAllDinote(limit,offset)
+            isLoading.postValue(false)
+        }
     }
 
     fun deleteDinote(dinote: Dinote) {
-        listDinote.value = listDinote.value.also {
-            it?.remove(dinote)
-            dinoteDAO?.onDelete(dinote)
-        }
-    }
-
-    fun setUpLoadData() {
-        isLoading.value = true
-        if (count + limit > totalDinote) {
-            limit = totalDinote - count
-            loadData(limit, count)
-        } else if (count > totalDinote) {
-            isLoading.value = true
-        } else {
-            count += 50
-            loadData(limit, count)
-        }
-    }
-
-    private fun loadData(limit: Int, count: Int) {
-        isLoading.value = true
-        GlobalScope.launch {
-            delay(2000L)
-            listDinote.postValue(listDinote.value.also {
-                dinoteDAO?.getAllDinote(limit, count)?.let { list ->
-                    it?.addAll(list)
-                    isLoading.postValue(false)
-                }
-            })
-        }
-    }
-
-    override fun onCleared() {
-        Log.e(TAG, "onCleared: ")
-        super.onCleared()
+        dinoteDAO?.onDelete(dinote)
     }
 }
+
+
+
 
 
 

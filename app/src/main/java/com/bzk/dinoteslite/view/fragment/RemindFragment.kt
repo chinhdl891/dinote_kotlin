@@ -17,6 +17,7 @@ import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.FragmentRemidBinding
 import com.bzk.dinoteslite.model.TimeRemind
 import com.bzk.dinoteslite.reciver.TimeRemindReceiver
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.RemindFragmentViewModel
 import java.text.SimpleDateFormat
@@ -148,15 +149,15 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
     private fun setAlarmRemind(time: Long) {
         val alarmManager = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity, TimeRemindReceiver::class.java)
-        val random = Random(50000)
+        val requestCode = AppConstant.REQUEST_CODE_REMIND
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(activity,
-                random.nextInt(),
+                requestCode,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.FLAG_IMMUTABLE.or(PendingIntent.FLAG_UPDATE_CURRENT))
         } else {
             PendingIntent.getBroadcast(activity,
-                random.nextInt(),
+                requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
         }

@@ -16,8 +16,8 @@ import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.FragmentTutorialBinding
 import com.bzk.dinoteslite.model.SlideModel
 import com.bzk.dinoteslite.reciver.TimeRemindReceiver
+import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
-import com.bzk.dinoteslite.view.activity.MainActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
@@ -59,7 +59,9 @@ class TutorialFragment : BaseFragment<FragmentTutorialBinding>(), View.OnClickLi
                     calendar + AlarmManager.INTERVAL_DAY
                 }
             timeRemindDefault = if (timeRemindDefault > time) time else timeRemindDefault
-            activity?.let { MySharedPreferences(it).pushTimeRemindDefault(time) }
+            activity?.let {
+                MySharedPreferences(it).pushTimeRemindDefault(time)
+            }
             setNotificationDefault(timeRemindDefault)
         }
     }
@@ -67,13 +69,13 @@ class TutorialFragment : BaseFragment<FragmentTutorialBinding>(), View.OnClickLi
     private fun setNotificationDefault(time: Long) {
         val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, TimeRemindReceiver::class.java)
-        val random = Random(1000).nextInt()
+        val requestCode = AppConstant.REQUEST_CODE_REMIND
         val pendingIntent =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.getBroadcast(context,
-                random,
+                requestCode,
                 intent,
                 PendingIntent.FLAG_IMMUTABLE) else PendingIntent.getBroadcast(context,
-                random,
+                requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
         val type = AlarmManager.RTC_WAKEUP
@@ -95,7 +97,9 @@ class TutorialFragment : BaseFragment<FragmentTutorialBinding>(), View.OnClickLi
                     calendar + AlarmManager.INTERVAL_DAY
                 }
             timeRemindDefault = time
-            activity?.let { MySharedPreferences(it).pushTimeMemoryDefault(time) }
+            activity?.let {
+                MySharedPreferences(it).pushTimeMemoryDefault(time)
+            }
         }
     }
 

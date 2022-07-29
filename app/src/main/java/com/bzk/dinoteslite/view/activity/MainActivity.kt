@@ -28,7 +28,6 @@ import java.util.*
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
-    var timeRemindDefault: Long = 0L
     private lateinit var mBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         onsetUpTheme()
@@ -36,70 +35,6 @@ class MainActivity : AppCompatActivity() {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setContentView(mBinding.root)
         checkPermissions()
-//        setTimeMemory()
-//        setupTimeDefault()
-    }
-
-    private fun setTimeMemory() {
-        val timeMemory: Long = MySharedPreferences(this).getTimeMemoryDefault()
-        if (timeMemory == 0L) {
-            val calendar = timeDefault(7)
-            val time =
-                if (calendar > System.currentTimeMillis())
-                    calendar
-                else {
-                    calendar + AlarmManager.INTERVAL_DAY
-                }
-            timeRemindDefault = time
-            MySharedPreferences(this).pushTimeMemoryDefault(time)
-        }
-    }
-
-    private fun timeDefault(hour: Int, minus: Int = 0): Long {
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minus)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        return calendar.timeInMillis
-    }
-
-    private fun setupTimeDefault() {
-        val timeDefault: Long = MySharedPreferences(this).getTimeRemindDefault()
-        if (timeDefault == 0L) {
-            val calendar = timeDefault(9, 30)
-            val time =
-                if (calendar > System.currentTimeMillis())
-                    calendar
-                else {
-                    calendar + AlarmManager.INTERVAL_DAY
-                }
-            timeRemindDefault = if (timeRemindDefault > time) time else timeRemindDefault
-            MySharedPreferences(this).pushTimeRemindDefault(time)
-            setNotificationDefault(timeRemindDefault)
-        }
-    }
-
-    private fun setNotificationDefault(time: Long) {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, TimeRemindReceiver::class.java)
-        val random = Random(1000).nextInt()
-        val pendingIntent =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.getBroadcast(this,
-                random,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE) else PendingIntent.getBroadcast(this,
-                random,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
-        val type = AlarmManager.RTC_WAKEUP
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(type, time, pendingIntent)
-        } else {
-            alarmManager.set(type, time, pendingIntent)
-        }
     }
 
     private fun onsetUpTheme() {

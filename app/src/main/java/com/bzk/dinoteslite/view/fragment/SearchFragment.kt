@@ -36,8 +36,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.listHotTag()
-        viewModel.listHistorySearch()
     }
 
     override fun setUpdata() {
@@ -67,10 +65,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), View.OnClickListen
 
     private fun observer() {
         viewModel.listHistorySearch.observe(this) {
-            it?.let { searchAdapter?.initData(it) }
+            it?.let { searchAdapter?.initData(it.toMutableList()) }
         }
         viewModel.listHotTag.observe(this) {
-            it?.let { listTag -> hotTagAdapter?.initData(listTag) }
+            it?.let { listTag -> hotTagAdapter?.initData(listTag.toMutableList()) }
         }
     }
 

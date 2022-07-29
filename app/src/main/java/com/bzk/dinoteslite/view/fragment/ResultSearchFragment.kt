@@ -63,8 +63,6 @@ class ResultSearchFragment : BaseFragment<FragmentResultSearchBinding>(), View.O
     }
 
     private fun onGotoDetail(dinote: Dinote) {
-//        val action =
-//            ResultSearchFragmentDirections.actionResultSearchFragmentToDetailFragment(dinote.id)
         val bundle = bundleOf(
             AppConstant.DEEP_LINK_ID to dinote.id
         )
