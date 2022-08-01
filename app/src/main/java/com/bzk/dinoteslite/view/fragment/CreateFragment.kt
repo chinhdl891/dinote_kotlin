@@ -219,6 +219,7 @@ class CreateFragment :
                 mBinding.imvCreateDrawer.setImageURI(Uri.parse(nameFile))
             }
             mBinding.lnlCreateImvDes.visibility = View.VISIBLE
+            ReSizeView.resizeView(mBinding.imvCreateDrawer,1080,1920)
         } catch (e: Exception) {
             mBinding.imvCreateDrawer.visibility = View.GONE
         }

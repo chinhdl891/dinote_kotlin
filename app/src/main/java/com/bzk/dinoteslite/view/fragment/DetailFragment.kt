@@ -141,6 +141,10 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                 viewModel.tagModelList.value = viewModel.tagModelList.value.also { tagList ->
                     tagList?.add(TagModel(0, ""))
                 }
+            } else {
+                if (mDinote.content.isEmpty()) {
+                    mBinding.edtCreateContent.hint = "Không có nội dung"
+                }
             }
         }
         viewModel.isFavorite.observe(this) {
