@@ -81,16 +81,18 @@ class ThemeFragment : BaseFragment<FragmentThemeBinding>(), View.OnClickListener
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.imv_theme_cancel -> {
+                findNavController().popBackStack()
+            }
+            R.id.btn_theme_change -> {
+                val mySharedPreferences = activity?.let { MySharedPreferences(it) }
+                mySharedPreferences?.pushTheme(mBinding.vpgThemeChange.currentItem)
+
                 val intent = Intent(requireActivity(), MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
                 activity?.let {
                     it.startActivity(intent)
                     it.finishAffinity()
                 }
-            }
-            R.id.btn_theme_change -> {
-                val mySharedPreferences = activity?.let { MySharedPreferences(it) }
-                mySharedPreferences?.pushTheme(mBinding.vpgThemeChange.currentItem)
             }
         }
     }

@@ -19,7 +19,6 @@ import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.model.TimeRemind
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.AppConstant.Companion.DEEP_LINK_ID
-import com.bzk.dinoteslite.utils.AppConstant.Companion.REQUEST_CODE_NOTIFICATION
 import com.bzk.dinoteslite.view.activity.MainActivity
 import java.util.*
 import kotlin.random.Random
@@ -59,7 +58,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
         }.sortedBy { timeModel -> timeModel.time }
 
         val timeRemindPendingIntent = listTimeSort[0]
-        if (getHour(System.currentTimeMillis()) == getHour(timeMemoryDefault)) {
+        if (getHour(System.currentTimeMillis() + 10000) == getHour(timeMemoryDefault)) {
             val listIdDinote: List<Int>? =
                 DinoteDataBase.getInstance(context)?.dinoteDAO()?.getAllId()
             val sizeList = listIdDinote?.size
@@ -83,7 +82,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
 
     private fun gotoReceiver(context: Context, time: Long) {
         val reIntent = Intent(context, TimeRemindReceiver::class.java)
-        val requestCode = REQUEST_CODE_NOTIFICATION
+        val requestCode = AppConstant.REQUEST_GOTO_RECEIVER
         val pendingIntentRe: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(context,
                 requestCode,
@@ -135,7 +134,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
     private fun createNotification(context: Context) {
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val requestCode = AppConstant.REQUEST_CODE_NOTIFICATION
+        val requestCode = AppConstant.REQUEST_CODE_ADD
         val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getActivity(context,
                 requestCode,
@@ -167,7 +166,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val description = context.getString(R.string.des_notifi)
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val notificationChannel = NotificationChannel("dinoteId", name, importance)
+            val notificationChannel = NotificationChannel(AppConstant.CHANNEL_ID, name, importance)
             notificationChannel.description = description
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(notificationChannel)

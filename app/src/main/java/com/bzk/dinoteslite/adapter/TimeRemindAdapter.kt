@@ -18,8 +18,8 @@ class TimeRemindAdapter(
     var onDelete: (TimeRemind) -> Unit,
 ) :
     RecyclerView.Adapter<TimeRemindAdapter.TimeRemindViewHolder>() {
-    private var listTimeRemind: MutableList<TimeRemind> = mutableListOf()
-    fun init(list: MutableList<TimeRemind>) {
+    private var listTimeRemind: List<TimeRemind> = listOf()
+    fun init(list: List<TimeRemind>) {
         listTimeRemind = list
         notifyDataSetChanged()
     }

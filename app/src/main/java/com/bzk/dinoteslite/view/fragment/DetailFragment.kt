@@ -55,6 +55,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
         val bundle = arguments
         val id = bundle?.getInt(AppConstant.DEEP_LINK_ID) as Int
         viewModel.id = id
+        viewModel.setUpdate
         initData(id)
         viewModel.getListTag()
         viewModel.getFavorite()
@@ -130,6 +131,16 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
             if (it) {
                 onUpdateDinote()
                 viewModel.setUpdate.value = !it
+            } else {
+                mBinding.lnlCrateOption.visibility = ViewGroup.GONE
+            }
+        }
+        viewModel.isUpdate.observe(this) {
+            if (it) {
+                mBinding.lnlCrateOption.visibility = ViewGroup.VISIBLE
+                viewModel.tagModelList.value = viewModel.tagModelList.value.also { tagList ->
+                    tagList?.add(TagModel(0, ""))
+                }
             }
         }
         viewModel.isFavorite.observe(this) {
@@ -251,7 +262,14 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                     }
                 }
                 cancelDialog?.dismiss()
-                findNavController().popBackStack()
+                if (viewModel.isUpdate.value == true) {
+                    findNavController().popBackStack()
+                    findNavController().navigate(R.id.detailFragment,
+                        bundleOf(AppConstant.DEEP_LINK_ID to viewModel.id,
+                            AppConstant.SEND_STATUS to 0))
+                } else {
+                    findNavController().popBackStack()
+                }
             })
         }
         cancelDialog?.show()
@@ -289,12 +307,12 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
         context?.let {
             RemoveDialog(it, onDelete = {
                 viewModel.dropDinote(mDinote)
-                val bundle = bundleOf(
-                    AppConstant.SEND_OBJ to viewModel.mDinote,
-                    AppConstant.SEND_STATUS to 0
-                )
-                findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_BUNDLE,
-                    bundle)
+//                val bundle = bundleOf(
+//                    AppConstant.SEND_OBJ to viewModel.mDinote,
+//                    AppConstant.SEND_STATUS to 0
+//                )
+//                findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_BUNDLE,
+//                    bundle)
                 findNavController().popBackStack()
             }).show()
         }
@@ -319,9 +337,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                     viewModel.tagModelList.value?.forEach { tag ->
                         detailFragmentListener?.onAddTag(tag)
                     }
-                    findNavController().popBackStack()
-                    findNavController().navigate(R.id.detailFragment,
-                        bundleOf(AppConstant.DEEP_LINK_ID to viewModel.id))
                 }
             }, onCancel = {
                 viewModel.blockView.set(ViewGroup.FOCUS_BEFORE_DESCENDANTS)
@@ -331,6 +346,10 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
 
     private fun onUpdate() {
         viewModel.updateDinote()
+        findNavController().popBackStack()
+        findNavController().navigate(R.id.detailFragment,
+            bundleOf(AppConstant.DEEP_LINK_ID to viewModel.id,
+                AppConstant.SEND_STATUS to 0))
     }
 
     var detailFragmentListener: DetailFragmentListener? = null
