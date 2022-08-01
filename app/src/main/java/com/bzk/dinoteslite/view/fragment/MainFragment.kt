@@ -175,7 +175,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(),
             },
             onGotoDetail = { dinote ->
                 val bundle = bundleOf(
-                    AppConstant.DEEP_LINK_ID to dinote.id
+                    AppConstant.DEEP_LINK_ID to dinote.id,
+                    AppConstant.SEND_STATUS to 0
                 )
                 findNavController().navigate(R.id.detailFragment, bundle)
             })

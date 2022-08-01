@@ -20,9 +20,11 @@ class AppConstant {
         const val TIME_DEFAULT = "time_default"
         const val CHANNEL_ID = "channel_id"
         const val DEEP_LINK_ID = "deep_link_id"
-        const val REQUEST_CODE_NOTIFICATION = 6699
+        const val REQUEST_CODE_NOTIFICATION_DEFAULT = 369
         const val REQUEST_CODE_REMIND = 8866
+        const val REQUEST_CODE_ADD = 8899
         const val ID_NOTIFICATION = 123
+        const val REQUEST_GOTO_RECEIVER = 8686
         const val SEND_THEME = "send_theme"
     }
 }

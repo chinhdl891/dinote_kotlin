@@ -21,6 +21,8 @@ import com.bzk.dinoteslite.utils.ReSizeView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 
 class TutorialFragment : BaseFragment<FragmentTutorialBinding>(), View.OnClickListener {
@@ -69,12 +71,13 @@ class TutorialFragment : BaseFragment<FragmentTutorialBinding>(), View.OnClickLi
     private fun setNotificationDefault(time: Long) {
         val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, TimeRemindReceiver::class.java)
-        val requestCode = AppConstant.REQUEST_CODE_REMIND
+        val requestCode = AppConstant.REQUEST_CODE_NOTIFICATION_DEFAULT
         val pendingIntent =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.getBroadcast(context,
                 requestCode,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE) else PendingIntent.getBroadcast(context,
+                PendingIntent.FLAG_IMMUTABLE.or(PendingIntent.FLAG_UPDATE_CURRENT)) else PendingIntent.getBroadcast(
+                context,
                 requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT)

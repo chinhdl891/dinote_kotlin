@@ -1,6 +1,7 @@
 package com.bzk.dinoteslite.viewmodel
 
 import android.app.Application
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
@@ -18,7 +19,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     lateinit var mDinote: Dinote
     var id: Int = 0
     var tagModelList: MutableLiveData<MutableList<TagModel>> =
-        MutableLiveData(mutableListOf(TagModel(0, "")))
+        MutableLiveData(mutableListOf())
     var isFavorite: MutableLiveData<Boolean> = MutableLiveData(false)
     var enableView: ObservableField<Boolean> = ObservableField(false)
     var txtUpdate: ObservableField<String> = ObservableField(application.getString(R.string.update))

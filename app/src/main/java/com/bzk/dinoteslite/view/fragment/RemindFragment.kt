@@ -23,6 +23,7 @@ import com.bzk.dinoteslite.viewmodel.RemindFragmentViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 private const val TAG = "RemindFragment"
 
@@ -55,7 +56,6 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             }
         }
         setTimeToText(calendar.timeInMillis)
-        remindFragmentViewModel.listTimeRemind()
         mBinding.rcvRemindListTime.layoutManager = LinearLayoutManager(context)
         mBinding.rcvRemindListTime.adapter = timeRemindAdapter
         observer()
@@ -63,11 +63,11 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
 
     private fun observer() {
         remindFragmentViewModel.listTimeRemind.observe(this) {
-            timeRemindAdapter?.init(it)
+            timeRemindAdapter?.init(it.sortedBy { timeRemind -> timeRemind.time })
         }
     }
 
-    fun setTimeToText(time: Long) {
+    private fun setTimeToText(time: Long) {
         val simpleDateFormat = SimpleDateFormat(getString(R.string.hh_mm_a))
         val date = simpleDateFormat.format(Date(time))
         mBinding.tvTimeSelect.text = getString(R.string.time_remind, date)
@@ -107,18 +107,14 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
     }
 
     private fun onAddTimeRemind(timeInMillis: Long) {
-        var time = 0L
-        time = if (timeInMillis <= System.currentTimeMillis()) {
+        val time = if (timeInMillis <= System.currentTimeMillis()) {
             timeInMillis + AlarmManager.INTERVAL_DAY
         } else {
             timeInMillis
         }
         val timeRemind = TimeRemind(id = 0, time = time, active = true)
         remindFragmentViewModel.insertTimeRemind(timeRemind)
-        if (!remindFragmentViewModel.check) {
-            remindFragmentViewModel.getTimeForPush()
-            setAlarmRemind(remindFragmentViewModel.getTimeForPush())
-        }
+        setAlarmRemind(time)
     }
 
 
