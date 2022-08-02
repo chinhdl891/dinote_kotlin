@@ -42,7 +42,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     private val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
 
     fun getListTag(): MutableList<TagModel> {
-        return tagModelList.value!!
+        return tagModelList.value ?: mutableListOf()
     }
 
     fun getFavorite() {
@@ -51,11 +51,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
 
     fun addTag() {
         tagModelList.value = tagModelList.value!!.also {
-            val size = tagModelList.value!!.size
-            val lastContentTag = tagModelList.value!![size - 1].contentTag
-            if (lastContentTag.isNotEmpty()) {
-                it.add(TagModel(0, ""))
-            }
+            it.add(TagModel(0, ""))
         }
     }
 
@@ -96,7 +92,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     private fun removeTag() {
-        for (i in getListTag()) {
+        for (i in tagModelList.value!!) {
             if (i.contentTag.isEmpty()) {
                 tagModelList.value = tagModelList.value.also {
                     if (it?.size!! > 0) {

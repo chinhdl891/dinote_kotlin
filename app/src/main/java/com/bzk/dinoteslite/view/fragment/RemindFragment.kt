@@ -7,12 +7,14 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.TimeRemindAdapter
 import com.bzk.dinoteslite.base.BaseFragment
+import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.database.sharedPreferences.MySharedPreferences
 import com.bzk.dinoteslite.databinding.FragmentRemidBinding
 import com.bzk.dinoteslite.model.TimeRemind
@@ -20,6 +22,7 @@ import com.bzk.dinoteslite.reciver.TimeRemindReceiver
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.RemindFragmentViewModel
+import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -100,21 +103,30 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             { timePicker, i1, i2 ->
                 calendar[Calendar.HOUR_OF_DAY] = i1
                 calendar[Calendar.MINUTE] = i2
-                calendar[Calendar.SECOND] = 0
-                calendar[Calendar.MILLISECOND] = 0
                 onAddTimeRemind(calendar.timeInMillis)
             }, hour, minus, false).show()
     }
 
     private fun onAddTimeRemind(timeInMillis: Long) {
-        val time = if (timeInMillis <= System.currentTimeMillis()) {
+        val timeNow: Long = getTimeNow()
+        val time = if (timeInMillis < timeNow) {
             timeInMillis + AlarmManager.INTERVAL_DAY
         } else {
             timeInMillis
         }
-        val timeRemind = TimeRemind(id = 0, time = time, active = true)
+        val timeRemind = TimeRemind(0, time, true)
         remindFragmentViewModel.insertTimeRemind(timeRemind)
-        setAlarmRemind(time)
+        setAlarmRemind()
+    }
+
+    private fun getTimeNow(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+        calendar.apply {
+            set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+        }
+        return calendar.timeInMillis
     }
 
 
@@ -132,7 +144,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
                 val time = calendar.timeInMillis
                 setTimeToText(time)
                 getMainActivity()?.let { MySharedPreferences(it).pushTimeRemindDefault(time) }
-                setAlarmRemind(time)
+                setAlarmRemind()
             },
             hour,
             minus,
@@ -142,7 +154,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
         }
     }
 
-    private fun setAlarmRemind(time: Long) {
+    private fun setAlarmRemind() {
         val alarmManager = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity, TimeRemindReceiver::class.java)
         val requestCode = AppConstant.REQUEST_CODE_REMIND
@@ -157,11 +169,26 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
         }
+
+        val listTime: MutableList<TimeRemind> =
+            (context?.let {
+                DinoteDataBase.getInstance(it)?.timeRemindDAO()?.getListTimeRemind()
+            } as MutableList<TimeRemind>?)!!
+
+        val timeDefault: Long = context?.let { MySharedPreferences(it).getTimeRemindDefault() }!!
+        val timeMemory: Long = context?.let { MySharedPreferences(it).getTimeMemoryDefault() }!!
+
+        listTime.add(TimeRemind(68, timeDefault, true))
+        listTime.add(TimeRemind(68, timeMemory, true))
+
+        val timeRemind = listTime.filter { it.time > System.currentTimeMillis() + 10000L }[0]
+
         val type = AlarmManager.RTC_WAKEUP
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(type, time, pendingIntent)
+            alarmManager.setExactAndAllowWhileIdle(type, timeRemind.time, pendingIntent)
         } else {
-            alarmManager.set(type, time, pendingIntent)
+            alarmManager.set(type, timeRemind.time, pendingIntent)
         }
     }
 
