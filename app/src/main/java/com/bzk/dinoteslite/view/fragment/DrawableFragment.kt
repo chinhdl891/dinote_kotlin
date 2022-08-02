@@ -8,7 +8,7 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.view.View
-import androidx.core.os.bundleOf
+import android.widget.Toast
 import androidx.core.view.drawToBitmap
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -22,7 +22,6 @@ import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
-import kotlin.math.log
 
 private const val TAG = "DrawableFragment"
 
@@ -110,31 +109,33 @@ class DrawableFragment() : BaseFragment<FragmentDrawableBinding>(),
     }
 
     private fun saveBitMapToStores(bitmap: Bitmap) {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveImageInQ(bitmap)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            runBlocking {
+                val job: Deferred<String> = lifecycleScope.async { saveImageInQ(bitmap) }
+                stringUri = job.await()
+            }
         } else {
-            saveImageUnQ(bitmap)
+            runBlocking {
+                val job: Deferred<String> = lifecycleScope.async { saveImageUnQ(bitmap) }
+                stringUri = job.await()
+            }
         }
     }
 
-    private fun saveImageUnQ(bitmap: Bitmap) {
-        lifecycleScope.launch {
-            val imagesDir =
-                Environment.getExternalStorageDirectory()
-            val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
-            stringUri = image.toURI().path
-            val fos = FileOutputStream(image)
-            fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
-        }
+    private fun saveImageUnQ(bitmap: Bitmap): String {
+        val imagesDir =
+            Environment.getExternalStorageDirectory()
+        val image = File(imagesDir, UUID.randomUUID().toString() + ".png")
+        val fos = FileOutputStream(image)
+        fos.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+        return image.toURI().path
     }
 
-    private fun saveImageInQ(bitmap: Bitmap) {
-        lifecycleScope.launch {
-            val filename = getString(R.string.txt_name_image, System.currentTimeMillis())
-            stringUri = filename
-            val fOutputStream = activity?.openFileOutput(filename, Context.MODE_PRIVATE)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream)
-        }
+    private fun saveImageInQ(bitmap: Bitmap): String {
+        val filename = getString(R.string.txt_name_image, System.currentTimeMillis())
+        val fOutputStream = activity?.openFileOutput(filename, Context.MODE_PRIVATE)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream)
+        return filename
     }
 
     private fun onChangeSize(size: Int) {

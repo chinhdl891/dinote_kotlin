@@ -4,11 +4,11 @@ import android.app.DatePickerDialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
@@ -140,6 +140,25 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                 mBinding.lnlCrateOption.visibility = ViewGroup.VISIBLE
                 viewModel.tagModelList.value = viewModel.tagModelList.value.also { tagList ->
                     tagList?.add(TagModel(0, ""))
+                    if (mDinote.content.isEmpty()) {
+                        mBinding.edtCreateContent.hint = getString(R.string.txt_input_content)
+                    }
+                    if (mDinote.desImage.isEmpty()) {
+                        mBinding.edtCreateDesDrawer.hint = getString(R.string.txt_input_des_image)
+                    }
+                    if (mDinote.title.isEmpty()) {
+                        mBinding.edtCreateTitle.hint = getString(R.string.txt_input_title)
+                    }
+                }
+            } else {
+                if (mDinote.content.isEmpty()) {
+                    mBinding.edtCreateContent.hint = getString(R.string.txt_no_content)
+                }
+                if (mDinote.desImage.isEmpty()) {
+                    mBinding.edtCreateDesDrawer.hint = getString(R.string.txt_no_desciption)
+                }
+                if (mDinote.title.isEmpty()) {
+                    mBinding.edtCreateTitle.hint = getString(R.string.txt_no_title)
                 }
             }
         }

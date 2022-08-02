@@ -76,7 +76,7 @@ class TutorialFragment : BaseFragment<FragmentTutorialBinding>(), View.OnClickLi
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.getBroadcast(context,
                 requestCode,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE.or(PendingIntent.FLAG_UPDATE_CURRENT)) else PendingIntent.getBroadcast(
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT) else PendingIntent.getBroadcast(
                 context,
                 requestCode,
                 intent,
