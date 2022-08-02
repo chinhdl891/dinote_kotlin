@@ -103,9 +103,9 @@
     <string name="txt_change">Thay đổi</string>
     <string name="fake_data">Fake data</string>
     <string name="hh_mm_a">HH:mm a</string>
-    <string name="txt_nodesciption">No description</string>
-    <string name="txt_no_title">No Title</string>
-    <string name="txt_no_content">No Content</string>
+    <string name="txt_no_desciption">Không có mô tả</string>
+    <string name="txt_no_title">Không có tiêu đề</string>
+    <string name="txt_no_content">Không có nội dung</string>
     <string name="txt_update">Cập Nhật</string>
     <string name="hint_date">08/09/2022</string>
     <string name="txt_des_image">Mô tả ảnh</string>
@@ -124,4 +124,8 @@
     <string name="my_notification">My notification</string>
     <string name="content_notification">Much longer text that cannot fit one line...</string>
     <string name="big_content_text">Much longer text that cannot fit one line...</string>
+    <string name="txt_input_content">Nhập nội dung</string>
+    <string name="txt_input_des_image">Nhập mô tả</string>
+    <string name="txt_input_title">Nhập tiêu đề</string>
+    <string name="txt_name">name</string>
 </resources>
