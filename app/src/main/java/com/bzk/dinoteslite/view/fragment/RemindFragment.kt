@@ -141,6 +141,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
                 calendar[Calendar.HOUR_OF_DAY] = i
                 calendar[Calendar.MINUTE] = i2
                 calendar[Calendar.SECOND] = 0
+                calendar[Calendar.MILLISECOND] = 0
                 val time = calendar.timeInMillis
                 setTimeToText(time)
                 getMainActivity()?.let { MySharedPreferences(it).pushTimeRemindDefault(time) }
@@ -179,12 +180,18 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
         val timeMemory: Long = context?.let { MySharedPreferences(it).getTimeMemoryDefault() }!!
 
         listTime.add(TimeRemind(68, timeDefault, true))
-        listTime.add(TimeRemind(68, timeMemory, true))
+        listTime.add(TimeRemind(69, timeMemory, true))
 
-        val timeRemind = listTime.filter { it.time > System.currentTimeMillis() + 10000L }[0]
+        listTime.filter {
+            it.time < System.currentTimeMillis() + 10000L && it.active
+        }.forEach {
+            it.time += AlarmManager.INTERVAL_DAY
+            DinoteDataBase.getInstance(context!!)?.timeRemindDAO()?.onUpdateTime(it)
+        }
 
+        val timeRemind = listTime.filter { it.time > System.currentTimeMillis() }[0]
+        Log.d(TAG, "setAlarmRemind: ${timeRemind.time}")
         val type = AlarmManager.RTC_WAKEUP
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(type, timeRemind.time, pendingIntent)
         } else {

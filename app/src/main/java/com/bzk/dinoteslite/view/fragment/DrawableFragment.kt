@@ -6,9 +6,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.view.drawToBitmap
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,19 +16,18 @@ import com.bzk.dinoteslite.databinding.FragmentDrawableBinding
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.DialogColor
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-private const val TAG = "DrawableFragment"
-
-class DrawableFragment() : BaseFragment<FragmentDrawableBinding>(),
+class DrawableFragment : BaseFragment<FragmentDrawableBinding>(),
     View.OnClickListener {
     private var sizeStoke = 16
     private var mColor = Color.BLACK
     private lateinit var stringUri: String
-    private var address: String = ""
     override fun getLayoutResource(): Int {
         return R.layout.fragment_drawable
     }
@@ -70,6 +67,7 @@ class DrawableFragment() : BaseFragment<FragmentDrawableBinding>(),
         mBinding.imvDrawEraser.setOnClickListener(this)
         mBinding.imvDrawSave.setOnClickListener(this)
         mBinding.imvDrawChangeColor.setOnClickListener(this)
+        mBinding.imvDrawCancel.setOnClickListener(this)
     }
 
     override fun onClick(p0: View) {
@@ -83,7 +81,7 @@ class DrawableFragment() : BaseFragment<FragmentDrawableBinding>(),
                 mBinding.lnlDrawChangeSize.visibility = View.VISIBLE
             }
             R.id.imv_draw_eraser -> mBinding.pvDrawContent.pen(Color.WHITE, sizeStoke)
-            R.id.imv_draw_cancel -> activity?.onBackPressed()
+            R.id.imv_draw_cancel -> findNavController().popBackStack()
             R.id.imv_draw_save -> saveImage()
             R.id.imv_draw_change_color -> changeColor()
         }
@@ -91,16 +89,16 @@ class DrawableFragment() : BaseFragment<FragmentDrawableBinding>(),
 
     private fun changeColor() {
         val dialogColor = getMainActivity()?.let {
-            DialogColor(it, onSelectColor = {
-                mColor = it
-                mBinding.pvDrawContent.pen(color = it, sizeStoke)
+            DialogColor(it, onSelectColor = { color ->
+                mColor = color
+                mBinding.pvDrawContent.pen(color = color, sizeStoke)
             })
         }
         dialogColor?.show()
     }
 
     private fun saveImage() {
-        var bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
+        val bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
         saveBitMapToStores(bitmap)
         //pass data
         findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_URI,

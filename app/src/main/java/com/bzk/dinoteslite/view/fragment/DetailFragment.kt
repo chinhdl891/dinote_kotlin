@@ -140,14 +140,14 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
                 mBinding.lnlCrateOption.visibility = ViewGroup.VISIBLE
                 viewModel.tagModelList.value = viewModel.tagModelList.value.also { tagList ->
                     val size = tagList?.size
-                   if (size!! > 0){
-                       val tagLast = size.let { size -> tagList[size - 1] }
-                       if (tagLast.contentTag.isNotEmpty()) {
-                           tagList.add(TagModel(0))
-                       }
-                   } else {
-                       viewModel.addTag()
-                   }
+                    if (size!! > 0) {
+                        val tagLast = size.let { size -> tagList[size - 1] }
+                        if (tagLast.contentTag.isNotEmpty()) {
+                            tagList.add(TagModel(0))
+                        }
+                    } else {
+                        viewModel.addTag()
+                    }
                 }
                 if (mDinote.content.isEmpty()) {
                     mBinding.edtCreateContent.hint = getString(R.string.txt_input_content)
