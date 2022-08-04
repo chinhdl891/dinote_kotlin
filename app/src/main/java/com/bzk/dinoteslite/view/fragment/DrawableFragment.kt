@@ -16,9 +16,7 @@ import com.bzk.dinoteslite.databinding.FragmentDrawableBinding
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.view.dialog.DialogColor
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -100,24 +98,28 @@ class DrawableFragment : BaseFragment<FragmentDrawableBinding>(),
     private fun saveImage() {
         val bitmap: Bitmap = mBinding.pvDrawContent.drawToBitmap(Bitmap.Config.ARGB_8888)
         saveBitMapToStores(bitmap)
-        //pass data
-        findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_URI,
-            stringUri)
-        findNavController().popBackStack()
     }
 
     private fun saveBitMapToStores(bitmap: Bitmap) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            runBlocking {
-                val job: Deferred<String> = lifecycleScope.async { saveImageInQ(bitmap) }
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val job: Deferred<String> =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                        lifecycleScope.async { saveImageInQ(bitmap) }
+                    else lifecycleScope.async { saveImageUnQ(bitmap) }
                 stringUri = job.await()
-            }
-        } else {
-            runBlocking {
-                val job: Deferred<String> = lifecycleScope.async { saveImageUnQ(bitmap) }
-                stringUri = job.await()
+            } finally {
+                withContext(Dispatchers.Main) {
+                    passData()
+                }
             }
         }
+    }
+
+    private fun passData() {
+        findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_URI,
+            stringUri)
+        findNavController().popBackStack()
     }
 
     private fun saveImageUnQ(bitmap: Bitmap): String {

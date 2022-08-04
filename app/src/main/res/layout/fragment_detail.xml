@@ -16,6 +16,7 @@
     </data>
 
     <RelativeLayout
+        android:paddingTop="@dimen/margin_view_to_view_small"
         android:id="@+id/rlt_detail_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

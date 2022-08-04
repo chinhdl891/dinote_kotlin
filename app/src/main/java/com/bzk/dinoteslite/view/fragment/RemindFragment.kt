@@ -10,6 +10,7 @@ import android.os.Build
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.TimeRemindAdapter
@@ -22,6 +23,9 @@ import com.bzk.dinoteslite.reciver.TimeRemindReceiver
 import com.bzk.dinoteslite.utils.AppConstant
 import com.bzk.dinoteslite.utils.ReSizeView
 import com.bzk.dinoteslite.viewmodel.RemindFragmentViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
@@ -103,6 +107,8 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             { timePicker, i1, i2 ->
                 calendar[Calendar.HOUR_OF_DAY] = i1
                 calendar[Calendar.MINUTE] = i2
+                calendar[Calendar.MILLISECOND] = 0
+                calendar[Calendar.SECOND] = 0
                 onAddTimeRemind(calendar.timeInMillis)
             }, hour, minus, false).show()
     }
@@ -176,7 +182,8 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
                 DinoteDataBase.getInstance(it)?.timeRemindDAO()?.getListTimeRemind()
             } as MutableList<TimeRemind>?)!!
 
-        val timeDefault: Long = context?.let { MySharedPreferences(it).getTimeRemindDefault() }!!
+        val timeDefault: Long =
+            context?.let { MySharedPreferences(it).getTimeRemindDefault() }!!
         val timeMemory: Long = context?.let { MySharedPreferences(it).getTimeMemoryDefault() }!!
 
         listTime.add(TimeRemind(68, timeDefault, true))
@@ -190,7 +197,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
         }
 
         val timeRemind = listTime.filter { it.time > System.currentTimeMillis() }[0]
-        Log.d(TAG, "setAlarmRemind: ${timeRemind.time}")
+
         val type = AlarmManager.RTC_WAKEUP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(type, timeRemind.time, pendingIntent)
@@ -198,5 +205,4 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
             alarmManager.set(type, timeRemind.time, pendingIntent)
         }
     }
-
 }

@@ -54,24 +54,28 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     fun addTag() {
-        tagModelList.value = tagModelList.value!!.also {
-            val size = tagModelList.value!!.size
-            val lastContentTag = tagModelList.value!![size - 1].contentTag
-            if (lastContentTag.isNotEmpty()) {
-                it.add(TagModel(0, ""))
+        tagModelList.value?.let {
+            tagModelList.value = it.also {
+                val size = it.size
+                val lastContentTag = it[size - 1].contentTag
+                if (lastContentTag.isNotEmpty()) {
+                    it.add(TagModel(0, ""))
+                }
             }
         }
     }
 
     fun deleteTag(position: Int) {
-        val size = tagModelList.value!!.size
-        if (size > 1) {
-            tagModelList.value = tagModelList.value!!.also {
-                it.removeAt(position)
-            }
-        } else {
-            tagModelList.value = tagModelList.value!!.also {
-                it[0] = TagModel(0, "")
+        tagModelList.value?.let {
+            val size = it.size
+            if (size > 1) {
+                tagModelList.value = tagModelList.value.also { tagModelList ->
+                    tagModelList?.removeAt(position)
+                }
+            } else {
+                tagModelList.value = tagModelList.value.also { tagModelList ->
+                    tagModelList?.set(0, TagModel(0, ""))
+                }
             }
         }
     }
