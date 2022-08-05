@@ -139,16 +139,26 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(),
             if (it) {
                 mBinding.lnlCrateOption.visibility = ViewGroup.VISIBLE
                 viewModel.tagModelList.value = viewModel.tagModelList.value.also { tagList ->
-                    tagList?.add(TagModel(0, ""))
-                    if (mDinote.content.isEmpty()) {
-                        mBinding.edtCreateContent.hint = getString(R.string.txt_input_content)
+                    val size = tagList?.size
+                    size?.let {
+                        if (size > 0) {
+                            val tagLast = size.let { size -> tagList[size - 1] }
+                            if (tagLast.contentTag.isNotEmpty()) {
+                                tagList.add(TagModel(0))
+                            }
+                        } else {
+                            viewModel.addTag()
+                        }
                     }
-                    if (mDinote.desImage.isEmpty()) {
-                        mBinding.edtCreateDesDrawer.hint = getString(R.string.txt_input_des_image)
-                    }
-                    if (mDinote.title.isEmpty()) {
-                        mBinding.edtCreateTitle.hint = getString(R.string.txt_input_title)
-                    }
+                }
+                if (mDinote.content.isEmpty()) {
+                    mBinding.edtCreateContent.hint = getString(R.string.txt_input_content)
+                }
+                if (mDinote.desImage.isEmpty()) {
+                    mBinding.edtCreateDesDrawer.hint = getString(R.string.txt_input_des_image)
+                }
+                if (mDinote.title.isEmpty()) {
+                    mBinding.edtCreateTitle.hint = getString(R.string.txt_input_title)
                 }
             } else {
                 if (mDinote.content.isEmpty()) {

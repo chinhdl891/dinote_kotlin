@@ -42,7 +42,7 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     private val tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
 
     fun getListTag(): MutableList<TagModel> {
-        return tagModelList.value!!
+        return tagModelList.value ?: mutableListOf()
     }
 
     fun getFavorite() {
@@ -50,24 +50,20 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     fun addTag() {
-        tagModelList.value = tagModelList.value!!.also {
-            val size = tagModelList.value!!.size
-            val lastContentTag = tagModelList.value!![size - 1].contentTag
-            if (lastContentTag.isNotEmpty()) {
-                it.add(TagModel(0, ""))
-            }
+        tagModelList.value = tagModelList.value?.also {
+            it.add(TagModel(0, ""))
         }
     }
 
     fun deleteTag(position: Int) {
-        val size = tagModelList.value!!.size
-        if (size > 1) {
-            tagModelList.value = tagModelList.value!!.also {
-                it.removeAt(position)
+        val size = tagModelList.value?.size
+        if (size != null && size > 1) {
+            tagModelList.value = tagModelList.value.also {
+                it?.removeAt(position)
             }
         } else {
-            tagModelList.value = tagModelList.value!!.also {
-                it[0] = TagModel(0, "")
+            tagModelList.value = tagModelList.value.also {
+                it?.set(0, TagModel(0, ""))
             }
         }
     }
@@ -96,17 +92,19 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     private fun removeTag() {
-        for (i in getListTag()) {
-            if (i.contentTag.isEmpty()) {
-                tagModelList.value = tagModelList.value.also {
-                    if (it?.size!! > 0) {
-                        it.remove(i)
+        tagModelList.value?.let { listTag ->
+            for (i in listTag) {
+                if (i.contentTag.isEmpty()) {
+                    tagModelList.value = tagModelList.value.also {
+                        if (listTag.size > 0) {
+                            listTag.remove(i)
+                        }
                     }
-                }
-            } else {
-                if (tagDAO?.countTag(i.contentTag) == 0) {
-                    val tagModel = TagModel(0, i.contentTag)
-                    tagDAO.insert(tagModel)
+                } else {
+                    if (tagDAO?.countTag(i.contentTag) == 0) {
+                        val tagModel = TagModel(0, i.contentTag)
+                        tagDAO.insert(tagModel)
+                    }
                 }
             }
         }

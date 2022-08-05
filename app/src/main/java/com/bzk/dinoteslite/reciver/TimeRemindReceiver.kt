@@ -58,6 +58,7 @@ class TimeRemindReceiver : BroadcastReceiver() {
         }.sortedBy { timeModel -> timeModel.time }
 
         val timeRemindPendingIntent = listTimeSort[0]
+        Log.d("aaa", "onReceive: ${timeRemindPendingIntent.time}")
         if (getHour(System.currentTimeMillis() + 10000) == getHour(timeMemoryDefault)) {
             val listIdDinote: List<Int>? =
                 DinoteDataBase.getInstance(context)?.dinoteDAO()?.getAllId()

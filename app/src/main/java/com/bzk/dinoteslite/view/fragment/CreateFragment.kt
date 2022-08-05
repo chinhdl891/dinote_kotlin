@@ -27,8 +27,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val TAG = "CreateFragment"
-
 class CreateFragment :
     BaseFragment<FragmentCreateBinding>(), View.OnClickListener {
     private val viewModel: CreateFragmentViewModel by lazy {
@@ -139,9 +137,9 @@ class CreateFragment :
     }
 
     private fun setDateSelect() {
-        var date = Date()
+        val date = Date()
         date.time = System.currentTimeMillis()
-        var calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance()
         calendar.timeInMillis = date.time
         val day = calendar.get(Calendar.DATE)
         val month = calendar.get(Calendar.MONTH)
@@ -186,7 +184,7 @@ class CreateFragment :
             content = mBinding.edtCreateContent.text.toString().trim()
             motionId = mMotion.id
             desImage = mBinding.edtCreateDesDrawer.text.toString().trim()
-            imageUri = nameFile?.toString() ?: getString(R.string.txt_no_des)
+            imageUri = nameFile ?: getString(R.string.txt_no_des)
             insertDinote()
         }
         viewModel.dinote?.let { createFragmentListener?.onAdd(it) }
@@ -200,8 +198,8 @@ class CreateFragment :
                     AppConstant.SEND_OBJ to viewModel.dinote,
                     AppConstant.SEND_STATUS to 1,
                 )
-                findNavController().previousBackStackEntry?.savedStateHandle?.
-                set(AppConstant.SEND_BUNDLE, bundle)
+                findNavController().previousBackStackEntry?.savedStateHandle?.set(AppConstant.SEND_BUNDLE,
+                    bundle)
                 findNavController().popBackStack()
             }).show()
         }
@@ -219,7 +217,7 @@ class CreateFragment :
                 mBinding.imvCreateDrawer.setImageURI(Uri.parse(nameFile))
             }
             mBinding.lnlCreateImvDes.visibility = View.VISIBLE
-            ReSizeView.resizeView(mBinding.imvCreateDrawer,1080,1920)
+            ReSizeView.resizeView(mBinding.imvCreateDrawer, 1080, 1920)
         } catch (e: Exception) {
             mBinding.imvCreateDrawer.visibility = View.GONE
         }

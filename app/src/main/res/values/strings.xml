@@ -128,4 +128,5 @@
     <string name="txt_input_des_image">Nhập mô tả</string>
     <string name="txt_input_title">Nhập tiêu đề</string>
     <string name="txt_name">name</string>
+    <string name="txt_input_number_fake_data">Hãy nhập số đi</string>
 </resources>

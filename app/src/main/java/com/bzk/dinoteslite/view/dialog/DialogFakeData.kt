@@ -20,15 +20,23 @@ class DialogFakeData(context: Context, var onAddData: () -> Unit) :
     }
 
     private fun addData() {
-        val count = mBinding.edtFakeNumber.text.toString().toInt()
-        val dinote = Dinote(0)
-        for (i in 0..count) {
-            dinote.title = "fake $i"
-            dinote.ListTag = emptyList()
-            DinoteDataBase.getInstance(context)?.dinoteDAO()?.onInsert(dinote)
+        val count = mBinding.edtFakeNumber.text.toString().trim()
+        if (count.isNotEmpty()) {
+            val dinote = Dinote(0)
+            val repeat = count.toInt()
+            for (i in 0..repeat) {
+                dinote.title = "fake $i"
+                dinote.ListTag = emptyList()
+                DinoteDataBase.getInstance(context)?.dinoteDAO()?.onInsert(dinote)
+            }
+            dismiss()
+            onAddData()
+        } else {
+            Toast.makeText(context,
+                context.getString(R.string.txt_input_number_fake_data),
+                Toast.LENGTH_SHORT).show()
+            mBinding.edtFakeNumber.requestFocus()
         }
-        dismiss()
-        onAddData()
     }
 
     override fun setResizeView() {

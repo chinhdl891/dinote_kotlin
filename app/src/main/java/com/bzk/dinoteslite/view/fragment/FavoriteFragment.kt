@@ -16,8 +16,6 @@ import com.bzk.dinoteslite.viewmodel.FavoriteFragmentViewModel
 private lateinit var viewModel: FavoriteFragmentViewModel
 
 class FavoriteFragment : BaseFragment<FragmentFavoriteBinding>(), View.OnClickListener {
-
-    private val layoutManager = LinearLayoutManager(activity)
     private var dinoteAdapter: DinoteAdapter? = null
     override fun getLayoutResource(): Int {
         return R.layout.fragment_favorite
@@ -58,7 +56,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding>(), View.OnClickLi
             findNavController().navigate(R.id.detailFragment, bundle)
         })
         mBinding.rcvFavoriteDinote.adapter = dinoteAdapter
-        mBinding.rcvFavoriteDinote.layoutManager = layoutManager
+        mBinding.rcvFavoriteDinote.layoutManager = LinearLayoutManager(context)
     }
 
     private fun observer() {
