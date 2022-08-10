@@ -6,12 +6,15 @@ import android.view.ViewGroup
 import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.base.GlobalApp
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.Motion
 import com.bzk.dinoteslite.model.TagModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val TAG = "DetailFragmentViewModel"
 
@@ -78,7 +81,9 @@ class DetailFragmentViewModel(application: Application) : AndroidViewModel(appli
             ListTag = getListTag()
             isLike = isFavorite.value!!
         }
-        dinoteDAO?.onUpdate(mDinote)
+        viewModelScope.launch(Dispatchers.IO) {
+            dinoteDAO?.onUpdate(mDinote)
+        }
     }
 
     fun onClickEnableView() {

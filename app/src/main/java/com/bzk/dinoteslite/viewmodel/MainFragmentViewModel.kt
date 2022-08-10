@@ -11,8 +11,10 @@ import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.PhotoModel
 import com.bzk.dinoteslite.model.TagModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlin.system.measureTimeMillis
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class MainFragmentViewModel(application: Application) : AndroidViewModel(application) {
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -21,7 +23,8 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
     val totalItem: MutableLiveData<Int> = MutableLiveData(0)
     var listHotTag: LiveData<List<TagModel>>
     var tagDAO = DinoteDataBase.getInstance(application)?.tagDAO()
-    lateinit var dinoteLoadMore : LiveData<List<Dinote>>
+    lateinit var dinoteLoadMore: LiveData<List<Dinote>>
+    var x: Int = 0
 
     var list = MutableLiveData(
         mutableListOf(
@@ -41,7 +44,15 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun getTotalItem() {
-        totalItem.value = dinoteDAO?.getTotalItem()
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                x = dinoteDAO?.getTotalItem()!!
+            } finally {
+                withContext(Dispatchers.Main) {
+                    totalItem.value = x
+                }
+            }
+        }
     }
 
     fun loadMoreItem() {
@@ -63,7 +74,9 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun deleteDinote(dinote: Dinote) {
-        dinoteDAO?.onDelete(dinote)
+        viewModelScope.launch(Dispatchers.IO) {
+            dinoteDAO?.onDelete(dinote)
+        }
     }
 }
 

@@ -5,12 +5,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.database.DinoteDAO
 import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.Motion
 import com.bzk.dinoteslite.model.TagModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val TAG = "CreateFragmentViewModel"
 
@@ -91,7 +94,9 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
             motionId,
             isFavorite.value!!,
             setIdForTag())
-        dinoteDAO?.onInsert(dinote!!)
+        viewModelScope.launch(Dispatchers.IO) {
+            dinoteDAO?.onInsert(dinote!!)
+        }
     }
 
     private fun setIdForTag(): List<TagModel> {
