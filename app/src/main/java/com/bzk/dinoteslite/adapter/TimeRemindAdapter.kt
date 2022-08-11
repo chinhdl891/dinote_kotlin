@@ -1,15 +1,12 @@
 package com.bzk.dinoteslite.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
 import com.bzk.dinoteslite.R
-import com.bzk.dinoteslite.base.GlobalApp
 import com.bzk.dinoteslite.databinding.ItemTimeRemindBinding
 import com.bzk.dinoteslite.model.TimeRemind
 
@@ -18,10 +15,13 @@ class TimeRemindAdapter(
     var onDelete: (TimeRemind) -> Unit,
 ) :
     RecyclerView.Adapter<TimeRemindAdapter.TimeRemindViewHolder>() {
-    private var listTimeRemind: List<TimeRemind> = listOf()
+    private var listTimeRemind = arrayListOf<TimeRemind>()
     fun init(list: List<TimeRemind>) {
-        listTimeRemind = list
-        notifyDataSetChanged()
+        val timeRemindDiffUtil = TimeRemindDiffUtil(listTimeRemind,list)
+        val diffResult = DiffUtil.calculateDiff(timeRemindDiffUtil)
+        listTimeRemind.clear()
+        listTimeRemind.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeRemindViewHolder {

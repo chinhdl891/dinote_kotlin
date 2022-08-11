@@ -3,6 +3,7 @@ package com.bzk.dinoteslite.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
 import com.bzk.dinoteslite.R
@@ -13,11 +14,15 @@ class HistorySearchAdapter(var onSearch: (String) -> Unit) :
     RecyclerView.Adapter<HistorySearchAdapter.HistorySearchViewHolder>() {
     var listSearch: MutableList<HistorySearch> = mutableListOf()
     fun initData(mutableList: MutableList<HistorySearch>) {
-        listSearch.apply {
-            clear()
-            addAll(mutableList)
-        }
-        notifyDataSetChanged()
+        val diffUtil = HistorySearchDiffUtil(listSearch, mutableList)
+        val diffResult = DiffUtil.calculateDiff(diffUtil)
+        listSearch = mutableList
+        diffResult.dispatchUpdatesTo(this)
+//        listSearch.apply {
+//            clear()
+//            addAll(mutableList)
+//        }
+//        notifyDataSetChanged()
     }
 
     inner class HistorySearchViewHolder(var mBinding: ItemSearchHistoryBinding) :
