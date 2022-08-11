@@ -1,7 +1,6 @@
 package com.bzk.dinoteslite.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,10 +10,8 @@ import com.bzk.dinoteslite.database.DinoteDataBase
 import com.bzk.dinoteslite.model.Dinote
 import com.bzk.dinoteslite.model.PhotoModel
 import com.bzk.dinoteslite.model.TagModel
-import kotlinx.coroutines.*
-import kotlin.system.measureTimeMillis
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainFragmentViewModel(application: Application) : AndroidViewModel(application) {
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -45,13 +42,8 @@ class MainFragmentViewModel(application: Application) : AndroidViewModel(applica
 
     fun getTotalItem() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                x = dinoteDAO?.getTotalItem()!!
-            } finally {
-                withContext(Dispatchers.Main) {
-                    totalItem.value = x
-                }
-            }
+            x = dinoteDAO?.getTotalItem() ?: 0
+            totalItem.postValue(x)
         }
     }
 

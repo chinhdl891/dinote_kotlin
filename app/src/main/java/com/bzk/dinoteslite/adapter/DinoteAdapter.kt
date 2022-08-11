@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.BR
 import com.bzk.dinoteslite.R
@@ -18,9 +19,13 @@ class DinoteAdapter(var onDelete: (Dinote) -> Unit, var onGotoDetail: (Dinote) -
     private var listDinote: ArrayList<Dinote> = arrayListOf<Dinote>()
     private lateinit var mContext: Context
     fun initData(list: MutableList<Dinote>) {
-        listDinote.clear()
-        listDinote.addAll(list)
-        notifyDataSetChanged()
+        val dinoteDiffUtil = DinoteDiffUtil(listDinote, list)
+        val diffResult = DiffUtil.calculateDiff(dinoteDiffUtil)
+        listDinote = list as ArrayList<Dinote>
+        diffResult.dispatchUpdatesTo(this)
+//        listDinote.clear()
+//        listDinote.addAll(list)
+//        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DinoteViewHolder {

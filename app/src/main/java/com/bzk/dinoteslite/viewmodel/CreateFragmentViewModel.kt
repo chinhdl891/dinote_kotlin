@@ -95,7 +95,9 @@ class CreateFragmentViewModel(application: Application) : AndroidViewModel(appli
             isFavorite.value!!,
             setIdForTag())
         viewModelScope.launch(Dispatchers.IO) {
-            dinoteDAO?.onInsert(dinote!!)
+            dinote?.let {
+                dinoteDAO?.onInsert(it)
+            }
         }
     }
 

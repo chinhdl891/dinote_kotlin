@@ -12,6 +12,7 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bzk.dinoteslite.R
 import com.bzk.dinoteslite.adapter.TimeRemindAdapter
 import com.bzk.dinoteslite.base.BaseFragment
@@ -70,7 +71,7 @@ class RemindFragment : BaseFragment<FragmentRemidBinding>(), View.OnClickListene
 
     private fun observer() {
         remindFragmentViewModel.listTimeRemind.observe(this) {
-            timeRemindAdapter?.init(it.sortedBy { timeRemind -> timeRemind.time })
+            timeRemindAdapter?.init(it)
         }
     }
 
